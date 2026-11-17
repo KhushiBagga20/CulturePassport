@@ -99,7 +99,7 @@ export function ChapterBar({
                   href={`#${c.id}`}
                   onClick={(e) => go(e, c.id)}
                   aria-current={on ? "location" : undefined}
-                  className={`flex h-12 items-center gap-2 px-3.5 font-ui text-[0.72rem] font-bold uppercase tracking-[0.1em] no-underline transition-colors xl:px-4 ${on ? "bg-[var(--accent)] text-[var(--accent-ink)]" : "text-bone/75 hover:bg-bone/10 hover:text-bone"}`}
+                  className={`flex h-12 items-center gap-1.5 whitespace-nowrap px-2.5 font-ui text-[0.68rem] font-bold uppercase tracking-[0.03em] no-underline transition-colors xl:px-3.5 ${on ? "bg-[var(--accent)] text-[var(--accent-ink)]" : "text-bone/75 hover:bg-bone/10 hover:text-bone"}`}
                 >
                   <span className={on ? "" : "text-yellow"}>{c.n}</span>
                   {c.label}

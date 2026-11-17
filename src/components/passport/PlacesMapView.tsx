@@ -68,7 +68,7 @@ export function PlacesMapView({ slug, name, width, height, lands, links, markers
               stroke="#F6F0E3"
               strokeWidth={4}
               paintOrder="stroke"
-              style={{ fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 800, textTransform: "uppercase" }}
+              style={{ fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 800, textTransform: "uppercase", letterSpacing: "-0.02em" }}
             >
               {curMarker.place}
             </text>

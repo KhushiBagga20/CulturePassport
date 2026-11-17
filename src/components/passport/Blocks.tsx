@@ -97,10 +97,10 @@ function Block({ b, ctx, large = false, lead = false, tone }: { b: TextBlock; ct
   if (b.type === "pull") {
     return (
       <blockquote className="relative my-10 max-w-[30ch]">
-        <span aria-hidden className="font-display absolute -left-1 -top-8 text-[6rem] leading-none text-[var(--accent)] opacity-90">
+        <span aria-hidden className="font-display absolute -left-1 -top-8 text-[4.8rem] leading-none text-[var(--accent)] opacity-90">
           &ldquo;
         </span>
-        <p className="font-display relative text-[clamp(2rem,4vw,3.4rem)] leading-[0.95]">{b.text}</p>
+        <p className="font-display relative text-[clamp(1.56rem,3.12vw,2.58rem)] leading-[0.95]">{b.text}</p>
         {b.attribution && <footer className={`label-sm mt-3 ${soft}`}>— {b.attribution}</footer>}
       </blockquote>
     );
@@ -163,14 +163,14 @@ export function ChapterHeading({
   const kick = tone === "light" ? "text-ink-mute" : "opacity-80";
   return (
     <header className="relative mb-12 grid items-end gap-x-8 gap-y-3 sm:grid-cols-[auto_1fr] lg:mb-16">
-      <span aria-hidden className={`font-display text-[clamp(6rem,15vw,12.5rem)] leading-[0.74] ${num}`}>
+      <span aria-hidden className={`font-display text-[clamp(4.68rem,11.7vw,9.5rem)] leading-[0.74] ${num}`}>
         {n}
       </span>
       <div className="pb-1">
         <p className={`label ${kick}`}>
           Chapter {n} · {kicker}
         </p>
-        <h2 id={id} className="font-display mt-2 text-[clamp(2.9rem,7vw,6.2rem)]">
+        <h2 id={id} className="font-display mt-2 text-[clamp(2.26rem,5.46vw,4.71rem)]">
           {title}
         </h2>
         {intro && <p className={`mt-4 max-w-2xl ${tone === "light" ? "text-ink-soft" : "opacity-90"}`}>{intro}</p>}

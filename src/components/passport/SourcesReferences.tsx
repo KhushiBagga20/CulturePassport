@@ -107,7 +107,7 @@ export function SourcesReferences({ claims, sources }: { claims: Claim[]; source
         <div className="flex flex-col justify-between bg-ink p-5 text-bone md:w-56">
           <p className="label text-yellow">In this passport</p>
           <p className="mt-3">
-            <span className="font-display block text-[5.5rem] leading-[0.8]">{sources.length}</span>
+            <span className="font-display block text-[4.4rem] leading-[0.8]">{sources.length}</span>
             <span className="font-ui text-sm font-bold uppercase tracking-[0.08em]">sources</span>
           </p>
           <p className="mt-3 text-sm text-bone/75">supporting {claims.length} labelled claims</p>
@@ -155,7 +155,7 @@ export function SourcesReferences({ claims, sources }: { claims: Claim[]; source
       <div className="mt-14 grid gap-14 lg:grid-cols-12">
         {/* ── Claims ── */}
         <div className="lg:col-span-7">
-          <h3 className="font-display text-[2.6rem]">Claims &amp; their evidence</h3>
+          <h3 className="font-display text-[2.08rem]">Claims &amp; their evidence</h3>
           <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Filter claims by evidence">
             <button type="button" aria-pressed={level === "all"} onClick={() => setLevel("all")} className="chip">
               All · {claims.length}
@@ -210,7 +210,7 @@ export function SourcesReferences({ claims, sources }: { claims: Claim[]; source
 
         {/* ── Source library ── */}
         <div className="lg:col-span-5">
-          <h3 className="font-display text-[2.6rem]">Source library</h3>
+          <h3 className="font-display text-[2.08rem]">Source library</h3>
           <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Filter sources by kind">
             <button type="button" aria-pressed={group === "all"} onClick={() => setGroup("all")} className="chip">
               All · {sources.length}

@@ -113,7 +113,7 @@ export function SourceDrawer({ sources }: { sources: DrawerSource[] }) {
         style={{ animation: reduce ? undefined : "drawer-in .28s cubic-bezier(.16,1,.3,1) both" }}
       >
         <div className="flex items-center justify-between gap-3 bg-ink px-5 py-3 text-bone">
-          <span className="font-display text-3xl text-yellow">[{s.n}]</span>
+          <span className="font-display text-2xl text-yellow">[{s.n}]</span>
           <span className="label-sm text-bone/70">{s.type}</span>
           <button type="button" onClick={close} className="label ml-auto border border-bone/40 px-3 py-1.5 hover:bg-bone hover:text-ink">
             Close

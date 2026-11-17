@@ -25,7 +25,7 @@ export default async function PassportsPage({ searchParams }: PageProps<"/passpo
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
             <p className="label text-brick">The register</p>
-            <h1 className="font-display mt-3 text-[clamp(3.6rem,10vw,9rem)]">Passports</h1>
+            <h1 className="font-display mt-3 text-[clamp(2.81rem,7.8vw,6.84rem)]">Passports</h1>
           </div>
           <p className="max-w-md text-ink-soft">
             In the order each entered the archive. Numbers are permanent: a printed QR code or a short link like{" "}
@@ -45,14 +45,14 @@ export default async function PassportsPage({ searchParams }: PageProps<"/passpo
                 href={`/passport/${t.slug}`}
                 className="group grid grid-cols-[4.5rem_1fr] items-center gap-4 border-2 border-ink bg-bone pr-4 transition-transform hover:-translate-y-0.5 sm:grid-cols-[6rem_5.5rem_1fr_auto] sm:gap-6"
               >
-                <span className="font-display flex h-full items-center justify-center self-stretch text-4xl sm:text-5xl" style={{ background: ACCENT[t.accent].hex, color: ACCENT[t.accent].ink }}>
+                <span className="font-display flex h-full items-center justify-center self-stretch text-3xl sm:text-4xl" style={{ background: ACCENT[t.accent].hex, color: ACCENT[t.accent].ink }}>
                   {t.passportNo}
                 </span>
                 <span className="my-3 hidden h-20 w-16 overflow-hidden border-2 border-ink sm:block">
                   <Motif motif={t.motif} className="h-full w-full transition-transform duration-700 group-hover:scale-110" />
                 </span>
                 <span className="min-w-0 py-4">
-                  <span className="font-display block text-[clamp(2rem,4vw,3.4rem)] group-hover:text-brick">{t.name}</span>
+                  <span className="font-display block text-[clamp(1.56rem,3.12vw,2.58rem)] group-hover:text-brick">{t.name}</span>
                   <span className="mt-1 block text-sm text-ink-soft">
                     {CATEGORY[t.category]} · {t.regionLabel} · {t.communities.map((c) => L.community.get(c.community)?.name).join(", ")}
                   </span>

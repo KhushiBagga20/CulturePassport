@@ -30,7 +30,7 @@ export function CaseFile({
       <div className="grid gap-px bg-bone/15 lg:grid-cols-[1fr_auto]">
         <div className="bg-ink px-5 py-8 sm:px-10 sm:py-10">
           <p className="label inline-block bg-yellow px-2 py-1 text-ink">Case file {c.code}</p>
-          <h3 id={`case-${c.id}`} className="font-display mt-4 text-[clamp(2.8rem,6.5vw,5.6rem)]">
+          <h3 id={`case-${c.id}`} className="font-display mt-4 text-[clamp(2.18rem,5.07vw,4.26rem)]">
             {c.title}
           </h3>
           <p className="lead mt-5 max-w-3xl text-bone/90">{c.summary}</p>
@@ -77,7 +77,7 @@ export function CaseFile({
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div>
                 <p className="label text-yellow">Side by side</p>
-                <p className="font-display mt-2 text-[clamp(2.2rem,4.5vw,3.6rem)]">The object and the interpretation</p>
+                <p className="font-display mt-2 text-[clamp(1.72rem,3.51vw,2.74rem)]">The object and the interpretation</p>
               </div>
               <p className="max-w-sm text-sm text-bone/75">
                 Only licensed images are shown. Where no licensed photograph exists, the panel says so instead of showing a look-alike.
@@ -95,7 +95,7 @@ export function CaseFile({
               <div className="mt-6 grid items-stretch gap-4 md:grid-cols-[1fr_auto_1fr]">
                 <ComparePanel title={trad.title} points={trad.points} media={tradMedia} motif={motif} tone="cream" />
                 <div className="flex items-center justify-center" aria-hidden>
-                  <span className="font-display flex h-16 w-16 rotate-45 items-center justify-center border-2 border-bone bg-yellow text-3xl text-ink">
+                  <span className="font-display flex h-16 w-16 rotate-45 items-center justify-center border-2 border-bone bg-yellow text-2xl text-ink">
                     <span className="-rotate-45">→</span>
                   </span>
                 </div>
@@ -107,7 +107,7 @@ export function CaseFile({
 
         {/* What travelled, and what was left behind? */}
         <div className="mt-16">
-          <h4 className="font-display text-[clamp(2.2rem,4.8vw,4rem)]">
+          <h4 className="font-display text-[clamp(1.72rem,3.74vw,3.04rem)]">
             What travelled, <span className="text-yellow">and what was left behind?</span>
           </h4>
           <div className="mt-8 grid items-stretch gap-4 md:grid-cols-[1fr_auto_1fr]">
@@ -123,7 +123,7 @@ export function CaseFile({
               </ul>
             </div>
             <div className="hidden flex-col items-center justify-center gap-2 md:flex" aria-hidden>
-              <span className="font-display text-5xl text-yellow">⇆</span>
+              <span className="font-display text-4xl text-yellow">⇆</span>
               <span className="label-sm vertical-label text-bone/60">The gap</span>
             </div>
             <div className="border-4 border-dashed border-yellow p-6">
@@ -145,7 +145,7 @@ export function CaseFile({
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="label text-yellow">{c.questions.length === 6 ? "Six questions" : "Our questions"}</p>
-              <p className="font-display mt-2 text-[clamp(2.2rem,4.5vw,3.6rem)]">Asked of every case</p>
+              <p className="font-display mt-2 text-[clamp(1.72rem,3.51vw,2.74rem)]">Asked of every case</p>
             </div>
             <p className="max-w-sm text-sm text-bone/75">
               The same questions, every time — so that {traditionName} is judged by a method, not by a mood. Open one to read the answer.
@@ -156,7 +156,7 @@ export function CaseFile({
               <li key={q.q}>
                 <details className="more group h-full border-2 border-bone/40 bg-ink p-5 open:border-yellow open:bg-bone open:text-ink">
                   <summary className="flex items-start gap-4">
-                    <span className="font-display text-5xl leading-[0.8] text-yellow group-open:text-brick">{i + 1}</span>
+                    <span className="font-display text-4xl leading-[0.8] text-yellow group-open:text-brick">{i + 1}</span>
                     <span className="font-title flex-1 text-xl leading-tight">{q.q}</span>
                     <span aria-hidden className="more-icon font-display text-2xl leading-none text-yellow transition-transform group-open:text-ink">
                       +

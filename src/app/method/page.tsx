@@ -16,7 +16,7 @@ export default async function MethodPage() {
   return (
     <div className="mx-auto max-w-[1200px] px-4 py-12 sm:px-6 lg:px-10 lg:py-20">
       <p className="label text-brick">About · how we work</p>
-      <h1 className="font-display mt-3 text-[clamp(3.4rem,9vw,8rem)]">How we know what we say</h1>
+      <h1 className="font-display mt-3 text-[clamp(2.65rem,7.02vw,6.08rem)]">How we know what we say</h1>
       <p className="font-title mt-6 max-w-3xl border-l-8 border-orange pl-5 text-[clamp(1.5rem,2.6vw,2.2rem)] leading-snug">
         Culture Passport is an education, documentation and attribution project. It is not a legal ownership registry, and a passport number is an
         archive reference — not a certificate.
@@ -38,7 +38,7 @@ export default async function MethodPage() {
       </nav>
 
       <section id="principles" className="mt-16 grid gap-10 border-t-2 border-ink pt-8 lg:grid-cols-12">
-        <h2 className="font-display text-5xl lg:col-span-4">Principles</h2>
+        <h2 className="font-display text-4xl lg:col-span-4">Principles</h2>
         <ol className="space-y-4 lg:col-span-8">
           {[
             ["We are not against cultural exchange.", "Inspiration, adaptation and collaboration are how culture lives. We document when context disappears — the origin, the makers, the meaning, the source."],
@@ -49,7 +49,7 @@ export default async function MethodPage() {
             ["Generated images are never evidence.", "Photographs are credited and licensed. Our geometric motifs are labelled as archive illustrations, not traditional artworks."],
           ].map(([h, p], i) => (
             <li key={h} className="grid grid-cols-[2.5rem_1fr] gap-3">
-              <span className="font-display text-3xl leading-none text-brick">{String(i + 1).padStart(2, "0")}</span>
+              <span className="font-display text-2xl leading-none text-brick">{String(i + 1).padStart(2, "0")}</span>
               <span>
                 <strong className="font-medium">{h}</strong> <span className="text-ink-soft">{p}</span>
               </span>
@@ -60,7 +60,7 @@ export default async function MethodPage() {
 
       <section id="evidence" className="mt-16 grid gap-10 border-t-2 border-ink pt-8 lg:grid-cols-12">
         <div className="lg:col-span-4">
-          <h2 className="font-display text-5xl">Evidence labels</h2>
+          <h2 className="font-display text-4xl">Evidence labels</h2>
           <p className="mt-3 text-sm text-ink-soft">
             Applied to every claim, milestone, material and answer by an editor — never automatically — and shown to readers next to the text.
           </p>
@@ -82,7 +82,7 @@ export default async function MethodPage() {
       </section>
 
       <section id="process" className="mt-16 grid gap-10 border-t-2 border-ink pt-8 lg:grid-cols-12">
-        <h2 className="font-display text-5xl lg:col-span-4">From draft to passport</h2>
+        <h2 className="font-display text-4xl lg:col-span-4">From draft to passport</h2>
         <div className="lg:col-span-8">
           <ol className="grid gap-4 sm:grid-cols-2">
             {[
@@ -92,7 +92,7 @@ export default async function MethodPage() {
               ["Publish & correct", "Passports move from draft to review to published. Every significant edit is logged; public corrections are reviewed against sources."],
             ].map(([h, p], i) => (
               <li key={h} className="border-2 border-ink bg-bone p-5">
-                <span className="font-display text-5xl text-brick">{i + 1}</span>
+                <span className="font-display text-4xl text-brick">{i + 1}</span>
                 <p className="font-title mt-2 text-2xl">{h}</p>
                 <p className="mt-1 text-sm text-ink-soft">{p}</p>
               </li>
@@ -110,7 +110,7 @@ export default async function MethodPage() {
       </section>
 
       <section id="corrections" className="mt-16 grid gap-10 border-t-2 border-ink pt-8 lg:grid-cols-12">
-        <h2 className="font-display text-5xl lg:col-span-4">Corrections</h2>
+        <h2 className="font-display text-4xl lg:col-span-4">Corrections</h2>
         <div className="space-y-3 text-ink-soft lg:col-span-8">
           <p>
             Every passport ends with a &ldquo;Suggest a correction&rdquo; form. Notes go to the editorial queue — never straight onto the page. Editors check
@@ -121,7 +121,7 @@ export default async function MethodPage() {
       </section>
 
       <section id="languages" className="mt-16 grid gap-10 border-t-2 border-ink pt-8 lg:grid-cols-12">
-        <h2 className="font-display text-5xl lg:col-span-4">Languages</h2>
+        <h2 className="font-display text-4xl lg:col-span-4">Languages</h2>
         <p className="text-ink-soft lg:col-span-8">
           Passports store traditional names in their own scripts, and the content model holds per-language versions of names, taglines and summaries.
           Translations are published only after human review — culturally sensitive interpretation is never left to machine translation alone.
@@ -129,7 +129,7 @@ export default async function MethodPage() {
       </section>
 
       <section id="maps" className="mt-16 grid gap-10 border-t-2 border-ink pt-8 lg:grid-cols-12">
-        <h2 className="font-display text-5xl lg:col-span-4">Maps</h2>
+        <h2 className="font-display text-4xl lg:col-span-4">Maps</h2>
         <p className="text-ink-soft lg:col-span-8">
           Country boundaries come from Natural Earth (via the world-atlas dataset) and are shown for orientation only. They do not represent a position
           on any disputed territory. Places are plotted at approximate district, town or site centres.
@@ -138,7 +138,7 @@ export default async function MethodPage() {
 
       <section id="credits" className="mt-16 grid gap-10 border-t-2 border-ink pt-8 lg:grid-cols-12">
         <div className="lg:col-span-4">
-          <h2 className="font-display text-5xl">Image credits</h2>
+          <h2 className="font-display text-4xl">Image credits</h2>
           <p className="mt-3 text-sm text-ink-soft">All photographs are from Wikimedia Commons under the licences shown. Follow each link for the original file.</p>
         </div>
         <ul className="divide-y divide-ink/15 border-y-2 border-ink text-sm lg:col-span-8">

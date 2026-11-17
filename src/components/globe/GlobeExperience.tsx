@@ -177,7 +177,7 @@ export function GlobeExperience({ countries, passports }: { countries: GlobeCoun
   return (
     <section
       aria-labelledby="hero-title"
-      className="relative isolate min-h-[max(100svh,680px)] overflow-hidden bg-bone"
+      className="relative isolate overflow-hidden bg-bone lg:min-h-[max(100svh,680px)]"
       style={{ ["--glow" as string]: glow }}
     >
       {/* reactive lighting behind the globe */}
@@ -197,7 +197,8 @@ export function GlobeExperience({ countries, passports }: { countries: GlobeCoun
       />
 
       {/* Globe stage */}
-      <div className="absolute inset-x-0 top-14 bottom-[44%] sm:bottom-[38%] lg:inset-y-0 lg:left-[30%] lg:right-0 lg:top-0">
+      {/* Below lg the globe gets its own band and the text starts underneath it, so they never overlap. */}
+      <div className="absolute inset-x-0 top-14 h-[min(50svh,440px)] lg:inset-y-0 lg:left-[30%] lg:right-0 lg:top-0 lg:h-auto">
         {mode === "3d" && world && !error && (
           <GlobeCanvas
             world={world}
@@ -313,12 +314,12 @@ export function GlobeExperience({ countries, passports }: { countries: GlobeCoun
       )}
 
       {/* Editorial column */}
-      <div className="pointer-events-none relative z-10 mx-auto flex min-h-[max(100svh,680px)] max-w-[1500px] flex-col justify-end px-4 pb-8 pt-20 sm:px-6 lg:justify-center lg:px-10 lg:pb-16">
+      <div className="pointer-events-none relative z-10 mx-auto flex max-w-[1500px] flex-col justify-start px-4 pb-10 pt-[calc(3.5rem+min(50svh,440px)+0.5rem)] sm:px-6 lg:min-h-[max(100svh,680px)] lg:justify-center lg:px-10 lg:pb-16 lg:pt-20">
         <div className="pointer-events-auto max-w-[34rem] lg:max-w-[38rem]">
           <p className="label inline-flex items-center gap-2 bg-ink px-2.5 py-1.5 text-yellow">
             <span aria-hidden>●</span> The living globe
           </p>
-          <h1 id="hero-title" className="font-display mt-4 text-[clamp(3.6rem,11vw,10rem)] text-ink">
+          <h1 id="hero-title" className="font-display mt-4 text-[clamp(2.81rem,8.58vw,7.6rem)] text-ink">
             <SplitHeadline text="When culture travels" />
           </h1>
           <p className="font-title mt-3 text-[clamp(1.7rem,3.4vw,2.8rem)] italic leading-tight text-brick">Let its story travel with it.</p>
@@ -397,7 +398,7 @@ export function GlobeExperience({ countries, passports }: { countries: GlobeCoun
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="label-sm text-ink-mute">{selectedCountry?.status ? `${COUNTRY_STATUS[selectedCountry.status].label}` : "Not yet in the archive"}</p>
-              <h2 className="font-display mt-1 text-5xl">{selected.name}</h2>
+              <h2 className="font-display mt-1 text-4xl">{selected.name}</h2>
             </div>
             <button type="button" onClick={() => setSelected(null)} className="chip" aria-label="Close panel and return to the globe">
               ✕ Back to globe
@@ -481,7 +482,7 @@ export function GlobeExperience({ countries, passports }: { countries: GlobeCoun
           <style>{`@keyframes curtain-in { from { clip-path: circle(0% at 64% 52%); } to { clip-path: circle(150% at 64% 52%); } }`}</style>
           <div className="text-center text-ivory">
             <p className="label">Opening the chapter</p>
-            <p className="font-display mt-2 text-[clamp(3.5rem,12vw,10rem)]">{entering.name === "United Arab Emirates" ? "UAE" : entering.name}</p>
+            <p className="font-display mt-2 text-[clamp(2.73rem,9.36vw,7.6rem)]">{entering.name === "United Arab Emirates" ? "UAE" : entering.name}</p>
           </div>
         </div>
       )}
@@ -493,7 +494,7 @@ export function GlobeExperience({ countries, passports }: { countries: GlobeCoun
         aria-labelledby="index-title"
       >
         <div className="flex items-center justify-between border-b rule px-5 py-4">
-          <h2 id="index-title" className="font-display text-3xl">
+          <h2 id="index-title" className="font-display text-2xl">
             Country index
           </h2>
           <button type="button" onClick={() => indexDialog.current?.close()} className="chip">
@@ -558,7 +559,7 @@ function PassportPicker({ dialogRef, passports }: { dialogRef: React.RefObject<H
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="label text-brick">Passport register</p>
-            <h2 id="picker-title" className="font-display mt-1 text-4xl">
+            <h2 id="picker-title" className="font-display mt-1 text-3xl">
               Enter a Culture Passport
             </h2>
           </div>

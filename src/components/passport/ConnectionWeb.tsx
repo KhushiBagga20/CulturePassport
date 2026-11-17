@@ -104,14 +104,14 @@ export function ConnectionWeb({ center, nodes }: { center: { name: string; color
           {/* centre */}
           <g>
             <circle cx={CX} cy={CY} r="64" fill={center.color} stroke="#1B1616" strokeWidth="3" />
-            {wrap(center.name, 11).map((l, i, all) => (
+            {wrap(center.name, 10).map((l, i, all) => (
               <text
                 key={l}
                 x={CX}
                 y={CY + 8 + (i - (all.length - 1) / 2) * 24}
                 textAnchor="middle"
                 fill="#F6F0E3"
-                style={{ fontFamily: "var(--font-display)", fontSize: 25, fontWeight: 800, textTransform: "uppercase" }}
+                style={{ fontFamily: "var(--font-display)", fontSize: 19, fontWeight: 800, textTransform: "uppercase", letterSpacing: "-0.02em" }}
               >
                 {l}
               </text>
@@ -159,7 +159,7 @@ export function ConnectionWeb({ center, nodes }: { center: { name: string; color
                     y={y + 5 + (i - (lines.length - 1) / 2) * 15}
                     textAnchor="middle"
                     fill={on && n.type === "passport" ? "#F6F0E3" : "#1B1616"}
-                    style={{ fontFamily: "var(--font-ui)", fontSize: 13, fontWeight: 700 }}
+                    style={{ fontFamily: "var(--font-ui)", fontSize: 12, fontWeight: 600 }}
                   >
                     {l}
                   </text>

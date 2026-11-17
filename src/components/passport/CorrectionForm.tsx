@@ -12,7 +12,7 @@ export function CorrectionForm({ traditionId, claims }: { traditionId: string; c
           <span className="label text-terracotta">Suggest a correction</span>
           <span className="mt-1 block text-sm text-ink-soft">Found an error, a missing source, or a better account? Tell the editors.</span>
         </span>
-        <span aria-hidden className="font-display text-3xl transition-transform group-open:rotate-45">
+        <span aria-hidden className="font-display text-2xl transition-transform group-open:rotate-45">
           +
         </span>
       </summary>
@@ -30,7 +30,7 @@ export function CorrectionForm({ traditionId, claims }: { traditionId: string; c
           </div>
           <label className="grid gap-1">
             <span className="label-sm text-ink-mute">Which claim? (optional)</span>
-            <select name="claim" className="border-2 border-ink/30 bg-cream px-2 py-2 text-sm">
+            <select name="claim" className="w-full min-w-0 border-2 border-ink/30 bg-cream px-2 py-2 text-sm">
               <option value="">The passport in general</option>
               {claims.map((c) => (
                 <option key={c.id} value={c.id}>

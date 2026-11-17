@@ -38,7 +38,7 @@ export default async function ExplorePage() {
       <div className="flex flex-wrap items-end justify-between gap-6">
         <div>
           <p className="label text-brick">The atlas, as a list</p>
-          <h1 className="font-display mt-3 text-[clamp(3.6rem,10vw,9rem)]">Countries</h1>
+          <h1 className="font-display mt-3 text-[clamp(2.81rem,7.8vw,6.84rem)]">Countries</h1>
         </div>
         <div className="flex max-w-md flex-col items-start gap-3 sm:items-end">
           <p className="text-ink-soft sm:text-right">
@@ -67,8 +67,8 @@ export default async function ExplorePage() {
                     return (
                       <li key={c.slug} className="border-2 border-ink bg-bone p-4 text-ink">
                         <Link href={`/country/${c.slug}`} className="group flex items-baseline justify-between gap-3">
-                          <span className="font-display text-4xl group-hover:text-brick">{c.name}</span>
-                          <span aria-hidden className="font-display text-3xl transition-transform group-hover:translate-x-1">
+                          <span className="font-display text-3xl group-hover:text-brick">{c.name}</span>
+                          <span aria-hidden className="font-display text-2xl transition-transform group-hover:translate-x-1">
                             →
                           </span>
                         </Link>

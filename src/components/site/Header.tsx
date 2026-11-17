@@ -59,11 +59,11 @@ export function Header() {
     <header
       className={`no-print z-50 w-full ${overlay ? "absolute inset-x-0 top-0" : "sticky top-0 border-b-2 border-ink bg-cream"}`}
     >
-      <div className="mx-auto grid h-14 max-w-[1500px] grid-cols-[1fr_auto] items-center gap-4 px-4 sm:px-6 lg:grid-cols-[1fr_auto_1fr] lg:px-10">
-        <Link href="/" className="group flex items-center gap-2.5 justify-self-start" aria-label="Culture Passport — back to the globe">
-          <SealMark className="h-8 w-8 text-brick transition-transform duration-700 group-hover:rotate-[30deg]" />
+      <div className="mx-auto grid h-14 max-w-[1500px] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-4 sm:px-6 lg:grid-cols-[1fr_auto_1fr] lg:px-10">
+        <Link href="/" className="group flex min-w-0 items-center gap-2 justify-self-start" aria-label="Culture Passport — back to the globe">
+          <SealMark className="h-8 w-8 shrink-0 text-brick transition-transform duration-700 group-hover:rotate-[30deg]" />
           <span className="flex flex-col leading-none">
-            <span className="font-display whitespace-nowrap text-[1.3rem] tracking-[0.01em]">Culture Passport</span>
+            <span className="font-display whitespace-nowrap text-[1rem] sm:text-[1.15rem]">Culture Passport</span>
             <span className="label-sm mt-0.5 hidden whitespace-nowrap text-ink-mute min-[400px]:block">{admin ? "Editorial desk" : "When culture travels"}</span>
           </span>
         </Link>
@@ -131,17 +131,17 @@ export function Header() {
                   <span className="label-sm block opacity-80">
                     {String(i + 1).padStart(2, "0")} {active ? "· You are here" : ""}
                   </span>
-                  <span className="font-display mt-1 block text-[3.2rem]">{item.label}</span>
+                  <span className="font-display mt-1 block text-[2.56rem]">{item.label}</span>
                   <span className="mt-1 block text-sm font-medium opacity-90">{item.hint}</span>
                 </span>
-                <span aria-hidden className="font-display text-4xl transition-transform group-hover:translate-x-1">
+                <span aria-hidden className="font-display text-3xl transition-transform group-hover:translate-x-1">
                   →
                 </span>
               </Link>
             );
           })}
           <Link href="/search" className="flex items-center justify-between border-b-2 border-ink bg-bone px-5 py-5 sm:px-6">
-            <span className="font-display text-3xl">Search the archive</span>
+            <span className="font-display text-2xl">Search the archive</span>
             <span className="label text-ink-mute">Traditions · places · sources</span>
           </Link>
         </nav>

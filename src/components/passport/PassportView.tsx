@@ -200,7 +200,7 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
         <div className={`${WRAP} relative grid gap-x-12 gap-y-10 pb-16 pt-8 lg:grid-cols-12 lg:pb-20`}>
           <div className="lg:col-span-7 lg:row-start-1">
             <DiamondBadge top="CULTURE PASSPORT" center={`No. ${t.passportNo}`} className="h-auto w-44 text-[var(--accent-text)] sm:w-60" />
-            <h1 className="font-display reveal-rise mt-6 text-[clamp(3.4rem,10.5vw,9.6rem)]">{t.displayTitle}</h1>
+            <h1 className="font-display reveal-rise mt-6 text-[clamp(2.65rem,8.19vw,7.3rem)]">{t.displayTitle}</h1>
             <p className="font-title mt-3 text-[clamp(1.7rem,3.4vw,2.8rem)] italic text-[var(--accent-text)]">{t.tagline}</p>
           </div>
 
@@ -259,7 +259,7 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
 
       <Ticker
         items={[`Culture Passport No. ${t.passportNo}`, t.name, t.regionLabel, CATEGORY[t.category], `${order.length} sources`, `Reviewed ${formatSourceDate(t.editorial.lastReviewed)}`]}
-        className="border-y-2 border-ink bg-ink py-2.5 font-display text-[1.6rem] uppercase text-bone"
+        className="border-y-2 border-ink bg-ink py-2.5 font-display text-[1.28rem] uppercase text-bone"
         dotClassName="text-[var(--accent)]"
       />
 
@@ -328,7 +328,7 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
           <div className={`${WRAP} grid gap-8 lg:grid-cols-12`}>
             <div className="lg:col-span-4">
               <p className="label">Why it matters</p>
-              <p className="font-display mt-3 text-[clamp(2.6rem,5vw,4.4rem)]">Meaning &amp; significance</p>
+              <p className="font-display mt-3 text-[clamp(2.03rem,3.9vw,3.34rem)]">Meaning &amp; significance</p>
             </div>
             <div className="lg:col-span-8">
               <Blocks blocks={t.significance} ctx={ctx} />
@@ -377,7 +377,7 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
             <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
               <div>
                 <p className="label text-yellow">How it is made</p>
-                <p className="font-display mt-2 text-[clamp(2.4rem,5vw,4.2rem)]">From material to object</p>
+                <p className="font-display mt-2 text-[clamp(1.87rem,3.9vw,3.19rem)]">From material to object</p>
               </div>
               <p className="max-w-sm text-sm text-bone/80">
                 Steps are listed only as far as sources describe them. Striped steps still await review by makers themselves.
@@ -423,7 +423,7 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
               <ol className="mt-3 grid gap-3">
                 {t.travels.influences.map((inf, i) => (
                   <li key={inf.title} className="grid grid-cols-[auto_1fr] gap-4 border-2 border-ink bg-bone p-4">
-                    <span className="font-display text-5xl leading-[0.8] text-[var(--accent-text)]">{String(i + 1).padStart(2, "0")}</span>
+                    <span className="font-display text-4xl leading-[0.8] text-[var(--accent-text)]">{String(i + 1).padStart(2, "0")}</span>
                     <div>
                       <div className="flex flex-wrap items-baseline justify-between gap-2">
                         <p className="font-title text-2xl leading-tight">{inf.title}</p>
@@ -445,7 +445,7 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
               <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
                 <div>
                   <p className="label text-[var(--accent-text)]">Connections</p>
-                  <p className="font-display mt-2 text-[clamp(2.4rem,5vw,4.2rem)]">Who and where it touches</p>
+                  <p className="font-display mt-2 text-[clamp(1.87rem,3.9vw,3.19rem)]">Who and where it touches</p>
                 </div>
                 <Link href={`/routes?tradition=${t.slug}`} className="btn btn-cream">
                   Open on the Roots &amp; Routes map →
@@ -612,7 +612,7 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
                   </span>
                   <span>
                     <span className="font-ui text-xs font-bold text-ink-mute">No. {o.passportNo}</span>
-                    <span className="font-display block text-3xl group-hover:text-brick">{o.name}</span>
+                    <span className="font-display block text-2xl group-hover:text-brick">{o.name}</span>
                     <span className="mt-1 block text-sm text-ink-soft">{r.reason}</span>
                   </span>
                 </Link>
@@ -641,7 +641,7 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
               style={{ background: ACCENT[prev.accent].text, color: "#F6F0E3" }}
             >
               <span className="label-sm opacity-80">← Previous passport · No. {prev.passportNo}</span>
-              <span className="font-display mt-1 block text-[clamp(2.4rem,5vw,4rem)] transition-transform group-hover:-translate-x-1">{prev.name}</span>
+              <span className="font-display mt-1 block text-[clamp(1.87rem,3.9vw,3.04rem)] transition-transform group-hover:-translate-x-1">{prev.name}</span>
             </Link>
           )}
           {next && next.slug !== t.slug && (
@@ -651,7 +651,7 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
               style={{ background: ACCENT[next.accent].text, color: "#F6F0E3" }}
             >
               <span className="label-sm opacity-80">Next passport · No. {next.passportNo} →</span>
-              <span className="font-display mt-1 block text-[clamp(2.4rem,5vw,4rem)] transition-transform group-hover:translate-x-1">{next.name}</span>
+              <span className="font-display mt-1 block text-[clamp(1.87rem,3.9vw,3.04rem)] transition-transform group-hover:translate-x-1">{next.name}</span>
             </Link>
           )}
         </nav>

@@ -14,11 +14,11 @@ async function font(pkg: string, file: string) {
 let fontsPromise: Promise<{ name: string; data: Buffer; weight: 500 | 600 | 700 | 800; style: "normal" | "italic" }[]> | null = null;
 function fonts() {
   fontsPromise ??= Promise.all([
-    font("barlow-condensed", "barlow-condensed-latin-800-normal.woff").then((data) => ({ name: "Display", data, weight: 800 as const, style: "normal" as const })),
-    font("barlow-condensed", "barlow-condensed-latin-600-italic.woff").then((data) => ({ name: "Title", data, weight: 600 as const, style: "italic" as const })),
-    font("manrope", "manrope-latin-500-normal.woff").then((data) => ({ name: "Body", data, weight: 500 as const, style: "normal" as const })),
-    font("space-grotesk", "space-grotesk-latin-500-normal.woff").then((data) => ({ name: "UI", data, weight: 500 as const, style: "normal" as const })),
-    font("space-grotesk", "space-grotesk-latin-700-normal.woff").then((data) => ({ name: "UI", data, weight: 700 as const, style: "normal" as const })),
+    font("inter", "inter-latin-800-normal.woff").then((data) => ({ name: "Display", data, weight: 800 as const, style: "normal" as const })),
+    font("inter", "inter-latin-600-italic.woff").then((data) => ({ name: "Title", data, weight: 600 as const, style: "italic" as const })),
+    font("inter", "inter-latin-500-normal.woff").then((data) => ({ name: "Body", data, weight: 500 as const, style: "normal" as const })),
+    font("inter", "inter-latin-500-normal.woff").then((data) => ({ name: "UI", data, weight: 500 as const, style: "normal" as const })),
+    font("inter", "inter-latin-700-normal.woff").then((data) => ({ name: "UI", data, weight: 700 as const, style: "normal" as const })),
   ]);
   return fontsPromise;
 }
@@ -85,14 +85,15 @@ export async function renderCard(
             style={{
               display: "flex",
               fontFamily: "Display",
-              fontSize: portrait ? 112 : 74,
-              lineHeight: 0.9,
+              fontSize: portrait ? 92 : 60,
+              lineHeight: 0.95,
+              letterSpacing: -3,
               textTransform: "uppercase",
             }}
           >
             {t.name}
           </div>
-          <div style={{ display: "flex", fontFamily: "Title", fontStyle: "italic", fontSize: portrait ? 46 : 32, color: accent.text, marginTop: 12 }}>{t.tagline}</div>
+          <div style={{ display: "flex", fontFamily: "Title", fontStyle: "italic", fontSize: portrait ? 38 : 27, color: accent.text, marginTop: 14 }}>{t.tagline}</div>
           <div style={{ display: "flex", flexDirection: "column", marginTop: portrait ? 30 : 16, fontSize: portrait ? 21 : 15, gap: 8 }}>
             <div style={{ display: "flex", gap: 14 }}>
               <span style={label}>Region</span>

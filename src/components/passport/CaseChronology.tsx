@@ -37,13 +37,13 @@ export function CaseChronology({ events }: { events: ChronoEvent[] }) {
           </li>
         ))}
       </ul>
-      <ol className="relative mt-6 grid gap-3 md:grid-cols-3 lg:grid-cols-6 lg:gap-0">
-        <span aria-hidden className="absolute left-0 right-0 top-[1.35rem] hidden h-1 bg-bone/30 lg:block" />
+      <ol className="relative mt-6 grid gap-3 md:grid-cols-3 xl:grid-cols-6 xl:gap-0">
+        <span aria-hidden className="absolute left-0 right-0 top-[1.35rem] hidden h-1 bg-bone/30 xl:block" />
         {events.map((e, i) => {
           const p = PHASE[e.tag ?? ""] ?? OTHER;
           const isOpen = open === e.id;
           return (
-            <li key={e.id} className="relative flex flex-col lg:pr-3">
+            <li key={e.id} className="relative flex flex-col xl:pr-3">
               <span
                 className="font-display relative z-10 flex h-11 w-11 items-center justify-center border-2 border-ink text-2xl"
                 style={{ background: p.color, color: p.ink }}
@@ -55,7 +55,7 @@ export function CaseChronology({ events }: { events: ChronoEvent[] }) {
                 <p className="label-sm text-ink-mute">
                   {e.date} · {p.label}
                 </p>
-                <p className="font-title mt-2 text-[1.4rem] leading-[1.05]">{e.title}</p>
+                <p className="font-title mt-2 text-[1.25rem] leading-[1.1] hyphens-auto xl:text-[0.95rem] 2xl:text-[1.1rem]">{e.title}</p>
                 <button
                   type="button"
                   onClick={() => setOpen(isOpen ? null : e.id)}

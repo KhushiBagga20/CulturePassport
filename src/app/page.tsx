@@ -28,7 +28,7 @@ export default async function HomePage() {
 
       <Ticker
         items={["When culture travels", "let its story travel with it", plural(published.length), "India → UAE → World", "Every claim sourced"]}
-        className="border-y-2 border-ink bg-ink py-3 font-display text-[1.7rem] uppercase text-bone"
+        className="border-y-2 border-ink bg-ink py-3 font-display text-[1.36rem] uppercase text-bone"
         dotClassName="text-vermilion"
       />
 
@@ -37,7 +37,7 @@ export default async function HomePage() {
         <div className={`${WRAP} grid gap-12 py-20 lg:grid-cols-12 lg:py-28`}>
           <Reveal className="lg:col-span-5">
             <p className="label">The gap</p>
-            <h2 className="font-display mt-4 text-[clamp(3rem,6vw,5.6rem)]">
+            <h2 className="font-display mt-4 text-[clamp(2.34rem,4.68vw,4.26rem)]">
               The image travels. <span className="text-bone [-webkit-text-stroke:2px_#1B1616]">Does the story?</span>
             </h2>
             <p className="lead mt-6 max-w-md">
@@ -47,23 +47,23 @@ export default async function HomePage() {
             <p className="mt-4 max-w-md font-semibold">We are not against inspiration, adaptation or exchange. We are against cultural context disappearing.</p>
           </Reveal>
           <Reveal delay={0.1} className="lg:col-span-7">
-            <div className="grid grid-cols-[1fr_auto_1fr] items-stretch gap-3 sm:gap-6">
+            <div className="grid items-stretch gap-3 sm:grid-cols-[1fr_auto_1fr] sm:gap-6">
               <div className="print-shadow bg-cobalt p-5 text-bone sm:p-7">
                 <p className="label text-yellow">What travelled fast</p>
-                <ul className="font-display mt-5 space-y-1 text-[clamp(1.6rem,3.4vw,2.9rem)]">
+                <ul className="font-display mt-5 space-y-1 text-[clamp(1.25rem,2.65vw,2.2rem)]">
                   <li>Artwork</li>
                   <li>Viral post</li>
                   <li>Global reach</li>
                 </ul>
               </div>
-              <div className="flex flex-col items-center justify-center gap-2" aria-hidden>
-                <span className="font-display text-4xl">→</span>
+              <div className="hidden flex-col items-center justify-center gap-2 sm:flex" aria-hidden>
+                <span className="font-display text-3xl">→</span>
                 <span className="vertical-label label-sm">The gap</span>
                 <span className="w-0 flex-1 border-l-2 border-dashed border-ink" />
               </div>
               <div className="border-4 border-dashed border-ink bg-bone/40 p-5 sm:p-7">
                 <p className="label text-brick">What got left behind</p>
-                <ul className="font-display mt-5 space-y-1 text-[clamp(1.6rem,3.4vw,2.9rem)] text-ink/70">
+                <ul className="font-display mt-5 space-y-1 text-[clamp(1.25rem,2.65vw,2.2rem)] text-ink/70">
                   <li>Origin?</li>
                   <li>Maker?</li>
                   <li>Community?</li>
@@ -95,10 +95,10 @@ export default async function HomePage() {
               <p className="label inline-flex self-start bg-yellow px-2 py-1 text-ink">
                 Case file {flagshipCase.code} · Passport No. {flagship.passportNo}
               </p>
-              <h2 className="font-display mt-5 text-[clamp(3.2rem,7.5vw,7rem)]">{flagship.name}</h2>
+              <h2 className="font-display mt-5 text-[clamp(2.5rem,5.85vw,5.32rem)]">{flagship.name}</h2>
               <p className="font-title mt-2 text-3xl italic text-yellow">{flagship.tagline}</p>
               <p className="lead mt-6 max-w-xl text-bone/85">{flagshipCase.summary}</p>
-              <dl className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <dl className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
                 {[
                   ["Made in", "8 districts, 2 states", "bg-cobalt"],
                   ["On the runway", "Milan, June 2025", "bg-brick"],
@@ -129,7 +129,7 @@ export default async function HomePage() {
           <Reveal className="flex flex-wrap items-end justify-between gap-6">
             <div>
               <p className="label text-brick">The register</p>
-              <h2 className="font-display mt-3 text-[clamp(3rem,6.5vw,6rem)]">{plural(published.length)}, so far</h2>
+              <h2 className="font-display mt-3 text-[clamp(2.34rem,5.07vw,4.56rem)]">{plural(published.length)}, so far</h2>
             </div>
             <div className="flex flex-col items-start gap-3 sm:items-end">
               <p className="max-w-sm text-ink-soft sm:text-right">Some researched, some honestly marked as drafts. Every one shows its evidence.</p>
@@ -158,7 +158,7 @@ export default async function HomePage() {
                       <span className="label-sm text-ink-mute">
                         No. {t.passportNo} · {CATEGORY[t.category]}
                       </span>
-                      <span className="font-display mt-2 text-[2.2rem] group-hover:text-brick">{t.name}</span>
+                      <span className="font-display mt-2 text-[1.76rem] group-hover:text-brick">{t.name}</span>
                       <span className="mt-auto pt-3 text-sm text-ink-soft">{whereLine(t, archive)}</span>
                     </div>
                   </Link>
@@ -174,7 +174,7 @@ export default async function HomePage() {
         <div className={`${WRAP} grid gap-12 py-20 lg:grid-cols-12 lg:py-28`}>
           <Reveal className="lg:col-span-4">
             <p className="label text-yellow">How it works</p>
-            <h2 className="font-display mt-4 text-[clamp(2.8rem,5vw,4.6rem)]">A QR code beside the object.</h2>
+            <h2 className="font-display mt-4 text-[clamp(2.18rem,3.9vw,3.5rem)]">A QR code beside the object.</h2>
             <p className="font-title mt-2 text-3xl italic text-yellow">The whole story behind it.</p>
             <p className="mt-5 max-w-sm text-bone/85">In a museum, a workshop, a market stall or on a product: scan, and the passport opens — no app, no account.</p>
             {flagship && (
@@ -188,7 +188,7 @@ export default async function HomePage() {
               </Link>
             )}
           </Reveal>
-          <ol className="grid gap-2 sm:grid-cols-2 lg:col-span-8 lg:flex lg:items-stretch lg:gap-0" aria-label="From object to story, in five steps">
+          <ol className="grid gap-2 sm:grid-cols-2 lg:col-span-8 lg:grid-cols-3" aria-label="From object to story, in five steps">
             {[
               ["See", "You spot a traditional object, pattern or product."],
               ["Scan", "Its Culture Passport QR opens a stable public page."],
@@ -200,10 +200,10 @@ export default async function HomePage() {
                 as="li"
                 key={title}
                 delay={i * 0.06}
-                className={`flex flex-1 flex-col bg-bone p-5 text-ink lg:pl-8 lg:pr-7 ${i === 0 ? "lg:chevron-first lg:pl-5" : "lg:chevron lg:-ml-3"}`}
+                className={`flex min-w-0 flex-col bg-bone p-5 text-ink ${i === 4 ? "sm:col-span-2 lg:col-span-1" : ""}`}
               >
-                <span className="font-display text-5xl leading-none text-green">{i + 1}</span>
-                <p className="font-display mt-3 text-[1.9rem]">{title}</p>
+                <span className="font-display text-4xl leading-none text-green">{i + 1}</span>
+                <p className="font-display mt-3 text-[1.52rem]">{title}</p>
                 <p className="mt-1 text-sm text-ink-soft">{text}</p>
               </Reveal>
             ))}
@@ -216,7 +216,7 @@ export default async function HomePage() {
         <div className={`${WRAP} py-20 lg:py-28`}>
           <Reveal>
             <p className="label text-brick">The habit we want</p>
-            <h2 className="font-display mt-3 max-w-5xl text-[clamp(3rem,7.5vw,7.2rem)]">Before you share culture, pause.</h2>
+            <h2 className="font-display mt-3 max-w-5xl text-[clamp(2.34rem,5.85vw,5.47rem)]">Before you share culture, pause.</h2>
           </Reveal>
           <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
             {[
@@ -227,8 +227,8 @@ export default async function HomePage() {
               ["Share", "Now help the story travel too.", "bg-ink text-bone"],
             ].map(([w, t, c], i) => (
               <Reveal key={w} delay={i * 0.05} className={`${c} flex min-h-48 flex-col p-5`}>
-                <span className="font-display text-6xl leading-none opacity-40">0{i + 1}</span>
-                <p className="font-display mt-auto text-[2.4rem]">{w}</p>
+                <span className="font-display text-5xl leading-none opacity-40">0{i + 1}</span>
+                <p className="font-display mt-auto break-words text-[clamp(1.35rem,6vw,1.95rem)]">{w}</p>
                 <p className="mt-1 text-sm opacity-90">{t}</p>
               </Reveal>
             ))}
@@ -242,7 +242,7 @@ export default async function HomePage() {
         <div className={`${WRAP} grid gap-12 py-20 lg:grid-cols-12 lg:py-28`}>
           <Reveal className="lg:col-span-6">
             <p className="label text-yellow">India → UAE → World</p>
-            <h2 className="font-display mt-4 text-[clamp(2.8rem,5.5vw,5rem)]">The UAE is not only a destination.</h2>
+            <h2 className="font-display mt-4 text-[clamp(2.18rem,4.29vw,3.8rem)]">The UAE is not only a destination.</h2>
             <p className="font-title mt-2 text-3xl italic text-yellow">It can be a bridge.</p>
             <p className="mt-6 max-w-lg text-bone/85">
               India gives us the starting point. The UAE is a place where many cultures already meet — and where Al Sadu, its first passport, was moved to
@@ -266,13 +266,13 @@ export default async function HomePage() {
               ].map(([name, line, meta, href, c], i) => (
                 <li key={name} className="relative">
                   <Link href={href} className={`group flex items-center gap-5 border-2 border-ink p-5 transition-transform hover:translate-x-1 ${c}`}>
-                    <span className="font-display text-5xl leading-none opacity-40">{i + 1}</span>
+                    <span className="font-display text-4xl leading-none opacity-40">{i + 1}</span>
                     <span className="flex-1">
-                      <span className="font-display block text-5xl">{name}</span>
+                      <span className="font-display block text-4xl">{name}</span>
                       <span className="mt-1 block font-semibold">{line}</span>
                       <span className="label-sm mt-1 block opacity-75">{meta}</span>
                     </span>
-                    <span aria-hidden className="font-display text-4xl transition-transform group-hover:translate-x-1">
+                    <span aria-hidden className="font-display text-3xl transition-transform group-hover:translate-x-1">
                       →
                     </span>
                   </Link>
@@ -287,7 +287,7 @@ export default async function HomePage() {
       <section className="bg-cream">
         <div className={`${WRAP} py-20 lg:py-28`}>
           <Reveal className="flex flex-wrap items-end justify-between gap-6">
-            <h2 className="font-display text-[clamp(3rem,6vw,5.4rem)]">Follow a trail</h2>
+            <h2 className="font-display text-[clamp(2.34rem,4.68vw,4.1rem)]">Follow a trail</h2>
             <Link href="/trails" className="btn btn-cream">
               All trails →
             </Link>
@@ -299,7 +299,7 @@ export default async function HomePage() {
                   <span className="block h-3" style={{ background: ACCENT[tr.accent].hex }} />
                   <span className="flex flex-1 flex-col p-5">
                     <span className="label-sm text-ink-mute">{tr.kicker}</span>
-                    <span className="font-display mt-2 block text-3xl group-hover:text-brick">{tr.title}</span>
+                    <span className="font-display mt-2 block text-2xl group-hover:text-brick">{tr.title}</span>
                     <span className="mt-2 block text-sm text-ink-soft">{tr.intro}</span>
                     <span className="label mt-auto pt-4 text-ink">{tr.steps.length} stops →</span>
                   </span>

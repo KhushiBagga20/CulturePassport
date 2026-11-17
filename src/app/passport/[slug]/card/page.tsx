@@ -38,7 +38,7 @@ export default async function CardPage({ params }: PageProps<"/passport/[slug]/c
       <div className="mt-8 grid gap-12 lg:grid-cols-12">
         <div className="lg:col-span-6">
           <p className="label text-[var(--accent)]">Cultural fingerprint</p>
-          <h1 className="font-display mt-3 text-[clamp(3rem,7vw,6rem)]">Identity card</h1>
+          <h1 className="font-display mt-3 text-[clamp(2.34rem,5.46vw,4.56rem)]">Identity card</h1>
           <p className="mt-4 max-w-lg text-ink-soft">
             A collectible card for {t.name}, carrying its passport number, region, community, a short story, and a QR code back to its sources.
             Share it with its caption so the story travels with it.

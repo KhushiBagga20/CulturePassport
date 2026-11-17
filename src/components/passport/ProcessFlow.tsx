@@ -60,7 +60,7 @@ export function ProcessFlow({
   motif: MotifKey;
 }) {
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,15rem)_1fr_minmax(0,13rem)] lg:items-stretch lg:gap-4">
+    <div className="grid gap-6 xl:grid-cols-[minmax(0,15rem)_1fr_minmax(0,13rem)] xl:items-stretch xl:gap-4">
       {/* 1 · Raw materials */}
       <div className="border-2 border-bone/70 p-4">
         <p className="label text-yellow">Raw materials</p>
@@ -85,24 +85,24 @@ export function ProcessFlow({
 
       {/* 2 · The steps */}
       {steps.length > 0 ? (
-        <ol className="grid gap-2 sm:grid-cols-2 lg:flex lg:gap-0" aria-label="Making process, in order">
+        <ol className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:flex xl:gap-0" aria-label="Making process, in order">
           {steps.map((s, i) => {
             const d = iconFor(s.title);
             const firm = s.level === "documented";
             return (
               <li
                 key={s.title}
-                className={`relative flex min-w-0 flex-1 flex-col bg-bone p-4 text-ink lg:py-5 lg:pl-8 lg:pr-7 ${i === 0 ? "lg:chevron-first lg:pl-5" : "lg:chevron lg:-ml-3"} ${firm ? "" : "bg-[repeating-linear-gradient(135deg,#F6F0E3_0_8px,#ECE2CA_8px_10px)]"}`}
+                className={`relative flex min-w-0 flex-1 flex-col bg-bone p-4 text-ink xl:py-5 xl:pl-8 xl:pr-7 ${i === 0 ? "xl:chevron-first xl:pl-5" : "xl:chevron xl:-ml-3"} ${firm ? "" : "bg-[repeating-linear-gradient(135deg,#F6F0E3_0_8px,#ECE2CA_8px_10px)]"}`}
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-display text-4xl leading-none text-[var(--accent-text)]">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="font-display text-3xl leading-none text-[var(--accent-text)]">{String(i + 1).padStart(2, "0")}</span>
                   {d && (
                     <svg viewBox="0 0 32 32" className="h-8 w-8 shrink-0" aria-hidden>
                       <path d={d} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   )}
                 </div>
-                <p className="font-title mt-3 text-xl leading-tight">{s.title}</p>
+                <p className="font-title mt-3 text-xl leading-tight hyphens-auto xl:text-[1.05rem] 2xl:text-lg">{s.title}</p>
                 <p className="mt-1 text-[0.8rem] leading-snug text-ink-soft">
                   {s.detail}
                   <SourceMarks ids={s.sources} numbering={numbering} />
@@ -123,7 +123,7 @@ export function ProcessFlow({
       )}
 
       {/* 3 · Finished object */}
-      <figure className="flex flex-col border-2 border-bone/70 p-3">
+      <figure className="flex w-full max-w-xs flex-col border-2 border-bone/70 p-3 xl:max-w-none">
         <p className="label text-yellow">Finished object</p>
         <div className="mt-2 flex-1 overflow-hidden border-2 border-bone/70">
           {finished ? (

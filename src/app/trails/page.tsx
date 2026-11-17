@@ -19,7 +19,7 @@ export default async function TrailsPage() {
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
             <p className="label text-brick">Cultural trails</p>
-            <h1 className="font-display mt-3 text-[clamp(3.6rem,10vw,9rem)]">Follow a thread</h1>
+            <h1 className="font-display mt-3 text-[clamp(2.81rem,7.8vw,6.84rem)]">Follow a thread</h1>
           </div>
           <p className="max-w-md text-ink-soft">
             Journeys across several passports, each linked by an editorial reason — a technique, a border, a market — never by resemblance alone.
@@ -34,14 +34,14 @@ export default async function TrailsPage() {
                   <span className="label">{tr.steps.length} stops</span>
                 </span>
                 <span className="flex flex-1 flex-col p-6">
-                  <h2 className="font-display text-[clamp(2.6rem,5vw,4.2rem)] group-hover:text-brick">{tr.title}</h2>
+                  <h2 className="font-display text-[clamp(2.03rem,3.9vw,3.19rem)] group-hover:text-brick">{tr.title}</h2>
                   <p className="mt-3 max-w-lg text-ink-soft">{tr.intro}</p>
                   <span className="mt-6 flex items-center">
                     {tr.steps.map((s, j) => {
                       const t = L.tradition.get(s.tradition);
                       return t ? (
                         <span key={s.tradition} className="flex items-center">
-                          <span className="h-16 w-16 overflow-hidden border-2 border-ink" title={t.name}>
+                          <span className="h-12 w-12 overflow-hidden border-2 border-ink sm:h-16 sm:w-16" title={t.name}>
                             <Motif motif={t.motif} className="h-full w-full" />
                           </span>
                           {j < tr.steps.length - 1 && <span aria-hidden className="h-0.5 w-6 bg-ink sm:w-10" />}

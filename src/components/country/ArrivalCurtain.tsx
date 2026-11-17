@@ -19,7 +19,7 @@ export function ArrivalCurtain({ slug, color, title }: { slug: string; color: st
   if (!arrived || done) return null;
   return (
     <div aria-hidden className="curtain pointer-events-none fixed inset-0 z-[70] flex items-center justify-center" style={{ background: color }}>
-      <p className="font-display text-[clamp(3.5rem,12vw,10rem)] text-ivory">{title}</p>
+      <p className="font-display text-[clamp(2.73rem,9.36vw,7.6rem)] text-ivory">{title}</p>
     </div>
   );
 }

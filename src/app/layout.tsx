@@ -1,28 +1,15 @@
 import type { Metadata, Viewport } from "next";
-import { Barlow_Condensed, Manrope, Space_Grotesk } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { SITE_NAME, TAGLINE, staticOrigin } from "@/lib/site";
 
-/* Display: condensed, heavy poster type for headlines, chapter titles and years. */
-const barlowCondensed = Barlow_Condensed({
-  variable: "--font-barlow-condensed",
+/* One plain, highly legible family for everything: headlines, labels and reading text. */
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin", "latin-ext"],
-  weight: ["500", "600", "700", "800"],
   style: ["normal", "italic"],
-  display: "swap",
-});
-/* UI: navigation, labels, numbers. */
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
-  subsets: ["latin", "latin-ext"],
-  display: "swap",
-});
-/* Reading text. */
-const manrope = Manrope({
-  variable: "--font-manrope",
-  subsets: ["latin", "latin-ext"],
   display: "swap",
 });
 
@@ -46,7 +33,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${barlowCondensed.variable} ${spaceGrotesk.variable} ${manrope.variable}`}
+      className={inter.variable}
     >
       <body className="min-h-dvh flex flex-col">
         <a

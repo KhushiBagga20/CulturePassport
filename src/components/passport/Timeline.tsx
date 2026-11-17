@@ -24,9 +24,9 @@ const UNCERTAIN: EvidenceLevel[] = ["disputed", "unverified", "community"];
 
 /** Year markers are as large as the label allows; long, hedged labels stay legible. */
 function yearSize(label: string, mobile = false) {
-  if (label.length <= 11) return mobile ? "text-5xl" : "text-[4.6rem]";
-  if (label.length <= 18) return mobile ? "text-4xl" : "text-[3.2rem]";
-  return mobile ? "text-3xl" : "text-[2.4rem]";
+  if (label.length <= 11) return mobile ? "text-4xl" : "text-[3.6rem]";
+  if (label.length <= 18) return mobile ? "text-3xl" : "text-[2.6rem]";
+  return mobile ? "text-2xl" : "text-[1.9rem]";
 }
 
 function gapLabel(years: number) {
@@ -180,7 +180,7 @@ export function Timeline({ items, motif }: { items: TimelineItem[]; motif: Motif
             return (
               <Fragment key={it.id}>
                 {gap > 60 && (
-                  <div className="flex w-24 shrink-0 flex-col items-center pt-[8.55rem]" aria-label={`${gapLabel(gap)} pass`}>
+                  <div className="flex w-24 shrink-0 flex-col items-center pt-[7.15rem]" aria-label={`${gapLabel(gap)} pass`}>
                     <svg width="96" height="14" viewBox="0 0 96 14" aria-hidden>
                       <path d="M0 7 H32 l4 -6 l6 12 l6 -12 l6 12 l4 -6 H96" fill="none" stroke="#1B1616" strokeWidth="2" />
                     </svg>
@@ -196,7 +196,7 @@ export function Timeline({ items, motif }: { items: TimelineItem[]; motif: Motif
                   className="w-[320px] shrink-0 snap-start pr-5 lg:w-[350px]"
                   aria-labelledby={`tl-${it.id}`}
                 >
-                  <p className={`font-display flex min-h-[7.4rem] items-end leading-[0.84] ${yearSize(it.label)} ${uncertain ? "text-ink/60" : "text-ink"}`}>{it.label}</p>
+                  <p className={`font-display flex min-h-[6rem] items-end leading-[0.84] ${yearSize(it.label)} ${uncertain ? "text-ink/60" : "text-ink"}`}>{it.label}</p>
                   <div className="relative my-4 h-5" aria-hidden>
                     <span className={`absolute inset-x-0 top-1/2 -translate-y-1/2 ${uncertain ? "h-0 border-t-2 border-dashed border-ink" : "h-1 bg-ink"}`} />
                     <span className={`absolute left-0 top-1/2 h-5 w-5 -translate-y-1/2 rounded-full border-[3px] border-ink ${uncertain ? "bg-bone" : "bg-[var(--accent)]"}`} />

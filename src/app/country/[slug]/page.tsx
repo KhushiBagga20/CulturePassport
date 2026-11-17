@@ -112,7 +112,7 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
               </span>
               {country.plate} · {status.label}
             </p>
-            <h1 className={`font-display reveal-rise mt-4 text-[clamp(4.5rem,17vw,15rem)] ${country.iso2 === "IN" ? "text-brick" : "text-teal"}`}>
+            <h1 className={`font-display reveal-rise mt-4 text-[clamp(3.51rem,13.26vw,11.4rem)] ${country.iso2 === "IN" ? "text-brick" : "text-teal"}`}>
               {country.iso2 === "AE" ? "UAE" : country.name}
             </h1>
             <p className="font-title mt-2 max-w-2xl text-[clamp(1.8rem,3.4vw,2.9rem)] leading-[1.05]">{country.headline}</p>
@@ -124,7 +124,7 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
                 ["Awaiting documentation", country.candidates.length, "bg-green text-bone"],
               ].map(([k, v, c]) => (
                 <div key={k as string} className={`${c} min-w-0 p-3 sm:p-4`}>
-                  <dd className="font-display text-6xl leading-none">{v}</dd>
+                  <dd className="font-display text-5xl leading-none">{v}</dd>
                   <dt className="label-sm mt-2 hyphens-auto [overflow-wrap:anywhere]">{k}</dt>
                 </div>
               ))}
@@ -139,7 +139,7 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
                     <Link href={`/passport/${t.slug}`} className="group grid grid-cols-[3.4rem_1fr_auto] items-baseline gap-3 py-3">
                       <span className="font-ui text-xs font-bold text-yellow">No. {t.passportNo}</span>
                       <span>
-                        <span className="font-display block text-[1.9rem] leading-none group-hover:text-yellow">{t.name}</span>
+                        <span className="font-display block text-[1.52rem] leading-none group-hover:text-yellow">{t.name}</span>
                         <span className="label-sm mt-1 block text-bone/60">{whereLine(t, archive)}</span>
                       </span>
                       <span aria-hidden className="font-display text-2xl transition-transform group-hover:translate-x-1 group-hover:text-yellow">
@@ -161,7 +161,7 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
       {/* Gallery + map */}
       <section aria-labelledby="gallery-title" className="mx-auto max-w-[1500px] px-4 py-16 sm:px-6 lg:px-10 lg:py-24">
         <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
-          <h2 id="gallery-title" className="font-display text-[clamp(3rem,6.5vw,5.6rem)]">
+          <h2 id="gallery-title" className="font-display text-[clamp(2.34rem,5.07vw,4.26rem)]">
             The collection
           </h2>
           <p className="max-w-sm text-sm text-ink-soft">Filter by craft, pick a place on the map, or open a card for the full passport.</p>
@@ -180,7 +180,7 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
                 <Reveal key={c.id}>
                   <Link href={`/passport/${t.slug}#travels`} className="group block h-full border-2 border-yellow/70 p-6 transition-colors hover:bg-yellow hover:text-ink sm:p-8">
                     <p className="label-sm inline-block bg-yellow px-2 py-1 text-ink">Case file {c.code} · {t.name}</p>
-                    <p className="font-display mt-4 text-5xl">{c.title}</p>
+                    <p className="font-display mt-4 text-4xl">{c.title}</p>
                     <p className="mt-4 opacity-85">{c.summary}</p>
                     <p className="label mt-6">{c.status} →</p>
                   </Link>
@@ -206,7 +206,7 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
           <div className="grid gap-10 lg:grid-cols-12">
             <div className="lg:col-span-4">
               <p className="label text-terracotta">Connections</p>
-              <h2 className="font-display mt-3 text-5xl">Threads between traditions</h2>
+              <h2 className="font-display mt-3 text-4xl">Threads between traditions</h2>
               <p className="mt-4 text-sm text-ink-soft">Editorial links, each with a reason. Resemblance alone never counts as a connection.</p>
               <Link href="/trails" className="btn btn-cream mt-6">
                 Follow a trail →
@@ -215,7 +215,7 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
             <ul className="grid gap-3 lg:col-span-8">
               {connections.map((cn) => (
                 <li key={cn.key} className="grid gap-2 border-2 border-ink bg-bone p-5 sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-6">
-                  <Link href={`/passport/${cn.a.slug}`} className="font-display text-3xl hover:text-brick">
+                  <Link href={`/passport/${cn.a.slug}`} className="font-display text-2xl hover:text-brick">
                     {cn.a.name}
                   </Link>
                   <span aria-hidden className="hidden items-center gap-1 sm:flex">
@@ -223,7 +223,7 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
                     <span className="h-0.5 w-12 bg-ink" />
                     <span className="h-3 w-3 rotate-45 bg-brick" />
                   </span>
-                  <Link href={`/passport/${cn.b.slug}`} className="font-display text-3xl hover:text-brick sm:text-right">
+                  <Link href={`/passport/${cn.b.slug}`} className="font-display text-2xl hover:text-brick sm:text-right">
                     {cn.b.name}
                   </Link>
                   <p className="text-sm text-ink-soft sm:col-span-3">{cn.reason}</p>
@@ -239,7 +239,7 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
         <div className="mx-auto grid max-w-[1500px] gap-10 px-4 py-20 sm:px-6 lg:grid-cols-12 lg:px-10">
           <div className="lg:col-span-4">
             <p className="label text-brick">Featured makers</p>
-            <h2 className="font-display mt-3 text-5xl">Named in the record</h2>
+            <h2 className="font-display mt-3 text-4xl">Named in the record</h2>
             <p className="mt-4 text-sm text-ink-soft">
               Practitioners appear here only when a public record names them — a national honour, a published oral history. Verified artisan profiles
               will be added with each maker&rsquo;s consent. We do not invent people.
@@ -271,7 +271,7 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="label text-terracotta">Stories being documented</p>
-              <h2 className="font-display mt-3 text-5xl">Not yet in the archive</h2>
+              <h2 className="font-display mt-3 text-4xl">Not yet in the archive</h2>
             </div>
             <p className="max-w-md text-sm text-ink-soft">
               Each has a place, a community and people behind it. None will be published until its sources are verified.
@@ -352,7 +352,7 @@ function DocumentingCountry({ country, archive, shared, outline }: { country: Co
           <p className="label mt-8" style={{ color: status.color }}>
             {country.plate} · {status.label}
           </p>
-          <h1 className="font-display reveal-rise mt-4 text-[clamp(4rem,14vw,12rem)] text-ink">{country.name}</h1>
+          <h1 className="font-display reveal-rise mt-4 text-[clamp(3.12rem,10.92vw,9.12rem)] text-ink">{country.name}</h1>
           <p className="font-title mt-4 text-[clamp(1.8rem,3.4vw,3rem)] italic leading-tight text-brick">{country.headline}</p>
           <p className="mt-5 max-w-xl text-ink-soft">{country.intro}</p>
 
@@ -362,7 +362,7 @@ function DocumentingCountry({ country, archive, shared, outline }: { country: Co
               <ul className="mt-4 space-y-5">
                 {country.candidates.map((c) => (
                   <li key={c.name}>
-                    <p className="font-display text-4xl">{c.name}</p>
+                    <p className="font-display text-3xl">{c.name}</p>
                     <p className="mt-1 max-w-xl text-ink-soft">{c.note}</p>
                     {c.sources?.map((id) => {
                       const s = sources.get(id);
@@ -452,7 +452,7 @@ async function UndocumentedCountry({ name, isoNumeric, archive }: { name: string
           </Link>
         </div>
         <p className="label mt-8 text-ink-mute">Not yet in the archive</p>
-        <h1 className="font-display mt-4 text-[clamp(3.5rem,12vw,10rem)]">{name}</h1>
+        <h1 className="font-display mt-4 text-[clamp(2.73rem,9.36vw,7.6rem)]">{name}</h1>
         <p className="mt-5 max-w-xl text-ink-soft">
           No stories from {name} have been documented yet. Culture Passport publishes a collection only after its sources are verified and the
           communities involved have been consulted — so this page stays honest rather than full.

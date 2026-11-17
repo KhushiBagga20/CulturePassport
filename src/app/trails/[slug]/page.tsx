@@ -39,7 +39,7 @@ export default async function TrailPage({ params }: PageProps<"/trails/[slug]">)
       <p className="label mt-8 inline-block px-2 py-1" style={{ background: accent, color: ACCENT[tr.accent].ink }}>
         {tr.kicker} · {steps.length} stops
       </p>
-      <h1 className="font-display mt-3 text-[clamp(3.2rem,9vw,8rem)]">{tr.title}</h1>
+      <h1 className="font-display mt-3 text-[clamp(2.5rem,7.02vw,6.08rem)]">{tr.title}</h1>
       <p className="font-title mt-4 max-w-2xl text-2xl leading-snug">{tr.intro}</p>
       {steps[0] && (
         <Link href={`/passport/${steps[0].tradition}?trail=${tr.slug}`} className="btn btn-ink mt-8">
@@ -54,7 +54,7 @@ export default async function TrailPage({ params }: PageProps<"/trails/[slug]">)
           const hero = t.hero ? L.media.get(t.hero) : undefined;
           return (
             <Reveal as="li" key={s.tradition} delay={i * 0.06} className="relative grid grid-cols-[3.4rem_1fr] gap-4 pb-14 sm:grid-cols-[4.4rem_1fr] sm:gap-8">
-              <span className="font-display relative z-10 flex h-14 w-14 items-center justify-center border-2 border-ink bg-[var(--accent)] text-2xl text-[var(--accent-ink)] sm:h-[4.4rem] sm:w-[4.4rem] sm:text-3xl">
+              <span className="font-display relative z-10 flex h-14 w-14 items-center justify-center border-2 border-ink bg-[var(--accent)] text-2xl text-[var(--accent-ink)] sm:h-[4.4rem] sm:w-[4.4rem] sm:text-2xl">
                 {i + 1}
               </span>
               <Link href={`/passport/${t.slug}?trail=${tr.slug}`} className="group grid gap-6 border-2 border-ink bg-bone p-5 transition-transform hover:-translate-y-0.5 md:grid-cols-[1fr_16rem]">
@@ -62,7 +62,7 @@ export default async function TrailPage({ params }: PageProps<"/trails/[slug]">)
                   <p className="label-sm text-ink-mute">
                     No. {t.passportNo} · {CATEGORY[t.category]} · {t.regionLabel}
                   </p>
-                  <p className="font-display mt-2 text-5xl group-hover:text-brick">{t.name}</p>
+                  <p className="font-display mt-2 text-4xl group-hover:text-brick">{t.name}</p>
                   <p className="font-title mt-2 text-2xl italic text-[var(--accent-text)]">{s.note}</p>
                   <p className="mt-3 text-ink-soft">{t.summary}</p>
                 </div>

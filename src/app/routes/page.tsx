@@ -69,7 +69,7 @@ export default async function RoutesPage({ searchParams }: PageProps<"/routes">)
       <div className="grid gap-8 lg:grid-cols-12">
         <div className="lg:col-span-7">
           <p className="label text-brick">Roots &amp; Routes</p>
-          <h1 className="font-display mt-3 text-[clamp(3.2rem,9vw,8rem)]">The connection map</h1>
+          <h1 className="font-display mt-3 text-[clamp(2.5rem,7.02vw,6.08rem)]">The connection map</h1>
         </div>
         <div className="self-end lg:col-span-5">
           <p className="text-ink-soft">

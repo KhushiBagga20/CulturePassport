@@ -37,7 +37,7 @@ export function RotatingSeal({
         <defs>
           <path id={pathId} d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0" />
         </defs>
-        <text fill={color} style={{ fontFamily: "var(--font-ui)", fontSize: 12.5, letterSpacing: "0.32em", fontWeight: 500 }}>
+        <text fill={color} style={{ fontFamily: "var(--font-ui)", fontSize: 12, letterSpacing: "0.22em", fontWeight: 600 }}>
           <textPath href={`#${pathId}`}>{text}</textPath>
         </text>
       </g>
@@ -58,7 +58,7 @@ export function RotatingSeal({
         y="126"
         textAnchor="middle"
         fill={color}
-        style={{ fontFamily: "var(--font-display)", fontSize: 40, fontWeight: 800 }}
+        style={{ fontFamily: "var(--font-display)", fontSize: 34, fontWeight: 800, letterSpacing: "-0.03em" }}
       >
         {center}
       </text>
@@ -91,14 +91,14 @@ export function DiamondBadge({
       <path d="M160 20 L279 100 L160 180 L41 100 Z" fill="none" stroke={color} strokeWidth="1.6" />
       <path d="M2 100 L20 88 L20 112 Z M318 100 L300 88 L300 112 Z" fill={color} />
       <path d="M96 100 H64 M256 100 H224" stroke={color} strokeWidth="1.6" />
-      <text x="160" y="72" textAnchor="middle" fill={color} style={{ fontFamily: "var(--font-ui)", fontSize: 11, letterSpacing: "0.26em", fontWeight: 700 }}>
+      <text x="160" y="72" textAnchor="middle" fill={color} style={{ fontFamily: "var(--font-ui)", fontSize: 10.5, letterSpacing: "0.16em", fontWeight: 700 }}>
         {top}
       </text>
-      <text x="160" y="121" textAnchor="middle" fill={color} style={{ fontFamily: "var(--font-display)", fontSize: 56, fontWeight: 800 }}>
+      <text x="160" y="121" textAnchor="middle" fill={color} style={{ fontFamily: "var(--font-display)", fontSize: 42, fontWeight: 800, letterSpacing: "-0.03em" }}>
         {center}
       </text>
       {bottom && (
-        <text x="160" y="146" textAnchor="middle" fill={color} style={{ fontFamily: "var(--font-ui)", fontSize: 10, letterSpacing: "0.22em", fontWeight: 600 }}>
+        <text x="160" y="146" textAnchor="middle" fill={color} style={{ fontFamily: "var(--font-ui)", fontSize: 9.5, letterSpacing: "0.14em", fontWeight: 600 }}>
           {bottom}
         </text>
       )}

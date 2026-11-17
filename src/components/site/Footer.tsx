@@ -37,7 +37,7 @@ export function Footer() {
       <div className="mx-auto grid max-w-[1500px] gap-12 px-4 py-16 sm:px-6 lg:grid-cols-12 lg:px-10">
         <div className="lg:col-span-5">
           <p className="label text-yellow">Our purpose</p>
-          <p className="font-display mt-4 text-[clamp(2.6rem,5vw,4.2rem)]">
+          <p className="font-display mt-4 text-[clamp(2.03rem,3.9vw,3.19rem)]">
             Culture becomes a bridge — <span className="text-vermilion">not a boundary.</span>
           </p>
           <p className="mt-5 max-w-md text-bone/75">

@@ -43,7 +43,7 @@ The header has four destinations — **Explore** (the globe), **Countries** (`/e
 
 ### Design language
 
-Flat colour blocks, condensed poster type and graphic devices (ticker bands, triangular tabs, notched ticket cards, chevron process steps, checker strips, offset print shadows), defined once in `src/app/globals.css`:
+Flat colour blocks, heavy uppercase headlines in Inter and graphic devices (ticker bands, triangular tabs, notched ticket cards, chevron process steps, checker strips, offset print shadows), defined once in `src/app/globals.css`:
 
 | Token | Hex | Use |
 | --- | --- | --- |
@@ -129,7 +129,7 @@ The app never reads a Supabase service-role key, so one can't leak to the browse
 - **Uploads** go through `/admin/media` (JPEG, PNG, WebP or AVIF; max 8 MB; licence, credit and alt text required). They're stored in `.data/uploads/` in demo mode or the Supabase `media` bucket in production.
 - **For production**, consider mirroring the Commons images into Supabase Storage, keeping the credit fields intact.
 - **Boundaries** come from Natural Earth via `world-atlas` (`public/geo/`), shown for orientation only, with no position on disputed territories. Places are plotted at approximate centres.
-- **Fonts**: Barlow Condensed (display), Space Grotesk (navigation, labels, numbers) and Manrope (reading text) via `next/font` (fetched at build time), plus the same families from `@fontsource` for generated card and Open Graph images. All are SIL Open Font Licence.
+- **Fonts**: Inter for everything (headlines, labels and reading text) via `next/font` (fetched at build time), plus `@fontsource/inter` for generated card and Open Graph images. SIL Open Font Licence.
 
 ---
 

@@ -177,7 +177,7 @@ export function CollectionExplorer({ cards, map }: { cards: ExplorerCard[]; map:
                   <div className="p-5">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="font-display text-[2.2rem] group-hover:text-brick">{c.name}</p>
+                        <p className="font-display text-[1.76rem] group-hover:text-brick">{c.name}</p>
                         {c.nativeName && <p className="mt-0.5 text-sm text-ink-mute">{c.nativeName}</p>}
                       </div>
                       <span className="mt-1 h-10 w-10 shrink-0 overflow-hidden border-2 border-ink">

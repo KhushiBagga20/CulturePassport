@@ -37,7 +37,7 @@ export default async function LabelPage({ params }: PageProps<"/passport/[slug]/
           <Link href={`/passport/${t.slug}`} className="label-sm text-ink-mute hover:text-terracotta">
             ← Back to the passport
           </Link>
-          <h1 className="font-display mt-2 text-5xl">Print a QR label</h1>
+          <h1 className="font-display mt-2 text-4xl">Print a QR label</h1>
           <p className="mt-2 max-w-xl text-sm text-ink-soft">
             Two sizes on one sheet: a gallery label and a small tag for products and market stalls. Print at 100% scale. Test the code with a phone before
             displaying it.
@@ -63,7 +63,7 @@ export default async function LabelPage({ params }: PageProps<"/passport/[slug]/
             <p className="label-sm" style={{ color: accent }}>
               Culture Passport · No. {t.passportNo}
             </p>
-            <p className="font-display mt-2 text-[2.4rem]">{t.name}</p>
+            <p className="font-display mt-2 text-[1.92rem]">{t.name}</p>
             {t.nativeNames[0] && <p className="text-lg">{t.nativeNames.map((n) => n.text).join(" · ")}</p>}
             <p className="mt-2 text-[0.8rem] leading-snug">
               <strong>{CATEGORY[t.category]}</strong> · {t.regionLabel}

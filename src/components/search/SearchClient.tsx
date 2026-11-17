@@ -133,7 +133,7 @@ export function SearchClient({ docs, countries }: { docs: SearchDoc[]; countries
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="A tradition, place, community, year, name…"
-          className="font-display w-full border-b-[3px] border-ink bg-transparent py-3 pr-14 text-[clamp(2rem,6vw,4.6rem)] normal-case tracking-tight outline-none placeholder:text-ink/20 focus:border-brick"
+          className="font-display w-full border-b-[3px] border-ink bg-transparent py-3 pr-14 text-[clamp(1.56rem,4.68vw,3.5rem)] normal-case tracking-tight outline-none placeholder:text-ink/20 focus:border-brick"
           style={{ textTransform: "none" }}
           autoComplete="off"
           spellCheck={false}
@@ -191,7 +191,7 @@ export function SearchClient({ docs, countries }: { docs: SearchDoc[]; countries
             <Link href={d.href} className="group grid gap-1 py-4 sm:grid-cols-[9rem_1fr] sm:gap-6">
               <span className="label-sm pt-1 text-ink-mute">{TYPES.find((t) => t.key === d.type)?.label.replace(/s$/, "")}</span>
               <span className="min-w-0">
-                <span className={`block group-hover:text-brick ${d.type === "passport" || d.type === "country" || d.type === "trail" ? "font-display text-3xl" : "font-title text-xl leading-snug"}`}>
+                <span className={`block group-hover:text-brick ${d.type === "passport" || d.type === "country" || d.type === "trail" ? "font-display text-2xl" : "font-title text-xl leading-snug"}`}>
                   <Highlight text={d.title} tokens={tokens} />
                 </span>
                 <span className="mt-0.5 flex flex-wrap items-center gap-2 text-sm text-ink-mute">
