@@ -1,0 +1,254 @@
+@import "tailwindcss";
+
+/* ───────────────────────── Design tokens ───────────────────────── */
+@theme {
+  --color-ivory: #f6f0e3;
+  --color-paper: #eee5d1;
+  --color-parchment: #e6d9bd;
+  --color-burgundy: #581d30;
+  --color-terracotta: #b84b30;
+  --color-indigo: #25346e;
+  --color-forest: #28563f;
+  --color-teal: #146d68;
+  --color-mustard: #e4aa29;
+  --color-ink: #211c19;
+  --color-ink-soft: #4d433c;
+  --color-ink-mute: #7a6d62;
+  --color-line: rgb(33 28 25 / 0.16);
+  --color-line-strong: rgb(33 28 25 / 0.32);
+
+  --font-display: var(--font-bricolage), "Arial Narrow", system-ui, sans-serif;
+  --font-serif: var(--font-instrument-serif), "Iowan Old Style", Georgia, serif;
+  --font-sans: var(--font-instrument-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --ease-archive: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-drift: cubic-bezier(0.45, 0, 0.2, 1);
+
+  --animate-spin-slow: spin 38s linear infinite;
+  --animate-drift: drift 9s var(--ease-drift) infinite alternate;
+}
+
+@keyframes drift {
+  from { transform: translate3d(0, -4px, 0) rotate(-0.4deg); }
+  to { transform: translate3d(0, 4px, 0) rotate(0.4deg); }
+}
+@keyframes route-dash {
+  to { stroke-dashoffset: -40; }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes curtain-lift {
+  from { clip-path: circle(150% at 50% 50%); }
+  to { clip-path: circle(0% at 50% 50%); }
+}
+
+/* ───────────────────────── Base ───────────────────────── */
+:root {
+  color-scheme: light;
+  --accent: var(--color-terracotta);
+  --accent-ink: var(--color-ivory);
+  --paper-grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.13  0 0 0 0 0.10  0 0 0 0 0.08  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+@layer base {
+html {
+  background: var(--color-ivory);
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  background: var(--color-ivory);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Paper grain sits above backgrounds and below content interaction. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  background-image: var(--paper-grain);
+  opacity: 0.22;
+  mix-blend-mode: multiply;
+}
+
+::selection {
+  background: var(--color-mustard);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-terracotta);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+a {
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+}
+
+}
+
+@layer components {
+/* ───────────────────────── Type ───────────────────────── */
+.font-display {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 75, "opsz" 96;
+  font-weight: 800;
+  letter-spacing: -0.012em;
+  line-height: 0.86;
+  text-transform: uppercase;
+}
+.font-display-wide {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 100, "opsz" 48;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+}
+.font-serif {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.005em;
+}
+.label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+.label-sm {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+.prose-archive p + p {
+  margin-top: 1.1em;
+}
+.prose-archive p {
+  max-width: 64ch;
+  text-wrap: pretty;
+}
+.balance {
+  text-wrap: balance;
+}
+.vertical-label {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+/* ───────────────────────── Ornament ───────────────────────── */
+.rule {
+  border-color: var(--color-line);
+}
+.hairline {
+  height: 1px;
+  background: var(--color-line-strong);
+}
+.dotted-rule {
+  height: 2px;
+  background-image: radial-gradient(circle, var(--color-ink) 0.9px, transparent 1.2px);
+  background-size: 7px 2px;
+  opacity: 0.45;
+}
+.route-line {
+  stroke-dasharray: 2 6;
+  animation: route-dash 2.4s linear infinite;
+}
+
+/* Folk-pattern strips (original geometric bands, in the spirit of the campaign deck). */
+.strip-diamond {
+  height: 14px;
+  background-color: var(--strip-bg, var(--color-burgundy));
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='14'><path d='M14 1 L20 7 L14 13 L8 7Z' fill='%23E4AA29'/><circle cx='14' cy='7' r='1.6' fill='%23581D30'/><circle cx='1' cy='7' r='1.2' fill='%23F6F0E3'/><circle cx='27' cy='7' r='1.2' fill='%23F6F0E3'/></svg>");
+  background-size: 28px 14px;
+}
+.strip-dots {
+  height: 12px;
+  background-color: var(--color-terracotta);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='18' height='12'><circle cx='9' cy='6' r='3.2' fill='none' stroke='%23F6F0E3' stroke-width='1.2'/><circle cx='9' cy='6' r='1' fill='%23F6F0E3'/></svg>");
+  background-size: 18px 12px;
+}
+.strip-weave {
+  height: 10px;
+  background: repeating-linear-gradient(90deg, #25346e 0 10px, #e4aa29 10px 14px, #b84b30 14px 24px, #f6f0e3 24px 26px, #146d68 26px 36px, #f6f0e3 36px 38px);
+}
+.strip-ladder {
+  height: 12px;
+  background-color: var(--color-indigo);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='12'><path d='M0 6 L4 2 L8 6 L12 2 L16 6' fill='none' stroke='%23E4AA29' stroke-width='1.3'/><path d='M0 10 L4 6 L8 10 L12 6 L16 10' fill='none' stroke='%23F6F0E3' stroke-width='1'/></svg>");
+  background-size: 16px 12px;
+}
+
+.contour-bg {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'><g fill='none' stroke='%23211C19' stroke-opacity='.08' stroke-width='1'><path d='M-20 120 C 120 60, 220 180, 360 110 S 560 40, 640 120'/><path d='M-20 160 C 120 100, 220 220, 360 150 S 560 80, 640 160'/><path d='M-20 200 C 130 150, 230 260, 370 190 S 560 120, 640 200'/><path d='M-20 330 C 90 300, 200 390, 330 340 S 540 280, 640 350'/><path d='M-20 370 C 90 340, 200 430, 330 380 S 540 320, 640 390'/><path d='M-20 410 C 100 380, 210 470, 340 420 S 540 360, 640 430'/><path d='M-20 520 C 140 480, 240 560, 380 510 S 560 470, 640 520'/><path d='M-20 560 C 140 520, 240 600, 380 550 S 560 510, 640 560'/></g></svg>");
+  background-size: 600px 600px;
+}
+
+/* Museum accession label */
+.accession {
+  border: 1px solid var(--color-line-strong);
+  background: color-mix(in oklab, var(--color-ivory) 88%, white);
+  box-shadow: 0 1px 0 rgb(33 28 25 / 0.06), 0 12px 30px -18px rgb(33 28 25 / 0.35);
+}
+
+.paper-card {
+  background: color-mix(in oklab, var(--color-ivory) 70%, white);
+  border: 1px solid var(--color-line);
+  box-shadow: 0 1px 0 rgb(33 28 25 / 0.05), 0 18px 40px -28px rgb(33 28 25 / 0.45);
+}
+
+/* Utility: hide scrollbar on horizontal rails while keeping them scrollable */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.reveal-rise {
+  animation: rise 0.9s var(--ease-archive) both;
+}
+
+.curtain {
+  animation: curtain-lift 1.1s var(--ease-archive) both;
+}
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  body::before,
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white;
+  }
+}
