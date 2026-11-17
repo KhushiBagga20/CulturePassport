@@ -32,7 +32,7 @@ export default async function EditPassportPage({ params }: PageProps<"/admin/pas
         traditions={archive.traditions.filter((x) => x.id !== t.id).map((x) => ({ id: x.slug, label: x.name }))}
       />
       <section className="mt-12">
-        <h2 className="font-serif text-3xl">Change history</h2>
+        <h2 className="font-title text-3xl">Change history</h2>
         {revisions.length ? (
           <ul className="mt-3 divide-y divide-ink/10 border-y rule text-sm">
             {revisions.map((r) => (

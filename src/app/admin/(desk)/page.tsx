@@ -49,7 +49,7 @@ export default async function AdminDashboard() {
 
       {(open.length > 0 || inReview.length > 0) && (
         <section className="mt-10">
-          <h2 className="font-serif text-3xl">Needs attention</h2>
+          <h2 className="font-title text-3xl">Needs attention</h2>
           <ul className="mt-3 space-y-2 text-sm">
             {inReview.map((t) => (
               <li key={t.id}>
@@ -73,7 +73,7 @@ export default async function AdminDashboard() {
 
       <section className="mt-10">
         <div className="flex flex-wrap items-end justify-between gap-3">
-          <h2 className="font-serif text-3xl">Passports</h2>
+          <h2 className="font-title text-3xl">Passports</h2>
           <Link href="/admin/passports/new" className="label rounded-full bg-ink px-4 py-2 text-ivory hover:bg-burgundy">
             + New passport
           </Link>
@@ -126,7 +126,7 @@ export default async function AdminDashboard() {
       </section>
 
       <section className="mt-10">
-        <h2 className="font-serif text-3xl">Recent edits</h2>
+        <h2 className="font-title text-3xl">Recent edits</h2>
         {revisions.length ? (
           <ul className="mt-3 divide-y divide-ink/10 border-y rule text-sm">
             {revisions.slice(0, 8).map((r) => (

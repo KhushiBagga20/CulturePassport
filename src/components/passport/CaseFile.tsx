@@ -1,8 +1,11 @@
 import type { CaseStudy, MediaAsset, MotifKey } from "@/lib/types";
 import { EvidenceBadge, SourceMarks } from "@/components/site/Evidence";
+import { ArchiveImage } from "@/components/site/ArchiveImage";
+import { Motif } from "@/components/motifs/Motif";
 import { CompareSlider } from "./CompareSlider";
-import { Reveal } from "@/components/site/Motion";
+import { CaseChronology } from "./CaseChronology";
 
+/** An attribution case: what happened, side by side, what travelled, and the same six questions every time. */
 export function CaseFile({
   c,
   numbering,
@@ -16,93 +19,120 @@ export function CaseFile({
   motif: MotifKey;
   traditionName: string;
 }) {
-  return (
-    <article aria-labelledby={`case-${c.id}`} className="relative mt-16 bg-ink text-ivory">
-      <div className="strip-weave" />
-      <div className="px-5 py-10 sm:px-10 sm:py-14">
-        <div className="flex flex-wrap items-start justify-between gap-6">
-          <div>
-            <p className="label text-mustard">Case file {c.code}</p>
-            <h3 id={`case-${c.id}`} className="font-display mt-3 text-[clamp(2.6rem,6vw,5.2rem)]">
-              {c.title}
-            </h3>
-          </div>
-          <div className="accession max-w-xs bg-ivory p-4 text-ink">
-            <p className="label-sm text-ink-mute">Status</p>
-            <p className="mt-1 text-sm">{c.status}</p>
-            <p className="label-sm mt-3 text-ink-mute">Parties</p>
-            <p className="mt-1 text-sm">{c.parties.join(" · ")}</p>
-          </div>
-        </div>
-        <p className="mt-6 max-w-3xl text-lg text-ivory/85">{c.summary}</p>
+  const trad = c.comparison?.traditional;
+  const adapt = c.comparison?.adaptation;
+  const tradMedia = trad?.media ? media.get(trad.media) : undefined;
+  const adaptMedia = adapt?.media ? media.get(adapt.media) : undefined;
 
+  return (
+    <article aria-labelledby={`case-${c.id}`} className="relative mt-20 border-2 border-ink bg-ink text-bone">
+      {/* Header band */}
+      <div className="grid gap-px bg-bone/15 lg:grid-cols-[1fr_auto]">
+        <div className="bg-ink px-5 py-8 sm:px-10 sm:py-10">
+          <p className="label inline-block bg-yellow px-2 py-1 text-ink">Case file {c.code}</p>
+          <h3 id={`case-${c.id}`} className="font-display mt-4 text-[clamp(2.8rem,6.5vw,5.6rem)]">
+            {c.title}
+          </h3>
+          <p className="lead mt-5 max-w-3xl text-bone/90">{c.summary}</p>
+        </div>
+        <dl className="flex flex-col gap-px bg-bone/15 lg:w-80">
+          <div className="bg-orange p-5 text-ink">
+            <dt className="label-sm">Status</dt>
+            <dd className="font-title mt-1 text-xl leading-tight">{c.status}</dd>
+          </div>
+          <div className="flex-1 bg-ink p-5">
+            <dt className="label-sm text-bone/60">Parties</dt>
+            <dd className="mt-2 flex flex-wrap gap-1.5">
+              {c.parties.map((p) => (
+                <span key={p} className="border border-bone/40 px-2 py-0.5 text-xs">
+                  {p}
+                </span>
+              ))}
+            </dd>
+          </div>
+        </dl>
+      </div>
+      <div className="strip-checker" style={{ ["--strip-bg" as string]: "#F4BA2E" }} />
+
+      <div className="px-5 py-10 sm:px-10 sm:py-14">
         {/* Chronology */}
-        <ol className="mt-12 grid gap-0 border-t border-ivory/20 md:grid-cols-3 lg:grid-cols-6">
-          {c.events.map((e, i) => (
-            <Reveal as="li" key={e.id} delay={i * 0.05} className="relative border-b border-ivory/15 py-5 md:border-b-0 md:border-r md:px-4 md:first:pl-0 md:last:border-r-0">
-              <span className="font-mono text-xs text-mustard">0{i + 1}</span>
-              <p className="label-sm mt-2 text-ivory/60">{e.date.label}</p>
-              <p className="font-serif mt-2 text-xl leading-tight">{e.title}</p>
-              <p className="mt-2 text-sm text-ivory/75">
-                {e.body}
-                <SourceMarks ids={e.sources} numbering={numbering} />
-              </p>
-            </Reveal>
-          ))}
-        </ol>
+        <p className="label text-yellow">How it unfolded</p>
+        <div className="mt-4">
+          <CaseChronology
+            events={c.events.map((e) => ({
+              id: e.id,
+              date: e.date.label,
+              title: e.title,
+              body: e.body,
+              tag: e.tag,
+              level: e.level,
+              sources: e.sources.map((id) => ({ id, n: numbering.get(id) ?? 0 })).filter((s) => s.n),
+            }))}
+          />
+        </div>
 
         {/* Comparison */}
-        {c.comparison && (
-          <div className="mt-14 grid gap-8 lg:grid-cols-12">
-            <div className="lg:col-span-4">
-              <p className="label text-mustard">Interactive comparison</p>
-              <p className="font-serif mt-3 text-3xl leading-tight">Side by side — with the credits showing.</p>
-              <p className="mt-3 text-sm text-ivory/70">
-                The left side is a museum object photographed under a public-domain licence. We have not licensed runway photography, so we will not
-                reproduce it; the right side says so rather than showing a look-alike.
+        {trad && adapt && (
+          <div className="mt-16">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p className="label text-yellow">Side by side</p>
+                <p className="font-display mt-2 text-[clamp(2.2rem,4.5vw,3.6rem)]">The object and the interpretation</p>
+              </div>
+              <p className="max-w-sm text-sm text-bone/75">
+                Only licensed images are shown. Where no licensed photograph exists, the panel says so instead of showing a look-alike.
               </p>
             </div>
-            <div className="text-ink lg:col-span-8">
-              <CompareSlider
-                motif={motif}
-                traditional={{
-                  title: c.comparison.traditional.title,
-                  points: c.comparison.traditional.points,
-                  media: c.comparison.traditional.media ? media.get(c.comparison.traditional.media) : undefined,
-                }}
-                adaptation={{
-                  title: c.comparison.adaptation.title,
-                  points: c.comparison.adaptation.points,
-                  media: c.comparison.adaptation.media ? media.get(c.comparison.adaptation.media) : undefined,
-                  mediaNote: c.comparison.adaptation.mediaNote,
-                }}
-              />
-            </div>
+            {tradMedia && adaptMedia ? (
+              <div className="mt-6 text-ink">
+                <CompareSlider
+                  motif={motif}
+                  traditional={{ title: trad.title, points: trad.points, media: tradMedia }}
+                  adaptation={{ title: adapt.title, points: adapt.points, media: adaptMedia, mediaNote: adapt.mediaNote }}
+                />
+              </div>
+            ) : (
+              <div className="mt-6 grid items-stretch gap-4 md:grid-cols-[1fr_auto_1fr]">
+                <ComparePanel title={trad.title} points={trad.points} media={tradMedia} motif={motif} tone="cream" />
+                <div className="flex items-center justify-center" aria-hidden>
+                  <span className="font-display flex h-16 w-16 rotate-45 items-center justify-center border-2 border-bone bg-yellow text-3xl text-ink">
+                    <span className="-rotate-45">→</span>
+                  </span>
+                </div>
+                <ComparePanel title={adapt.title} points={adapt.points} media={adaptMedia} note={adapt.mediaNote} motif={motif} tone="red" />
+              </div>
+            )}
           </div>
         )}
 
         {/* What travelled, and what was left behind? */}
         <div className="mt-16">
-          <h4 className="font-serif text-[clamp(2rem,4vw,3.4rem)] leading-tight">
-            What travelled, <em className="text-mustard">and what was left behind?</em>
+          <h4 className="font-display text-[clamp(2.2rem,4.8vw,4rem)]">
+            What travelled, <span className="text-yellow">and what was left behind?</span>
           </h4>
-          <div className="mt-8 grid gap-6 md:grid-cols-2">
-            <div className="border border-ivory/25 p-6">
-              <p className="label text-ivory/60">What travelled</p>
+          <div className="mt-8 grid items-stretch gap-4 md:grid-cols-[1fr_auto_1fr]">
+            <div className="bg-cream p-6 text-ink">
+              <p className="label">What travelled</p>
               <ul className="mt-4 space-y-2">
                 {c.travelled.map((x) => (
-                  <li key={x} className="font-display text-2xl">
-                    {x}
+                  <li key={x} className="flex items-baseline gap-3">
+                    <span aria-hidden className="font-display text-xl text-green">✓</span>
+                    <span className="font-title text-2xl leading-tight">{x}</span>
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="border-2 border-dashed border-mustard/70 p-6">
-              <p className="label text-mustard">What was left behind</p>
+            <div className="hidden flex-col items-center justify-center gap-2 md:flex" aria-hidden>
+              <span className="font-display text-5xl text-yellow">⇆</span>
+              <span className="label-sm vertical-label text-bone/60">The gap</span>
+            </div>
+            <div className="border-4 border-dashed border-yellow p-6">
+              <p className="label text-yellow">What was left behind</p>
               <ul className="mt-4 space-y-2">
                 {c.leftBehind.map((x) => (
-                  <li key={x} className="font-display text-2xl text-mustard">
-                    {x}
+                  <li key={x} className="flex items-baseline gap-3">
+                    <span aria-hidden className="font-display text-xl text-yellow">?</span>
+                    <span className="font-title text-2xl leading-tight text-yellow">{x}</span>
                   </li>
                 ))}
               </ul>
@@ -110,62 +140,122 @@ export function CaseFile({
           </div>
         </div>
 
-        {/* Questions */}
-        <div className="mt-14 grid gap-10 lg:grid-cols-12">
-          <div className="lg:col-span-4">
-            <p className="label text-mustard">Six questions</p>
-            <p className="mt-3 text-sm text-ivory/70">
-              The same questions we will ask of every case — so that {traditionName} is judged by a method, not by a mood.
+        {/* Six questions */}
+        <div className="mt-16">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="label text-yellow">{c.questions.length === 6 ? "Six questions" : "Our questions"}</p>
+              <p className="font-display mt-2 text-[clamp(2.2rem,4.5vw,3.6rem)]">Asked of every case</p>
+            </div>
+            <p className="max-w-sm text-sm text-bone/75">
+              The same questions, every time — so that {traditionName} is judged by a method, not by a mood. Open one to read the answer.
             </p>
           </div>
-          <div className="divide-y divide-ivory/15 border-y border-ivory/15 lg:col-span-8">
+          <ol className="mt-6 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
             {c.questions.map((q, i) => (
-              <details key={q.q} className="group py-4" open={i === 0}>
-                <summary className="flex cursor-pointer list-none items-baseline gap-4">
-                  <span className="font-mono text-xs text-mustard">Q{i + 1}</span>
-                  <span className="font-serif flex-1 text-2xl leading-tight">{q.q}</span>
-                  <span aria-hidden className="text-mustard transition-transform group-open:rotate-45">
-                    +
-                  </span>
-                </summary>
-                <div className="mt-3 pl-9">
-                  <p className="text-ivory/85">
-                    {q.a}
-                    <SourceMarks ids={q.sources} numbering={numbering} />
-                  </p>
-                  <div className="mt-2">
-                    <EvidenceBadge level={q.level} className="bg-ivory" />
+              <li key={q.q}>
+                <details className="more group h-full border-2 border-bone/40 bg-ink p-5 open:border-yellow open:bg-bone open:text-ink">
+                  <summary className="flex items-start gap-4">
+                    <span className="font-display text-5xl leading-[0.8] text-yellow group-open:text-brick">{i + 1}</span>
+                    <span className="font-title flex-1 text-xl leading-tight">{q.q}</span>
+                    <span aria-hidden className="more-icon font-display text-2xl leading-none text-yellow transition-transform group-open:text-ink">
+                      +
+                    </span>
+                  </summary>
+                  <div className="mt-4 pl-10">
+                    <p className="text-[0.95rem] text-ink-soft">
+                      {q.a}
+                      <SourceMarks ids={q.sources} numbering={numbering} />
+                    </p>
+                    <div className="mt-3">
+                      <EvidenceBadge level={q.level} compact />
+                    </div>
                   </div>
-                </div>
-              </details>
+                </details>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
 
-        {c.legalNote && (
-          <aside className="mt-12 border-l-4 border-mustard bg-ivory/5 p-6">
-            <p className="label text-mustard">A note on the law</p>
-            <p className="mt-2 max-w-3xl text-ivory/85">
-              {c.legalNote.text}
-              <SourceMarks ids={c.legalNote.sources} numbering={numbering} />
-            </p>
-          </aside>
-        )}
+        <div className="mt-14 grid gap-6 lg:grid-cols-2">
+          {c.legalNote && (
+            <aside className="bg-yellow p-6 text-ink">
+              <p className="label">A note on the law</p>
+              <p className="mt-2 text-[0.97rem]">
+                {c.legalNote.text}
+                <SourceMarks ids={c.legalNote.sources} numbering={numbering} />
+              </p>
+            </aside>
+          )}
+          {c.openQuestions.length > 0 && (
+            <div className="border-2 border-bone/40 p-6">
+              <p className="label text-bone/70">Still open</p>
+              <ul className="mt-3 space-y-2 text-bone/90">
+                {c.openQuestions.map((q) => (
+                  <li key={q} className="flex gap-3">
+                    <span aria-hidden className="font-display text-xl leading-none text-yellow">
+                      ?
+                    </span>
+                    {q}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
+    </article>
+  );
+}
 
-        {c.openQuestions.length > 0 && (
-          <div className="mt-12">
-            <p className="label text-ivory/60">Still open</p>
-            <ul className="mt-3 space-y-2 text-ivory/80">
-              {c.openQuestions.map((q) => (
-                <li key={q} className="flex gap-3">
-                  <span aria-hidden className="text-mustard">?</span>
-                  {q}
-                </li>
-              ))}
-            </ul>
+function ComparePanel({
+  title,
+  points,
+  media,
+  note,
+  motif,
+  tone,
+}: {
+  title: string;
+  points: string[];
+  media?: MediaAsset;
+  note?: string;
+  motif: MotifKey;
+  tone: "cream" | "red";
+}) {
+  const red = tone === "red";
+  return (
+    <figure className={`flex flex-col border-2 ${red ? "border-bone/40 bg-brick text-bone" : "border-bone bg-cream text-ink"}`}>
+      <div className={`relative aspect-[4/3] border-b-2 ${red ? "border-bone/40" : "border-ink"}`}>
+        {media ? (
+          <ArchiveImage media={media} fallbackMotif={motif} className="h-full w-full" sizes="(min-width:768px) 40vw, 100vw" width={960} />
+        ) : (
+          <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
+            <span className="flex h-16 w-16 items-center justify-center border-2 border-dashed border-current" aria-hidden>
+              <svg viewBox="0 0 24 24" className="h-8 w-8">
+                <rect x="3" y="5" width="18" height="14" fill="none" stroke="currentColor" strokeWidth="1.6" />
+                <path d="M3 5l18 14" stroke="currentColor" strokeWidth="1.6" />
+              </svg>
+            </span>
+            <p className="label">Image not licensed</p>
+            <p className="max-w-xs text-sm opacity-90">{note}</p>
+            <div className="h-10 w-10 opacity-40">
+              <Motif motif={motif} className="h-full w-full" title="Archive illustration, not the runway design" />
+            </div>
           </div>
         )}
       </div>
-    </article>
+      <figcaption className="p-5">
+        <p className="font-title text-2xl leading-tight">{title}</p>
+        <ol className="mt-3 space-y-1.5">
+          {points.map((p, i) => (
+            <li key={p} className="flex items-baseline gap-3 text-sm">
+              <span className={`font-ui text-xs font-bold ${red ? "text-yellow" : "text-brick"}`}>{String(i + 1).padStart(2, "0")}</span>
+              {p}
+            </li>
+          ))}
+        </ol>
+      </figcaption>
+    </figure>
   );
 }

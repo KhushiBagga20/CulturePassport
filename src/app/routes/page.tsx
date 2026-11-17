@@ -3,6 +3,7 @@ import { geoGraticule10, geoInterpolate, geoNaturalEarth1, geoPath } from "d3-ge
 import { getArchive, isPublic, lookups } from "@/lib/data/archive";
 import { loadCountries } from "@/lib/geo-server";
 import { ACCENT } from "@/lib/labels";
+import { StoriesNav } from "@/components/site/StoriesNav";
 import { RoutesExplorer, type RouteArc, type RouteNode } from "@/components/routes/RoutesExplorer";
 
 export const revalidate = 300;
@@ -62,10 +63,12 @@ export default async function RoutesPage({ searchParams }: PageProps<"/routes">)
   });
 
   return (
+    <>
+    <StoriesNav current="routes" />
     <div className="mx-auto max-w-[1500px] px-4 py-12 sm:px-6 lg:px-10 lg:py-20">
       <div className="grid gap-8 lg:grid-cols-12">
         <div className="lg:col-span-7">
-          <p className="label text-terracotta">Roots &amp; Routes</p>
+          <p className="label text-brick">Roots &amp; Routes</p>
           <h1 className="font-display mt-3 text-[clamp(3.2rem,9vw,8rem)]">The connection map</h1>
         </div>
         <div className="self-end lg:col-span-5">
@@ -73,7 +76,7 @@ export default async function RoutesPage({ searchParams }: PageProps<"/routes">)
             Traditions are rarely tied to a single point. This map shows documented exchanges — shared practice across borders, migrations of makers,
             museum journeys, commercial adaptations — each with its evidence label and sources.
           </p>
-          <p className="mt-3 border-l-4 border-terracotta pl-3 text-sm">
+          <p className="mt-3 border-l-4 border-brick bg-bone p-3 text-sm">
             <strong>Visual similarity is never shown as influence.</strong> Where a resemblance is popularly claimed, it appears as a faint dotted line,
             labelled as such.
           </p>
@@ -94,5 +97,6 @@ export default async function RoutesPage({ searchParams }: PageProps<"/routes">)
       </div>
       <p className="mt-8 text-xs text-ink-mute">Boundaries: Natural Earth 1:110m; no position is implied on disputed territories. Places are plotted at approximate centres.</p>
     </div>
+    </>
   );
 }

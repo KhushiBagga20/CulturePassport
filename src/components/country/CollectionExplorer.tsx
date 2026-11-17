@@ -50,20 +50,20 @@ export function CollectionExplorer({ cards, map }: { cards: ExplorerCard[]; map:
       {map && (
         <div className="lg:col-span-5">
           <div className="lg:sticky lg:top-20">
-            <figure className="relative border rule bg-paper/70">
+            <figure className="relative border-2 border-ink bg-bone">
               <svg viewBox={`0 0 ${map.width} ${map.height}`} className="h-auto w-full" role="img" aria-label={`Map of ${map.focusName} showing where each tradition is made`}>
                 <defs>
                   <pattern id="hatch-shared" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-                    <rect width="6" height="6" fill="#EADCC9" />
-                    <line x1="0" y1="0" x2="0" y2="6" stroke="#581D30" strokeOpacity="0.35" strokeWidth="1.4" />
+                    <rect width="6" height="6" fill="#F2C2AE" />
+                    <line x1="0" y1="0" x2="0" y2="6" stroke="#B0351E" strokeOpacity="0.55" strokeWidth="1.6" />
                   </pattern>
                 </defs>
-                <rect width={map.width} height={map.height} fill="#E9DDC4" />
+                <rect width={map.width} height={map.height} fill="#1F4E9F" />
                 {map.lands.map((l) => (
                   <path
                     key={l.iso + l.name}
                     d={l.d}
-                    fill={l.focus ? "#F6F0E3" : l.shared ? "url(#hatch-shared)" : "#DDCDAE"}
+                    fill={l.focus ? "#F6F0E3" : l.shared ? "url(#hatch-shared)" : "#E1D4B5"}
                     stroke="#211C19"
                     strokeOpacity={l.focus ? 0.7 : 0.3}
                     strokeWidth={l.focus ? 1.2 : 0.6}
@@ -105,13 +105,13 @@ export function CollectionExplorer({ cards, map }: { cards: ExplorerCard[]; map:
                   );
                 })}
               </svg>
-              <figcaption className="flex flex-wrap items-center justify-between gap-2 border-t rule px-3 py-2">
-                <span className="label-sm text-ink-mute">Fig. — Where each tradition is made · hatched: shared across a border</span>
+              <figcaption className="flex flex-wrap items-center justify-between gap-2 border-t-2 border-ink px-3 py-2">
+                <span className="label-sm text-ink-mute">Where each tradition is made · hover a card or a dot · hatched: shared across a border</span>
                 <span className="label-sm text-ink-mute">Boundaries: Natural Earth</span>
               </figcaption>
             </figure>
             {active && (
-              <p className="label mt-3 text-ink-soft" aria-live="polite">
+              <p className="label mt-3 inline-block bg-ink px-2 py-1 text-bone" aria-live="polite">
                 {cards.find((c) => c.slug === active)?.name} — {map.markers.filter((m) => m.tradition === active).map((m) => m.place).join(", ")}
               </p>
             )}
@@ -154,11 +154,11 @@ export function CollectionExplorer({ cards, map }: { cards: ExplorerCard[]; map:
               >
                 <Link
                   href={`/passport/${c.slug}`}
-                  className={`group block border bg-ivory transition-[border-color,box-shadow] duration-500 hover:shadow-[0_30px_60px_-35px_rgba(33,28,25,.55)] ${active === c.slug ? "border-ink" : "border-ink/15"}`}
+                  className={`group block border-2 border-ink bg-bone transition-[transform,box-shadow] duration-300 ${active === c.slug ? "print-shadow -translate-x-1 -translate-y-1" : ""}`}
                   onFocus={() => setActive(c.slug)}
                   onBlur={() => setActive(null)}
                 >
-                  <div className={`relative overflow-hidden ${SHAPES[cards.indexOf(c) % SHAPES.length]}`}>
+                  <div className={`relative overflow-hidden border-b-2 border-ink ${SHAPES[cards.indexOf(c) % SHAPES.length]}`}>
                     {c.media ? (
                       <ArchiveImage
                         media={c.media}
@@ -171,16 +171,16 @@ export function CollectionExplorer({ cards, map }: { cards: ExplorerCard[]; map:
                     ) : (
                       <Motif motif={c.motif} className="h-full w-full" />
                     )}
-                    <span className="label-sm absolute left-3 top-3 rounded-full bg-ivory/90 px-2 py-1 text-ink">No. {c.no}</span>
-                    {c.hasCase && <span className="label-sm absolute right-3 top-3 rounded-full bg-terracotta px-2 py-1 text-ivory">Attribution case</span>}
+                    <span className="font-display absolute left-3 top-3 flex h-14 w-14 -rotate-6 items-center justify-center rounded-full border-2 border-ink bg-yellow text-lg text-ink">{c.no}</span>
+                    {c.hasCase && <span className="label-sm absolute right-0 top-3 bg-brick px-2 py-1 text-bone">Attribution case</span>}
                   </div>
                   <div className="p-5">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="font-display text-[2.1rem] group-hover:text-terracotta">{c.name}</p>
+                        <p className="font-display text-[2.2rem] group-hover:text-brick">{c.name}</p>
                         {c.nativeName && <p className="mt-0.5 text-sm text-ink-mute">{c.nativeName}</p>}
                       </div>
-                      <span className="mt-1 h-10 w-10 shrink-0 overflow-hidden rounded-full border border-ink/20">
+                      <span className="mt-1 h-10 w-10 shrink-0 overflow-hidden border-2 border-ink">
                         <Motif motif={c.motif} className="h-full w-full" />
                       </span>
                     </div>
@@ -193,11 +193,11 @@ export function CollectionExplorer({ cards, map }: { cards: ExplorerCard[]; map:
                       <dd>{c.category}</dd>
                     </dl>
                     <p className="mt-4 text-[0.95rem] text-ink-soft">{c.summary}</p>
-                    <div className="mt-5 flex items-center justify-between border-t rule pt-3">
-                      <span className="label-sm rounded-full px-2 py-0.5" style={{ background: c.accentSoft }}>
+                    <div className="mt-5 flex items-center justify-between border-t-2 border-ink pt-3">
+                      <span className="label-sm px-2 py-0.5" style={{ background: c.accentSoft }}>
                         {c.maturity}
                       </span>
-                      <span className="label group-hover:text-terracotta">Open passport →</span>
+                      <span className="label group-hover:text-brick">Open passport →</span>
                     </div>
                   </div>
                 </Link>
@@ -217,7 +217,7 @@ function Chip({ on, onClick, children }: { on: boolean; onClick: () => void; chi
       type="button"
       aria-pressed={on}
       onClick={onClick}
-      className={`label-sm rounded-full border px-3 py-1.5 transition-colors ${on ? "border-ink bg-ink text-ivory" : "border-ink/25 hover:border-ink"}`}
+      className="chip"
     >
       {children}
     </button>

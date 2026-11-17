@@ -15,35 +15,35 @@ export const EVIDENCE: Record<EvidenceLevel, { label: string; short: string; des
     label: "Documented",
     short: "DOC",
     description: "Supported by a primary record (registry, official decision, court report) or by credible published reporting, with no credible contradiction.",
-    color: "#28563F",
+    color: "#23613A",
     glyph: "●",
   },
   community: {
     label: "Community testimony",
     short: "COM",
     description: "Oral tradition or practitioners' own accounts, recorded as such — valuable, but not the same as a written record.",
-    color: "#146D68",
+    color: "#0F6E67",
     glyph: "◐",
   },
   interpretation: {
     label: "Historical interpretation",
     short: "INT",
     description: "A reading of the evidence by historians, curators or journalists. Reasonable people may read it differently.",
-    color: "#25346E",
+    color: "#1F4E9F",
     glyph: "◒",
   },
   disputed: {
     label: "Disputed",
     short: "DIS",
     description: "Credible sources disagree, or a popular claim is not supported by the evidence we have found.",
-    color: "#B84B30",
+    color: "#B0351E",
     glyph: "◇",
   },
   unverified: {
     label: "Further verification needed",
     short: "VER",
     description: "Plausible, but resting on uncited, tertiary or commercial sources. Awaiting confirmation.",
-    color: "#8A6A1F",
+    color: "#7E5A10",
     glyph: "○",
   },
 };
@@ -122,14 +122,24 @@ export const PLACE_ROLE: Record<TraditionPlace["role"], string> = {
   "community-home": "Community home",
 };
 
-export const ACCENT: Record<AccentKey, { hex: string; ink: string; soft: string }> = {
-  terracotta: { hex: "#B84B30", ink: "#F6F0E3", soft: "#EBC8B6" },
-  burgundy: { hex: "#581D30", ink: "#F6F0E3", soft: "#D9B9C0" },
-  indigo: { hex: "#25346E", ink: "#F6F0E3", soft: "#BFC6E0" },
-  forest: { hex: "#28563F", ink: "#F6F0E3", soft: "#BFD3C5" },
-  teal: { hex: "#146D68", ink: "#F6F0E3", soft: "#B6D6D2" },
-  mustard: { hex: "#E4AA29", ink: "#211C19", soft: "#F2DCA5" },
+/**
+ * Tradition accents. Keys are stored content values; only the colours follow the design language.
+ * hex: blocks and large type · ink: text on a hex block · text: small text on cream (AA) · soft: tints.
+ */
+export const ACCENT: Record<AccentKey, { hex: string; ink: string; text: string; soft: string }> = {
+  terracotta: { hex: "#E04A2C", ink: "#F6F0E3", text: "#B0351E", soft: "#F2C2AE" },
+  burgundy: { hex: "#B32A3C", ink: "#F6F0E3", text: "#B32A3C", soft: "#EBC0C2" },
+  indigo: { hex: "#1F4E9F", ink: "#F6F0E3", text: "#1F4E9F", soft: "#BCCBE6" },
+  forest: { hex: "#27703F", ink: "#F6F0E3", text: "#23613A", soft: "#BFD9C3" },
+  teal: { hex: "#0F6E67", ink: "#F6F0E3", text: "#0F6E67", soft: "#B4D8D2" },
+  mustard: { hex: "#EEA53A", ink: "#1B1616", text: "#8A5A12", soft: "#F6DDA6" },
 };
+
+/** CSS custom properties that theme a page section with a tradition's accent. */
+export function accentVars(key: AccentKey): Record<string, string> {
+  const a = ACCENT[key];
+  return { "--accent": a.hex, "--accent-ink": a.ink, "--accent-text": a.text, "--accent-soft": a.soft };
+}
 
 export function formatSourceDate(d?: string): string {
   if (!d) return "Undated";

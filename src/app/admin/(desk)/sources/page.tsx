@@ -19,7 +19,7 @@ export default async function SourcesPage({ searchParams }: PageProps<"/admin/so
       <h1 className="font-display mt-2 text-5xl">Sources · {archive.sources.length}</h1>
 
       <section className="paper-card mt-8 p-5" id="form">
-        <h2 className="font-serif text-2xl">{editing ? `Edit “${editing.title}”` : "Add a source"}</h2>
+        <h2 className="font-title text-2xl">{editing ? `Edit “${editing.title}”` : "Add a source"}</h2>
         <p className="mt-1 text-sm text-ink-soft">Real, checkable links only. Note conflicts and retrieval problems — readers see them.</p>
         <ActionForm action={saveSourceAction} submitLabel={editing ? "Save source" : "Add source"} className="mt-4" key={editing?.id ?? "new"}>
           <div className="grid gap-4 md:grid-cols-2">

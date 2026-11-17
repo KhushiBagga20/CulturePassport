@@ -11,13 +11,13 @@ export default function NotFound() {
         review.
       </p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
-        <Link href="/" className="label rounded-full bg-ink px-5 py-3 text-ivory hover:bg-burgundy">
+        <Link href="/" className="btn btn-ink">
           Back to the globe
         </Link>
-        <Link href="/passports" className="label rounded-full border rule px-5 py-3 hover:border-ink">
+        <Link href="/passports" className="btn btn-cream">
           Passport register
         </Link>
-        <Link href="/search" className="label rounded-full border rule px-5 py-3 hover:border-ink">
+        <Link href="/search" className="btn btn-cream">
           Search
         </Link>
       </div>

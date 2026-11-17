@@ -5,13 +5,24 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SealMark } from "./Seal";
 
-const NAV = [
-  { href: "/", label: "Atlas", match: (p: string) => p === "/" },
-  { href: "/country/india", label: "India", match: (p: string) => p.startsWith("/country") },
-  { href: "/passports", label: "Passports", match: (p: string) => p.startsWith("/passport") },
-  { href: "/routes", label: "Roots & Routes", match: (p: string) => p.startsWith("/routes") },
-  { href: "/trails", label: "Trails", match: (p: string) => p.startsWith("/trails") },
-  { href: "/method", label: "Method", match: (p: string) => p.startsWith("/method") },
+/** Four destinations, each with a one-line promise so visitors know where they will land. */
+export const NAV = [
+  { href: "/", label: "Explore", hint: "Spin the living globe", block: "bg-orange text-ink", match: (p: string) => p === "/" },
+  {
+    href: "/explore",
+    label: "Countries",
+    hint: "Every collection, as a list",
+    block: "bg-cobalt text-bone",
+    match: (p: string) => p.startsWith("/explore") || p.startsWith("/country"),
+  },
+  {
+    href: "/passports",
+    label: "Stories",
+    hint: "Passports, trails and routes",
+    block: "bg-green text-bone",
+    match: (p: string) => p.startsWith("/passport") || p.startsWith("/trails") || p.startsWith("/routes") || p.startsWith("/p/"),
+  },
+  { href: "/method", label: "About", hint: "How we research and credit", block: "bg-brick text-bone", match: (p: string) => p.startsWith("/method") },
 ];
 
 export function Header() {
@@ -46,18 +57,18 @@ export function Header() {
 
   return (
     <header
-      className={`no-print z-50 w-full ${overlay ? "absolute inset-x-0 top-0" : "sticky top-0 border-b rule bg-ivory/92 backdrop-blur-sm"}`}
+      className={`no-print z-50 w-full ${overlay ? "absolute inset-x-0 top-0" : "sticky top-0 border-b-2 border-ink bg-cream"}`}
     >
-      <div className="mx-auto flex h-14 max-w-[1500px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-10">
-        <Link href="/" className="group flex items-center gap-2.5" aria-label="Culture Passport — back to the globe">
-          <SealMark className="h-8 w-8 text-burgundy transition-transform duration-700 group-hover:rotate-[30deg]" />
+      <div className="mx-auto grid h-14 max-w-[1500px] grid-cols-[1fr_auto] items-center gap-4 px-4 sm:px-6 lg:grid-cols-[1fr_auto_1fr] lg:px-10">
+        <Link href="/" className="group flex items-center gap-2.5 justify-self-start" aria-label="Culture Passport — back to the globe">
+          <SealMark className="h-8 w-8 text-brick transition-transform duration-700 group-hover:rotate-[30deg]" />
           <span className="flex flex-col leading-none">
-            <span className="font-display text-[1.15rem] tracking-tight">Culture Passport</span>
-            <span className="label-sm text-ink-mute">{admin ? "Editorial desk" : "When culture travels"}</span>
+            <span className="font-display whitespace-nowrap text-[1.3rem] tracking-[0.01em]">Culture Passport</span>
+            <span className="label-sm mt-0.5 hidden whitespace-nowrap text-ink-mute min-[400px]:block">{admin ? "Editorial desk" : "When culture travels"}</span>
           </span>
         </Link>
 
-        <nav aria-label="Primary" className="hidden items-center gap-1 lg:flex">
+        <nav aria-label="Primary" className="hidden items-center lg:flex">
           {NAV.map((item) => {
             const active = item.match(pathname);
             return (
@@ -65,67 +76,76 @@ export function Header() {
                 key={item.href}
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={`label relative px-3 py-2 transition-colors hover:text-terracotta ${active ? "text-terracotta" : "text-ink-soft"}`}
+                title={item.hint}
+                className={`relative px-4 py-2 font-ui text-[0.8rem] font-bold uppercase tracking-[0.12em] transition-colors ${active ? "text-brick" : "text-ink hover:text-brick"}`}
               >
                 {item.label}
-                {active && <span className="absolute inset-x-3 -bottom-0.5 h-px bg-terracotta" />}
+                {active && <span aria-hidden className="tab-down absolute left-1/2 top-full h-2 w-3 -translate-x-1/2 bg-brick" />}
               </Link>
             );
           })}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 justify-self-end">
           <Link
             href="/search"
-            className="label flex items-center gap-2 rounded-full border rule px-3 py-2 text-ink-soft transition-colors hover:border-ink hover:text-ink"
-            aria-label="Search the archive"
+            className="flex h-9 items-center gap-2 border-2 border-ink bg-bone px-3 font-ui text-[0.72rem] font-bold uppercase tracking-[0.1em] transition-colors hover:bg-yellow"
+            aria-label="Search traditions, places and sources"
           >
             <svg viewBox="0 0 20 20" className="h-3.5 w-3.5" aria-hidden>
-              <circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" strokeWidth="1.6" />
-              <path d="M13 13l4.5 4.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              <circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" strokeWidth="2" />
+              <path d="M13 13l4.5 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="square" />
             </svg>
             <span className="hidden sm:inline">Search</span>
-            <kbd className="hidden rounded border rule px-1 text-[0.6rem] text-ink-mute md:inline">⌘K</kbd>
+            <kbd className="hidden border border-ink/30 px-1 font-ui text-[0.6rem] text-ink-mute md:inline">⌘K</kbd>
           </Link>
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className="label flex h-9 items-center gap-2 rounded-full border rule px-3 lg:hidden"
+            className="flex h-9 items-center gap-2 border-2 border-ink bg-ink px-3 font-ui text-[0.72rem] font-bold uppercase tracking-[0.1em] text-bone lg:hidden"
             aria-expanded={open}
             aria-controls="mobile-nav"
           >
             <span aria-hidden className="flex w-4 flex-col gap-[3px]">
-              <span className={`h-px bg-ink transition-transform ${open ? "translate-y-[4px] rotate-45" : ""}`} />
-              <span className={`h-px bg-ink transition-opacity ${open ? "opacity-0" : ""}`} />
-              <span className={`h-px bg-ink transition-transform ${open ? "-translate-y-[4px] -rotate-45" : ""}`} />
+              <span className={`h-0.5 bg-bone transition-transform ${open ? "translate-y-[5px] rotate-45" : ""}`} />
+              <span className={`h-0.5 bg-bone transition-opacity ${open ? "opacity-0" : ""}`} />
+              <span className={`h-0.5 bg-bone transition-transform ${open ? "-translate-y-[5px] -rotate-45" : ""}`} />
             </span>
-            Menu
+            {open ? "Close" : "Menu"}
           </button>
         </div>
       </div>
 
-      <div
-        id="mobile-nav"
-        hidden={!open}
-        className="fixed inset-x-0 top-14 bottom-0 z-50 overflow-y-auto bg-ivory px-4 pb-10 pt-6 sm:px-6 lg:hidden"
-      >
+      <div id="mobile-nav" hidden={!open} className="fixed inset-x-0 top-14 bottom-0 z-50 overflow-y-auto border-t-2 border-ink bg-cream lg:hidden">
         <nav aria-label="Mobile" className="flex flex-col">
-          {NAV.map((item, i) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="flex items-baseline justify-between border-b rule py-4"
-              aria-current={item.match(pathname) ? "page" : undefined}
-            >
-              <span className="font-display text-4xl">{item.label}</span>
-              <span className="label text-ink-mute">{String(i + 1).padStart(2, "0")}</span>
-            </Link>
-          ))}
-          <Link href="/explore" className="label mt-6 text-ink-soft underline">
-            Browse every country as a list
+          {NAV.map((item, i) => {
+            const active = item.match(pathname);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`group flex items-end justify-between gap-4 border-b-2 border-ink px-5 py-5 sm:px-6 ${item.block}`}
+                aria-current={active ? "page" : undefined}
+              >
+                <span>
+                  <span className="label-sm block opacity-80">
+                    {String(i + 1).padStart(2, "0")} {active ? "· You are here" : ""}
+                  </span>
+                  <span className="font-display mt-1 block text-[3.2rem]">{item.label}</span>
+                  <span className="mt-1 block text-sm font-medium opacity-90">{item.hint}</span>
+                </span>
+                <span aria-hidden className="font-display text-4xl transition-transform group-hover:translate-x-1">
+                  →
+                </span>
+              </Link>
+            );
+          })}
+          <Link href="/search" className="flex items-center justify-between border-b-2 border-ink bg-bone px-5 py-5 sm:px-6">
+            <span className="font-display text-3xl">Search the archive</span>
+            <span className="label text-ink-mute">Traditions · places · sources</span>
           </Link>
         </nav>
-        <div className="strip-diamond mt-10" />
+        <div className="strip-checker" />
       </div>
     </header>
   );

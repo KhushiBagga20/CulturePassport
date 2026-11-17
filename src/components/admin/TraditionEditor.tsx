@@ -373,7 +373,7 @@ export function TraditionEditor(props: {
                 </div>
               )}
             />
-            <F label="Organisations (Keep the story alive)">
+            <F label="Organisations (Meet the Makers)">
               <SourcePicker options={props.organizations} value={t.keepAlive.organizations} onChange={(organizations) => up({ keepAlive: { ...t.keepAlive, organizations } })} />
             </F>
             <F label="Collaboration guidance (one per line)">

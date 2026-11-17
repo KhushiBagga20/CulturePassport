@@ -23,7 +23,7 @@ export default async function DeskLayout({ children }: LayoutProps<"/admin">) {
       <aside className="mb-8 lg:mb-0">
         <div className="lg:sticky lg:top-20">
           <p className="label-sm text-ink-mute">Signed in as</p>
-          <p className="font-serif text-xl">{editor.name}</p>
+          <p className="font-title text-xl">{editor.name}</p>
           <p className="label-sm text-ink-mute">{editor.mode === "supabase" ? "Supabase editor" : "Local demo editor"}</p>
           <nav aria-label="Editorial desk" className="no-scrollbar mt-6 flex gap-1 overflow-x-auto lg:flex-col">
             {NAV.map((n) => (

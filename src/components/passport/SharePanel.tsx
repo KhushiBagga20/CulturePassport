@@ -15,20 +15,20 @@ export function QrPanel({ slug, passportNo, name }: { slug: string; passportNo: 
   const url = origin ? `${origin}/passport/${slug}` : `/passport/${slug}`;
   const [copied, setCopied] = useState(false);
   return (
-    <div className="paper-card grid gap-5 p-5 sm:grid-cols-[auto_1fr] sm:p-6">
+    <div className="grid gap-5 border-2 border-ink bg-bone p-5 sm:grid-cols-[auto_1fr] sm:p-6">
       <div className="relative mx-auto w-40 sm:mx-0">
         {/* eslint-disable-next-line @next/next/no-img-element -- generated QR code */}
         <img src={`/api/qr/${slug}?format=svg`} alt={`QR code that opens the ${name} passport`} width={160} height={160} className="h-40 w-40" />
-        <span className="label-sm absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap bg-ink px-2 py-0.5 text-ivory">No. {passportNo}</span>
+        <span className="label-sm absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap bg-ink px-2 py-0.5 text-bone">No. {passportNo}</span>
       </div>
       <div className="min-w-0">
         <p className="label text-ink-mute">Scan to open the story</p>
-        <p className="font-serif mt-1 text-2xl leading-tight">A stable link for a museum label, a market stall or a product tag.</p>
+        <p className="font-title mt-1 text-2xl leading-tight">A stable link for a museum label, a market stall or a product tag.</p>
         <div className="mt-3 flex items-center gap-2">
-          <code className="font-mono min-w-0 flex-1 truncate border rule bg-ivory px-2 py-1.5 text-xs">{url}</code>
+          <code className="font-ui min-w-0 flex-1 truncate border-2 border-ink/30 bg-cream px-2 py-1.5 text-xs">{url}</code>
           <button
             type="button"
-            className="label-sm shrink-0 rounded border rule px-2 py-1.5 hover:border-ink"
+            className="chip shrink-0"
             onClick={async () => {
               try {
                 await navigator.clipboard.writeText(url);
@@ -44,13 +44,13 @@ export function QrPanel({ slug, passportNo, name }: { slug: string; passportNo: 
         </div>
         <p className="label-sm mt-2 text-ink-mute">Short link: {origin ? `${origin}/p/${passportNo}` : `/p/${passportNo}`}</p>
         <div className="mt-4 flex flex-wrap gap-2">
-          <a href={`/api/qr/${slug}?format=svg&download=1`} className="label-sm rounded-full border rule px-3 py-1.5 hover:border-ink">
+          <a href={`/api/qr/${slug}?format=svg&download=1`} className="chip">
             Download SVG
           </a>
-          <a href={`/api/qr/${slug}?format=png&size=1200&download=1`} className="label-sm rounded-full border rule px-3 py-1.5 hover:border-ink">
+          <a href={`/api/qr/${slug}?format=png&size=1200&download=1`} className="chip">
             Download PNG
           </a>
-          <Link href={`/passport/${slug}/label`} className="label-sm rounded-full bg-ink px-3 py-1.5 text-ivory hover:bg-burgundy">
+          <Link href={`/passport/${slug}/label`} className="chip border-ink bg-ink text-bone hover:bg-brick">
             Print a label
           </Link>
         </div>
@@ -97,9 +97,9 @@ export function ShareWithCredit({ slug, passportNo, name, captionTemplate }: { s
   };
 
   return (
-    <div className="border-2 border-[var(--accent)] bg-ivory p-5 sm:p-6">
-      <p className="label text-[var(--accent)]">Share with credit</p>
-      <p className="font-serif mt-1 text-2xl leading-tight">Share the image — and the story with it.</p>
+    <div className="border-2 border-ink bg-bone p-5 sm:p-6">
+      <p className="label text-[var(--accent-text)]">Share with credit</p>
+      <p className="font-title mt-1 text-2xl leading-tight">Share the image — and the story with it.</p>
       <label htmlFor={`caption-${slug}`} className="label-sm mt-4 block text-ink-mute">
         Caption (editable)
       </label>
@@ -108,22 +108,22 @@ export function ShareWithCredit({ slug, passportNo, name, captionTemplate }: { s
         value={text}
         onChange={(e) => setEdited(e.target.value)}
         rows={7}
-        className="mt-1 w-full resize-y border rule bg-paper/50 p-3 font-mono text-xs leading-relaxed outline-none focus:border-ink"
+        className="mt-1 w-full resize-y border-2 border-ink/30 bg-cream p-3 font-ui text-xs leading-relaxed outline-none focus:border-ink"
       />
       <div className="mt-3 flex flex-wrap gap-2">
-        <button type="button" onClick={copy} className="label-sm rounded-full bg-ink px-3 py-2 text-ivory hover:bg-burgundy">
+        <button type="button" onClick={copy} className="btn btn-ink">
           Copy caption
         </button>
-        <button type="button" onClick={() => share(false)} className="label-sm rounded-full border rule px-3 py-2 hover:border-ink">
+        <button type="button" onClick={() => share(false)} className="btn btn-cream">
           Share link
         </button>
-        <button type="button" onClick={() => share(true)} className="label-sm rounded-full border rule px-3 py-2 hover:border-ink">
+        <button type="button" onClick={() => share(true)} className="btn btn-cream">
           Share card image
         </button>
-        <a href={`/api/card/${slug}?download=1`} className="label-sm rounded-full border rule px-3 py-2 hover:border-ink">
+        <a href={`/api/card/${slug}?download=1`} className="btn btn-cream">
           Download card
         </a>
-        <Link href={`/passport/${slug}/card`} className="label-sm rounded-full border rule px-3 py-2 hover:border-ink">
+        <Link href={`/passport/${slug}/card`} className="btn btn-cream">
           View identity card
         </Link>
       </div>

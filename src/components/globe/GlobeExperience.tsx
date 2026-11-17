@@ -177,7 +177,7 @@ export function GlobeExperience({ countries, passports }: { countries: GlobeCoun
   return (
     <section
       aria-labelledby="hero-title"
-      className="relative isolate min-h-[max(100svh,680px)] overflow-hidden bg-ivory"
+      className="relative isolate min-h-[max(100svh,680px)] overflow-hidden bg-bone"
       style={{ ["--glow" as string]: glow }}
     >
       {/* reactive lighting behind the globe */}
@@ -193,7 +193,7 @@ export function GlobeExperience({ countries, passports }: { countries: GlobeCoun
       {/* veil so the globe recedes beneath the headline on wide screens */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-y-0 left-0 z-[5] hidden w-[52%] bg-gradient-to-r from-ivory via-ivory/80 to-transparent lg:block"
+        className="pointer-events-none absolute inset-y-0 left-0 z-[5] hidden w-[52%] bg-gradient-to-r from-bone via-bone/80 to-transparent lg:block"
       />
 
       {/* Globe stage */}
@@ -242,7 +242,7 @@ export function GlobeExperience({ countries, passports }: { countries: GlobeCoun
                 className="label-sm absolute left-0 top-0 -translate-x-1/2 whitespace-nowrap opacity-0 transition-opacity"
                 style={{ willChange: "transform" }}
               >
-                <span className="relative -left-1/2 -top-7 flex items-center gap-1.5 rounded-full border border-ink/30 bg-ivory/90 px-2 py-1 shadow-sm backdrop-blur-sm">
+                <span className="relative -left-1/2 -top-7 flex items-center gap-1.5 rounded-full border border-ink/30 bg-bone/90 px-2 py-1 shadow-sm backdrop-blur-sm">
                   <span className="h-1.5 w-1.5 rounded-full" style={{ background: COUNTRY_STATUS[c.status].color }} />
                   {c.name === "United Arab Emirates" ? "UAE" : c.name}
                   <span className="text-ink-mute">
@@ -315,41 +315,53 @@ export function GlobeExperience({ countries, passports }: { countries: GlobeCoun
       {/* Editorial column */}
       <div className="pointer-events-none relative z-10 mx-auto flex min-h-[max(100svh,680px)] max-w-[1500px] flex-col justify-end px-4 pb-8 pt-20 sm:px-6 lg:justify-center lg:px-10 lg:pb-16">
         <div className="pointer-events-auto max-w-[34rem] lg:max-w-[38rem]">
-          <p className="label flex items-center gap-3 text-terracotta">
-            <span className="h-px w-8 bg-terracotta" /> Plate I · The living globe
+          <p className="label inline-flex items-center gap-2 bg-ink px-2.5 py-1.5 text-yellow">
+            <span aria-hidden>●</span> The living globe
           </p>
-          <h1 id="hero-title" className="font-display mt-4 text-[clamp(3.4rem,10.5vw,9.6rem)] text-burgundy">
+          <h1 id="hero-title" className="font-display mt-4 text-[clamp(3.6rem,11vw,10rem)] text-ink">
             <SplitHeadline text="When culture travels" />
           </h1>
-          <p className="font-serif mt-4 text-[clamp(1.6rem,3.2vw,2.6rem)] italic leading-tight text-ink">Let its story travel with it.</p>
-          <p className="mt-4 max-w-md text-[0.98rem] text-ink-soft max-sm:hidden">
-            A living atlas of culture. Every tradition gets a passport: its names, its places, the people who make it, how it has travelled — and
-            the sources for all of it.
-          </p>
-          <div className="mt-6 flex flex-wrap items-center gap-3">
+          <p className="font-title mt-3 text-[clamp(1.7rem,3.4vw,2.8rem)] italic leading-tight text-brick">Let its story travel with it.</p>
+          {/* How to use the globe, in three steps */}
+          <ol className="mt-5 grid max-w-md grid-cols-3 border-2 border-ink bg-bone" aria-label="How to explore">
+            {[
+              mode === "2d" ? "Hover or tab to a country" : "Drag to spin the globe",
+              "Pick a coloured country",
+              "Open its collection",
+            ].map((step, i) => (
+              <li key={step} className={`flex items-start gap-2 p-2.5 ${i < 2 ? "border-r-2 border-ink" : ""}`}>
+                <span className="font-display text-2xl leading-[0.8] text-brick">{i + 1}</span>
+                <span className="font-ui text-[0.68rem] font-semibold leading-tight">{step}</span>
+              </li>
+            ))}
+          </ol>
+          <div className="mt-5 flex flex-wrap items-center gap-2 sm:gap-3">
             <Magnetic>
               <button
                 type="button"
                 onClick={() => selectById("356", true)}
                 disabled={!world}
-                className="group inline-flex items-center gap-3 rounded-full bg-terracotta px-6 py-3.5 text-ivory shadow-[0_10px_30px_-12px_rgba(184,75,48,.8)] transition-colors hover:bg-burgundy disabled:opacity-60"
+                className="btn btn-red group px-3.5 disabled:opacity-60 sm:px-[1.15rem]"
               >
-                <span className="label">Explore the world</span>
+                <span>Explore the world</span>
                 <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
               </button>
             </Magnetic>
             <button
               type="button"
               onClick={() => passportDialog.current?.showModal()}
-              className="label rounded-full border border-ink/40 bg-ivory/70 px-5 py-3.5 backdrop-blur-sm transition-colors hover:border-ink hover:bg-ivory"
+              className="btn btn-cream px-3.5 sm:px-[1.15rem]"
             >
-              Enter a Culture Passport
+              Enter a <span className="max-sm:hidden">Culture </span>Passport
             </button>
           </div>
-          <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2">
-            <button type="button" onClick={() => indexDialog.current?.showModal()} className="label-sm text-ink-soft underline decoration-dotted hover:text-ink">
-              Browse countries as a list
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <button type="button" onClick={() => indexDialog.current?.showModal()} className="chip bg-bone">
+              ☰ Countries as a list
             </button>
+            <Link href="/search" className="chip bg-bone">
+              ⌕ Search a tradition
+            </Link>
             {mode && detected === "3d" && (
               <button
                 type="button"
@@ -358,7 +370,7 @@ export function GlobeExperience({ countries, passports }: { countries: GlobeCoun
                   setReady(false);
                   setMode(mode === "3d" ? "2d" : detectMode());
                 }}
-                className="label-sm text-ink-soft underline decoration-dotted hover:text-ink"
+                className="chip bg-bone max-sm:hidden"
               >
                 {mode === "3d" ? "Switch to flat atlas" : "Switch to 3D globe"}
               </button>
@@ -380,20 +392,20 @@ export function GlobeExperience({ countries, passports }: { countries: GlobeCoun
       {selected && (
         <aside
           aria-label={`${selected.name} details`}
-          className="fixed inset-x-0 bottom-0 z-40 max-h-[72svh] overflow-y-auto rounded-t-2xl border-t border-ink/20 bg-ivory p-5 shadow-[0_-20px_60px_-20px_rgba(33,28,25,.45)] sm:p-6 lg:absolute lg:inset-x-auto lg:bottom-10 lg:right-10 lg:w-[400px] lg:rounded-none lg:border lg:shadow-[0_30px_60px_-30px_rgba(33,28,25,.6)]"
+          className="fixed inset-x-0 bottom-0 z-40 max-h-[72svh] overflow-y-auto border-t-4 border-ink bg-bone p-5 sm:p-6 lg:absolute lg:inset-x-auto lg:bottom-10 lg:right-10 lg:w-[400px] lg:border-4 lg:print-shadow"
         >
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="label-sm text-ink-mute">{selectedCountry?.status ? `${COUNTRY_STATUS[selectedCountry.status].label}` : "Not yet in the archive"}</p>
               <h2 className="font-display mt-1 text-5xl">{selected.name}</h2>
             </div>
-            <button type="button" onClick={() => setSelected(null)} className="label-sm rounded-full border rule px-3 py-1.5 hover:border-ink" aria-label="Close panel">
-              Close
+            <button type="button" onClick={() => setSelected(null)} className="chip" aria-label="Close panel and return to the globe">
+              ✕ Back to globe
             </button>
           </div>
           {selectedCountry ? (
             <>
-              <p className="font-serif mt-3 text-2xl leading-tight">{selectedCountry.headline}</p>
+              <p className="font-title mt-3 text-2xl leading-tight">{selectedCountry.headline}</p>
               <p className="mt-2 text-sm text-ink-soft">{selectedCountry.intro}</p>
               {selectedCountry.passports.length > 0 && (
                 <ul className="mt-4 divide-y divide-ink/10 border-y rule">
@@ -429,9 +441,9 @@ export function GlobeExperience({ countries, passports }: { countries: GlobeCoun
               <button
                 type="button"
                 onClick={() => enter(selectedCountry)}
-                className="group mt-5 inline-flex w-full items-center justify-between rounded-full bg-ink px-5 py-3 text-ivory hover:bg-burgundy"
+                className="btn btn-ink group mt-5 w-full justify-between"
               >
-                <span className="label">
+                <span>
                   {selectedCountry.status === "active" || selectedCountry.status === "introductory" ? `Enter the ${selectedCountry.name === "United Arab Emirates" ? "UAE" : selectedCountry.name} archive` : "Open this chapter"}
                 </span>
                 <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
@@ -444,10 +456,10 @@ export function GlobeExperience({ countries, passports }: { countries: GlobeCoun
                 involved have been consulted — so this page stays empty rather than pretending.
               </p>
               <div className="mt-4 flex flex-wrap gap-3">
-                <Link href="/passports" className="label rounded-full border rule px-4 py-2 hover:border-ink">
+                <Link href="/passports" className="chip">
                   See published passports
                 </Link>
-                <Link href="/method" className="label rounded-full border rule px-4 py-2 hover:border-ink">
+                <Link href="/method" className="chip">
                   How we choose
                 </Link>
               </div>
@@ -477,14 +489,14 @@ export function GlobeExperience({ countries, passports }: { countries: GlobeCoun
       {/* Country index (accessible alternative to the globe) */}
       <dialog
         ref={indexDialog}
-        className="m-auto max-h-[85svh] w-[min(640px,calc(100vw-2rem))] overflow-hidden border border-ink/30 bg-ivory p-0 text-ink backdrop:bg-ink/50"
+        className="m-auto max-h-[85svh] w-[min(640px,calc(100vw-2rem))] overflow-hidden border-4 border-ink bg-bone p-0 text-ink backdrop:bg-ink/50"
         aria-labelledby="index-title"
       >
         <div className="flex items-center justify-between border-b rule px-5 py-4">
           <h2 id="index-title" className="font-display text-3xl">
             Country index
           </h2>
-          <button type="button" onClick={() => indexDialog.current?.close()} className="label-sm rounded-full border rule px-3 py-1.5">
+          <button type="button" onClick={() => indexDialog.current?.close()} className="chip">
             Close
           </button>
         </div>
@@ -538,19 +550,19 @@ function PassportPicker({ dialogRef, passports }: { dialogRef: React.RefObject<H
   return (
     <dialog
       ref={dialogRef}
-      className="m-auto w-[min(560px,calc(100vw-2rem))] border border-ink/30 bg-ivory p-0 text-ink backdrop:bg-ink/50"
+      className="m-auto w-[min(560px,calc(100vw-2rem))] border-4 border-ink bg-bone p-0 text-ink backdrop:bg-ink/50"
       aria-labelledby="picker-title"
     >
       <div className="strip-weave" />
       <div className="p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="label text-terracotta">Passport register</p>
+            <p className="label text-brick">Passport register</p>
             <h2 id="picker-title" className="font-display mt-1 text-4xl">
               Enter a Culture Passport
             </h2>
           </div>
-          <button type="button" onClick={() => dialogRef.current?.close()} className="label-sm rounded-full border rule px-3 py-1.5">
+          <button type="button" onClick={() => dialogRef.current?.close()} className="chip">
             Close
           </button>
         </div>
@@ -566,10 +578,10 @@ function PassportPicker({ dialogRef, passports }: { dialogRef: React.RefObject<H
               setMsg(null);
             }}
             placeholder="No. 001 or a name"
-            className="font-mono min-w-0 flex-1 border-b-2 border-ink bg-transparent px-1 py-2 text-xl tracking-widest outline-none placeholder:text-ink-mute/60 focus:border-terracotta"
+            className="font-ui min-w-0 flex-1 border-b-2 border-ink bg-transparent px-1 py-2 text-xl tracking-widest outline-none placeholder:text-ink-mute/60 focus:border-terracotta"
             autoComplete="off"
           />
-          <button type="submit" className="label rounded-full bg-ink px-5 text-ivory hover:bg-burgundy">
+          <button type="submit" className="btn btn-ink">
             Open
           </button>
         </form>
@@ -586,7 +598,7 @@ function PassportPicker({ dialogRef, passports }: { dialogRef: React.RefObject<H
                 onClick={() => dialogRef.current?.close()}
                 className="flex items-baseline gap-4 py-2.5 hover:text-terracotta"
               >
-                <span className="font-mono text-sm text-ink-mute">No. {p.no}</span>
+                <span className="font-ui text-sm text-ink-mute">No. {p.no}</span>
                 <span className="flex-1">{p.name}</span>
                 <span className="label-sm text-ink-mute">{p.where}</span>
               </Link>

@@ -58,7 +58,7 @@ export function ArchiveImage({
         />
       )}
       {showCredit && (
-        <figcaption className="label-sm absolute bottom-0 right-0 max-w-full bg-ink/70 px-2 py-1 text-ivory/90 backdrop-blur-sm">
+        <figcaption className="label-sm absolute bottom-0 right-0 max-w-full bg-ink px-2 py-1 text-bone">
           {linkCredit ? (
             <a href={media.sourcePage} target="_blank" rel="noreferrer" className="hover:underline">
               {media.credit} · {media.license}

@@ -1,26 +1,41 @@
 @import "tailwindcss";
 
-/* ───────────────────────── Design tokens ───────────────────────── */
+/* ───────────────────────── Design tokens ─────────────────────────
+   Retro-modern editorial palette: flat colour blocks, no gradients.
+   Bright vermilion is for large type and shapes; `brick` carries small
+   red text (AA on cream). */
 @theme {
-  --color-ivory: #f6f0e3;
-  --color-paper: #eee5d1;
-  --color-parchment: #e6d9bd;
-  --color-burgundy: #581d30;
-  --color-terracotta: #b84b30;
-  --color-indigo: #25346e;
-  --color-forest: #28563f;
-  --color-teal: #146d68;
-  --color-mustard: #e4aa29;
-  --color-ink: #211c19;
-  --color-ink-soft: #4d433c;
-  --color-ink-mute: #7a6d62;
-  --color-line: rgb(33 28 25 / 0.16);
-  --color-line-strong: rgb(33 28 25 / 0.32);
+  --color-cream: #ece2ca;
+  --color-bone: #f6f0e3;
+  --color-sand: #e1d4b5;
+  --color-kraft: #b8935c;
+  --color-orange: #eea53a;
+  --color-yellow: #f4ba2e;
+  --color-vermilion: #e04a2c;
+  --color-brick: #b0351e;
+  --color-cobalt: #1f4e9f;
+  --color-cobalt-deep: #173c7c;
+  --color-green: #27703f;
+  --color-ink: #1b1616;
+  --color-ink-soft: #3e3632;
+  --color-ink-mute: #6b5f55;
+  --color-line: rgb(27 22 22 / 0.16);
+  --color-line-strong: rgb(27 22 22 / 0.34);
 
-  --font-display: var(--font-bricolage), "Arial Narrow", system-ui, sans-serif;
-  --font-serif: var(--font-instrument-serif), "Iowan Old Style", Georgia, serif;
-  --font-sans: var(--font-instrument-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", Menlo, monospace;
+  /* Earlier token names, kept as aliases so every page shares one palette. */
+  --color-ivory: #ece2ca;
+  --color-paper: #e1d4b5;
+  --color-parchment: #dccba6;
+  --color-burgundy: #8f2a17;
+  --color-terracotta: #b0351e;
+  --color-indigo: #1f4e9f;
+  --color-forest: #27703f;
+  --color-teal: #0f6e67;
+  --color-mustard: #f4ba2e;
+
+  --font-display: var(--font-barlow-condensed), "Arial Narrow", "Roboto Condensed", system-ui, sans-serif;
+  --font-sans: var(--font-manrope), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-ui: var(--font-space-grotesk), system-ui, -apple-system, "Segoe UI", sans-serif;
 
   --ease-archive: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-drift: cubic-bezier(0.45, 0, 0.2, 1);
@@ -44,34 +59,44 @@
   from { clip-path: circle(150% at 50% 50%); }
   to { clip-path: circle(0% at 50% 50%); }
 }
+@keyframes ticker {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+@keyframes drawer-in {
+  from { transform: translate3d(0, 24px, 0); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
 
 /* ───────────────────────── Base ───────────────────────── */
 :root {
   color-scheme: light;
-  --accent: var(--color-terracotta);
-  --accent-ink: var(--color-ivory);
-  --paper-grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.13  0 0 0 0 0.10  0 0 0 0 0.08  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  --accent: var(--color-vermilion);
+  --accent-ink: var(--color-bone);
+  --accent-text: var(--color-brick);
+  --accent-soft: #f2c2ae;
+  --paper-grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.11  0 0 0 0 0.09  0 0 0 0 0.09  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 }
 
 @layer base {
 html {
-  background: var(--color-ivory);
+  background: var(--color-cream);
   -webkit-text-size-adjust: 100%;
-  scroll-padding-top: 5rem;
+  scroll-padding-top: 7.5rem;
 }
 
 body {
-  background: var(--color-ivory);
+  background: var(--color-cream);
   color: var(--color-ink);
   font-family: var(--font-sans);
   font-size: 1.0625rem;
-  line-height: 1.6;
+  line-height: 1.65;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
 
-/* Paper grain sits above backgrounds and below content interaction. */
+/* A faint print grain over flat colour blocks. */
 body::before {
   content: "";
   position: fixed;
@@ -79,64 +104,80 @@ body::before {
   z-index: 60;
   pointer-events: none;
   background-image: var(--paper-grain);
-  opacity: 0.22;
+  opacity: 0.16;
   mix-blend-mode: multiply;
 }
 
 ::selection {
-  background: var(--color-mustard);
+  background: var(--color-yellow);
   color: var(--color-ink);
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-terracotta);
+  outline: 3px solid var(--color-cobalt);
   outline-offset: 3px;
-  border-radius: 2px;
+  border-radius: 1px;
 }
 
 a {
-  text-underline-offset: 0.18em;
-  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1.5px;
 }
 
+h1, h2, h3, h4 {
+  text-wrap: balance;
+}
 }
 
 @layer components {
-/* ───────────────────────── Type ───────────────────────── */
+/* ───────────────────────── Type ─────────────────────────
+   Barlow Condensed — posters, chapter titles, years
+   Space Grotesk    — navigation, labels, numbers
+   Manrope          — reading text */
 .font-display {
   font-family: var(--font-display);
-  font-variation-settings: "wdth" 75, "opsz" 96;
   font-weight: 800;
-  letter-spacing: -0.012em;
-  line-height: 0.86;
+  letter-spacing: -0.004em;
+  line-height: 0.88;
   text-transform: uppercase;
 }
 .font-display-wide {
   font-family: var(--font-display);
-  font-variation-settings: "wdth" 100, "opsz" 48;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
   line-height: 0.95;
 }
-.font-serif {
-  font-family: var(--font-serif);
-  font-weight: 400;
-  letter-spacing: -0.005em;
+.font-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.002em;
+  line-height: 1.02;
+}
+.font-ui {
+  font-variant-numeric: tabular-nums;
 }
 .label {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  line-height: 1.35;
+}
+.label-sm {
+  font-family: var(--font-ui);
+  font-size: 0.66rem;
   font-weight: 500;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
   line-height: 1.4;
 }
-.label-sm {
-  font-family: var(--font-mono);
-  font-size: 0.625rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  line-height: 1.4;
+.lead {
+  font-family: var(--font-sans);
+  font-size: clamp(1.12rem, 1.6vw, 1.3rem);
+  font-weight: 500;
+  line-height: 1.55;
+  text-wrap: pretty;
 }
 .prose-archive p + p {
   margin-top: 1.1em;
@@ -153,7 +194,60 @@ a {
   transform: rotate(180deg);
 }
 
-/* ───────────────────────── Ornament ───────────────────────── */
+/* ───────────────────────── Controls ───────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border: 2px solid var(--color-ink);
+  padding: 0.8rem 1.15rem;
+  font-family: var(--font-ui);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s, transform 0.2s var(--ease-archive), box-shadow 0.2s var(--ease-archive);
+}
+.btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 var(--color-ink);
+}
+.btn:active {
+  transform: none;
+  box-shadow: none;
+}
+.btn-ink { background: var(--color-ink); color: var(--color-bone); }
+.btn-red { background: var(--color-brick); color: var(--color-bone); border-color: var(--color-ink); }
+.btn-cream { background: var(--color-bone); color: var(--color-ink); }
+.btn-yellow { background: var(--color-yellow); color: var(--color-ink); }
+.btn-ghost { background: transparent; color: inherit; border-color: currentColor; }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1.5px solid var(--color-line-strong);
+  padding: 0.38rem 0.7rem;
+  font-family: var(--font-ui);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.1;
+  text-transform: uppercase;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+.chip:hover { border-color: var(--color-ink); }
+.chip[aria-pressed="true"],
+.chip[aria-current] {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  color: var(--color-bone);
+}
+
+/* ───────────────────────── Graphic devices ───────────────────────── */
 .rule {
   border-color: var(--color-line);
 }
@@ -172,46 +266,73 @@ a {
   animation: route-dash 2.4s linear infinite;
 }
 
-/* Folk-pattern strips (original geometric bands, in the spirit of the campaign deck). */
+/* Saw-tooth edge under a colour block. */
+.zigzag-b {
+  --zz: 14px;
+  -webkit-mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--zz)) 100%;
+  mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--zz)) 100%;
+}
+
+/* Scrolling marquee band. Content is duplicated; the copy is aria-hidden. */
+.ticker {
+  overflow: hidden;
+  white-space: nowrap;
+}
+.ticker-track {
+  display: inline-flex;
+  width: max-content;
+  animation: ticker var(--ticker-speed, 40s) linear infinite;
+}
+.ticker:hover .ticker-track {
+  animation-play-state: paused;
+}
+
+/* Folk-pattern strips (original geometric bands). */
 .strip-diamond {
   height: 14px;
-  background-color: var(--strip-bg, var(--color-burgundy));
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='14'><path d='M14 1 L20 7 L14 13 L8 7Z' fill='%23E4AA29'/><circle cx='14' cy='7' r='1.6' fill='%23581D30'/><circle cx='1' cy='7' r='1.2' fill='%23F6F0E3'/><circle cx='27' cy='7' r='1.2' fill='%23F6F0E3'/></svg>");
+  background-color: var(--strip-bg, var(--color-ink));
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='14'><path d='M14 1 L20 7 L14 13 L8 7Z' fill='%23F4BA2E'/><circle cx='14' cy='7' r='1.6' fill='%23E04A2C'/><circle cx='1' cy='7' r='1.2' fill='%23ECE2CA'/><circle cx='27' cy='7' r='1.2' fill='%23ECE2CA'/></svg>");
   background-size: 28px 14px;
 }
 .strip-dots {
   height: 12px;
-  background-color: var(--color-terracotta);
+  background-color: var(--color-vermilion);
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='18' height='12'><circle cx='9' cy='6' r='3.2' fill='none' stroke='%23F6F0E3' stroke-width='1.2'/><circle cx='9' cy='6' r='1' fill='%23F6F0E3'/></svg>");
   background-size: 18px 12px;
 }
 .strip-weave {
   height: 10px;
-  background: repeating-linear-gradient(90deg, #25346e 0 10px, #e4aa29 10px 14px, #b84b30 14px 24px, #f6f0e3 24px 26px, #146d68 26px 36px, #f6f0e3 36px 38px);
+  background: repeating-linear-gradient(90deg, #1f4e9f 0 14px, #f4ba2e 14px 20px, #e04a2c 20px 34px, #ece2ca 34px 37px, #27703f 37px 51px, #ece2ca 51px 54px);
 }
 .strip-ladder {
   height: 12px;
-  background-color: var(--color-indigo);
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='12'><path d='M0 6 L4 2 L8 6 L12 2 L16 6' fill='none' stroke='%23E4AA29' stroke-width='1.3'/><path d='M0 10 L4 6 L8 10 L12 6 L16 10' fill='none' stroke='%23F6F0E3' stroke-width='1'/></svg>");
+  background-color: var(--color-cobalt);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='12'><path d='M0 6 L4 2 L8 6 L12 2 L16 6' fill='none' stroke='%23F4BA2E' stroke-width='1.3'/><path d='M0 10 L4 6 L8 10 L12 6 L16 10' fill='none' stroke='%23ECE2CA' stroke-width='1'/></svg>");
   background-size: 16px 12px;
+}
+.strip-checker {
+  height: 12px;
+  background: conic-gradient(var(--color-ink) 25%, var(--strip-bg, var(--color-yellow)) 0 50%, var(--color-ink) 0 75%, var(--strip-bg, var(--color-yellow)) 0) 0 0 / 12px 12px;
 }
 
 .contour-bg {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'><g fill='none' stroke='%23211C19' stroke-opacity='.08' stroke-width='1'><path d='M-20 120 C 120 60, 220 180, 360 110 S 560 40, 640 120'/><path d='M-20 160 C 120 100, 220 220, 360 150 S 560 80, 640 160'/><path d='M-20 200 C 130 150, 230 260, 370 190 S 560 120, 640 200'/><path d='M-20 330 C 90 300, 200 390, 330 340 S 540 280, 640 350'/><path d='M-20 370 C 90 340, 200 430, 330 380 S 540 320, 640 390'/><path d='M-20 410 C 100 380, 210 470, 340 420 S 540 360, 640 430'/><path d='M-20 520 C 140 480, 240 560, 380 510 S 560 470, 640 520'/><path d='M-20 560 C 140 520, 240 600, 380 550 S 560 510, 640 560'/></g></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'><g fill='none' stroke='%231B1616' stroke-opacity='.08' stroke-width='1'><path d='M-20 120 C 120 60, 220 180, 360 110 S 560 40, 640 120'/><path d='M-20 160 C 120 100, 220 220, 360 150 S 560 80, 640 160'/><path d='M-20 200 C 130 150, 230 260, 370 190 S 560 120, 640 200'/><path d='M-20 330 C 90 300, 200 390, 330 340 S 540 280, 640 350'/><path d='M-20 370 C 90 340, 200 430, 330 380 S 540 320, 640 390'/><path d='M-20 410 C 100 380, 210 470, 340 420 S 540 360, 640 430'/><path d='M-20 520 C 140 480, 240 560, 380 510 S 560 470, 640 520'/><path d='M-20 560 C 140 520, 240 600, 380 550 S 560 510, 640 560'/></g></svg>");
   background-size: 600px 600px;
 }
+.dot-grid {
+  background-image: radial-gradient(circle, rgb(27 22 22 / 0.18) 1px, transparent 1.3px);
+  background-size: 16px 16px;
+}
 
-/* Museum accession label */
+/* Museum accession label — flat, outlined. */
 .accession {
-  border: 1px solid var(--color-line-strong);
-  background: color-mix(in oklab, var(--color-ivory) 88%, white);
-  box-shadow: 0 1px 0 rgb(33 28 25 / 0.06), 0 12px 30px -18px rgb(33 28 25 / 0.35);
+  border: 1.5px solid var(--color-ink);
+  background: var(--color-bone);
 }
 
 .paper-card {
-  background: color-mix(in oklab, var(--color-ivory) 70%, white);
-  border: 1px solid var(--color-line);
-  box-shadow: 0 1px 0 rgb(33 28 25 / 0.05), 0 18px 40px -28px rgb(33 28 25 / 0.45);
+  background: var(--color-bone);
+  border: 1.5px solid var(--color-line-strong);
 }
 
 /* Utility: hide scrollbar on horizontal rails while keeping them scrollable */
@@ -230,6 +351,52 @@ a {
   animation: curtain-lift 1.1s var(--ease-archive) both;
 }
 
+/* Disclosure blocks (<details>) used for progressive reading. */
+.more > summary {
+  list-style: none;
+  cursor: pointer;
+}
+.more > summary::-webkit-details-marker {
+  display: none;
+}
+.more[open] > summary .more-closed,
+.more:not([open]) > summary .more-open {
+  display: none;
+}
+.more[open] > summary .more-icon {
+  transform: rotate(45deg);
+}
+}
+
+
+/* ───────────────────────── Shape utilities (usable with responsive variants) ───────────────────────── */
+/* Flat, offset "print" shadow instead of soft drop shadows. */
+@utility print-shadow {
+  box-shadow: 8px 8px 0 var(--shadow-color, var(--color-ink));
+}
+@utility print-shadow-sm {
+  box-shadow: 4px 4px 0 var(--shadow-color, var(--color-ink));
+}
+/* Triangular tabs that hang from a band (as in poster mastheads). */
+@utility tab-down {
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+@utility tab-up {
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+/* Ticket card with notched sides. */
+@utility notched {
+  -webkit-mask: radial-gradient(circle 9px at 0 50%, #0000 98%, #000) left / 51% 100% no-repeat,
+    radial-gradient(circle 9px at 100% 50%, #0000 98%, #000) right / 51% 100% no-repeat;
+  mask: radial-gradient(circle 9px at 0 50%, #0000 98%, #000) left / 51% 100% no-repeat,
+    radial-gradient(circle 9px at 100% 50%, #0000 98%, #000) right / 51% 100% no-repeat;
+}
+/* Arrow-shaped steps for process flows. */
+@utility chevron {
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%, 18px 50%);
+}
+@utility chevron-first {
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -241,6 +408,9 @@ a {
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
+  .ticker-track {
+    animation: none !important;
+  }
 }
 
 @media print {
@@ -250,5 +420,9 @@ a {
   }
   body {
     background: white;
+  }
+  .more::details-content {
+    content-visibility: visible;
+    display: block;
   }
 }

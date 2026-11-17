@@ -52,10 +52,10 @@ export default async function CardPage({ params }: PageProps<"/passport/[slug]/c
             <ShareWithCredit slug={t.slug} passportNo={t.passportNo} name={t.name} captionTemplate={shareCaption(t, "{url}", communities)} />
           </div>
           <div className="mt-6 flex flex-wrap gap-2">
-            <a href={`/api/card/${t.slug}?layout=landscape&download=1`} className="label-sm rounded-full border rule px-3 py-2 hover:border-ink">
+            <a href={`/api/card/${t.slug}?layout=landscape&download=1`} className="btn btn-cream">
               Download landscape (1200×630)
             </a>
-            <Link href={`/passport/${t.slug}/label`} className="label-sm rounded-full border rule px-3 py-2 hover:border-ink">
+            <Link href={`/passport/${t.slug}/label`} className="btn btn-cream">
               Print a QR label
             </Link>
           </div>

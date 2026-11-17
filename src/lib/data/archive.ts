@@ -77,7 +77,7 @@ export function lookups(a: Archive) {
 }
 export type Lookups = ReturnType<typeof lookups>;
 
-/** All source ids a tradition cites, in first-use order — the Evidence Room's numbering. */
+/** All source ids a tradition cites, in first-use order — the numbering used in Sources & References. */
 export function citedSources(t: Tradition): string[] {
   const order: string[] = [];
   const add = (ids?: string[]) => ids?.forEach((id) => !order.includes(id) && order.push(id));

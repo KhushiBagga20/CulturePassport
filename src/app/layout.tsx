@@ -1,33 +1,28 @@
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, Instrument_Sans, Instrument_Serif, IBM_Plex_Mono } from "next/font/google";
+import { Barlow_Condensed, Manrope, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { SITE_NAME, TAGLINE, staticOrigin } from "@/lib/site";
 
-const bricolage = Bricolage_Grotesque({
-  variable: "--font-bricolage",
+/* Display: condensed, heavy poster type for headlines, chapter titles and years. */
+const barlowCondensed = Barlow_Condensed({
+  variable: "--font-barlow-condensed",
   subsets: ["latin", "latin-ext"],
-  axes: ["wdth", "opsz"],
-  display: "swap",
-});
-const instrumentSans = Instrument_Sans({
-  variable: "--font-instrument-sans",
-  subsets: ["latin", "latin-ext"],
-  axes: ["wdth"],
-  display: "swap",
-});
-const instrumentSerif = Instrument_Serif({
-  variable: "--font-instrument-serif",
-  subsets: ["latin", "latin-ext"],
-  weight: "400",
+  weight: ["500", "600", "700", "800"],
   style: ["normal", "italic"],
   display: "swap",
 });
-const plexMono = IBM_Plex_Mono({
-  variable: "--font-plex-mono",
-  subsets: ["latin"],
-  weight: ["400", "500"],
+/* UI: navigation, labels, numbers. */
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
+  subsets: ["latin", "latin-ext"],
+  display: "swap",
+});
+/* Reading text. */
+const manrope = Manrope({
+  variable: "--font-manrope",
+  subsets: ["latin", "latin-ext"],
   display: "swap",
 });
 
@@ -42,7 +37,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#F6F0E3",
+  themeColor: "#ECE2CA",
   width: "device-width",
   initialScale: 1,
 };
@@ -51,12 +46,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${bricolage.variable} ${instrumentSans.variable} ${instrumentSerif.variable} ${plexMono.variable}`}
+      className={`${barlowCondensed.variable} ${spaceGrotesk.variable} ${manrope.variable}`}
     >
       <body className="min-h-dvh flex flex-col">
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-ink focus:px-4 focus:py-2 focus:text-ivory"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-ink focus:px-4 focus:py-2 focus:text-bone"
         >
           Skip to content
         </a>

@@ -14,7 +14,7 @@ export default async function MediaPage() {
       <h1 className="font-display mt-2 text-5xl">Images · {archive.media.length}</h1>
 
       <section className="paper-card mt-8 p-5">
-        <h2 className="font-serif text-2xl">Upload a permitted image</h2>
+        <h2 className="font-title text-2xl">Upload a permitted image</h2>
         <p className="mt-1 text-sm text-ink-soft">
           Only images you have the right to publish. Every image needs a credit and licence; generated images may never be marked documentary.
         </p>

@@ -6,7 +6,7 @@ export function SealMark({ className = "" }: { className?: string }) {
       <circle cx="24" cy="24" r="17.5" fill="none" stroke="currentColor" strokeWidth="0.8" strokeDasharray="1.5 2.2" />
       <ellipse cx="24" cy="24" rx="7" ry="13" fill="none" stroke="currentColor" strokeWidth="1.1" />
       <path d="M11 24h26M24 11v26" stroke="currentColor" strokeWidth="1.1" />
-      <path d="M24 17l3 7-3 7-3-7z" fill="#E4AA29" stroke="currentColor" strokeWidth="0.8" />
+      <path d="M24 17l3 7-3 7-3-7z" fill="#F4BA2E" stroke="currentColor" strokeWidth="0.8" />
     </svg>
   );
 }
@@ -37,7 +37,7 @@ export function RotatingSeal({
         <defs>
           <path id={pathId} d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0" />
         </defs>
-        <text fill={color} style={{ fontFamily: "var(--font-mono)", fontSize: 12.5, letterSpacing: "0.32em", fontWeight: 500 }}>
+        <text fill={color} style={{ fontFamily: "var(--font-ui)", fontSize: 12.5, letterSpacing: "0.32em", fontWeight: 500 }}>
           <textPath href={`#${pathId}`}>{text}</textPath>
         </text>
       </g>
@@ -49,7 +49,7 @@ export function RotatingSeal({
         y="96"
         textAnchor="middle"
         fill={color}
-        style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.22em" }}
+        style={{ fontFamily: "var(--font-ui)", fontSize: 10, letterSpacing: "0.22em" }}
       >
         NO.
       </text>
@@ -58,10 +58,50 @@ export function RotatingSeal({
         y="126"
         textAnchor="middle"
         fill={color}
-        style={{ fontFamily: "var(--font-display)", fontSize: 38, fontWeight: 800, fontVariationSettings: '"wdth" 75' }}
+        style={{ fontFamily: "var(--font-display)", fontSize: 40, fontWeight: 800 }}
       >
         {center}
       </text>
+    </svg>
+  );
+}
+
+/**
+ * Diamond passport badge: a double-ruled lozenge with flag tips, holding the passport number.
+ * An original graphic frame for the archive's identity.
+ */
+export function DiamondBadge({
+  top,
+  center,
+  bottom,
+  className = "",
+  color = "currentColor",
+  fill = "none",
+}: {
+  top: string;
+  center: string;
+  bottom?: string;
+  className?: string;
+  color?: string;
+  fill?: string;
+}) {
+  return (
+    <svg viewBox="0 0 320 200" className={className} role="img" aria-label={`${top} ${center}${bottom ? ` · ${bottom}` : ""}`}>
+      <path d="M160 6 L300 100 L160 194 L20 100 Z" fill={fill} stroke={color} strokeWidth="4" strokeLinejoin="miter" />
+      <path d="M160 20 L279 100 L160 180 L41 100 Z" fill="none" stroke={color} strokeWidth="1.6" />
+      <path d="M2 100 L20 88 L20 112 Z M318 100 L300 88 L300 112 Z" fill={color} />
+      <path d="M96 100 H64 M256 100 H224" stroke={color} strokeWidth="1.6" />
+      <text x="160" y="72" textAnchor="middle" fill={color} style={{ fontFamily: "var(--font-ui)", fontSize: 11, letterSpacing: "0.26em", fontWeight: 700 }}>
+        {top}
+      </text>
+      <text x="160" y="121" textAnchor="middle" fill={color} style={{ fontFamily: "var(--font-display)", fontSize: 56, fontWeight: 800 }}>
+        {center}
+      </text>
+      {bottom && (
+        <text x="160" y="146" textAnchor="middle" fill={color} style={{ fontFamily: "var(--font-ui)", fontSize: 10, letterSpacing: "0.22em", fontWeight: 600 }}>
+          {bottom}
+        </text>
+      )}
     </svg>
   );
 }

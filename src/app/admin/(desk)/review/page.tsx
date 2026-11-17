@@ -21,7 +21,7 @@ export default async function ReviewPage() {
       <h1 className="font-display mt-2 text-5xl">Pending content</h1>
 
       <section className="mt-8">
-        <h2 className="font-serif text-3xl">Passports awaiting review · {pending.length}</h2>
+        <h2 className="font-title text-3xl">Passports awaiting review · {pending.length}</h2>
         {pending.length ? (
           <ul className="mt-3 space-y-2">
             {pending.map((t) => (
@@ -42,7 +42,7 @@ export default async function ReviewPage() {
       </section>
 
       <section className="mt-12">
-        <h2 className="font-serif text-3xl">Correction requests · {open.length} open</h2>
+        <h2 className="font-title text-3xl">Correction requests · {open.length} open</h2>
         {open.length === 0 && <p className="mt-3 text-sm text-ink-soft">Nothing waiting. Public notes from passport pages will appear here.</p>}
         <ul className="mt-4 space-y-4">
           {open.map((c) => {

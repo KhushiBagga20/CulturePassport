@@ -133,13 +133,13 @@ export function SearchClient({ docs, countries }: { docs: SearchDoc[]; countries
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="A tradition, place, community, year, name…"
-          className="font-display w-full border-b-[3px] border-ink bg-transparent py-3 pr-14 text-[clamp(2rem,6vw,4.6rem)] normal-case tracking-tight outline-none placeholder:text-ink/20 focus:border-terracotta"
+          className="font-display w-full border-b-[3px] border-ink bg-transparent py-3 pr-14 text-[clamp(2rem,6vw,4.6rem)] normal-case tracking-tight outline-none placeholder:text-ink/20 focus:border-brick"
           style={{ textTransform: "none" }}
           autoComplete="off"
           spellCheck={false}
         />
         {q && (
-          <button type="button" onClick={() => setQ("")} className="label-sm absolute right-0 top-1/2 -translate-y-1/2 rounded-full border rule px-3 py-1.5">
+          <button type="button" onClick={() => setQ("")} className="chip absolute right-0 top-1/2 -translate-y-1/2">
             Clear
           </button>
         )}
@@ -149,7 +149,7 @@ export function SearchClient({ docs, countries }: { docs: SearchDoc[]; countries
         <p className="mt-4 flex flex-wrap items-center gap-2 text-sm text-ink-soft">
           <span className="label-sm text-ink-mute">Try</span>
           {suggestions.map((s) => (
-            <button key={s} type="button" onClick={() => setQ(s)} className="rounded-full border rule px-3 py-1 hover:border-ink">
+            <button key={s} type="button" onClick={() => setQ(s)} className="chip">
               {s}
             </button>
           ))}
@@ -163,7 +163,7 @@ export function SearchClient({ docs, countries }: { docs: SearchDoc[]; countries
             type="button"
             aria-pressed={type === t.key}
             onClick={() => setType(t.key)}
-            className={`label-sm rounded-full border px-3 py-1.5 ${type === t.key ? "border-ink bg-ink text-ivory" : "border-ink/20 hover:border-ink"}`}
+            className="chip"
           >
             {t.label}
             {tokens.length > 0 && t.key !== "all" && <span className="ml-1 opacity-60">{counts.get(t.key) ?? 0}</span>}
@@ -171,7 +171,7 @@ export function SearchClient({ docs, countries }: { docs: SearchDoc[]; countries
         ))}
         <label className="label-sm ml-auto flex items-center gap-2 text-ink-mute">
           Country
-          <select value={country} onChange={(e) => setCountry(e.target.value)} className="label-sm rounded border rule bg-ivory px-2 py-1.5 text-ink">
+          <select value={country} onChange={(e) => setCountry(e.target.value)} className="label-sm border-2 border-ink bg-bone px-2 py-1.5 text-ink">
             <option value="all">All</option>
             {countries.map((c) => (
               <option key={c.iso2} value={c.iso2}>
@@ -191,7 +191,7 @@ export function SearchClient({ docs, countries }: { docs: SearchDoc[]; countries
             <Link href={d.href} className="group grid gap-1 py-4 sm:grid-cols-[9rem_1fr] sm:gap-6">
               <span className="label-sm pt-1 text-ink-mute">{TYPES.find((t) => t.key === d.type)?.label.replace(/s$/, "")}</span>
               <span className="min-w-0">
-                <span className={`block group-hover:text-terracotta ${d.type === "passport" || d.type === "country" || d.type === "trail" ? "font-display text-3xl" : "font-serif text-xl leading-snug"}`}>
+                <span className={`block group-hover:text-brick ${d.type === "passport" || d.type === "country" || d.type === "trail" ? "font-display text-3xl" : "font-title text-xl leading-snug"}`}>
                   <Highlight text={d.title} tokens={tokens} />
                 </span>
                 <span className="mt-0.5 flex flex-wrap items-center gap-2 text-sm text-ink-mute">
@@ -210,7 +210,7 @@ export function SearchClient({ docs, countries }: { docs: SearchDoc[]; countries
       </ol>
       {tokens.length > 0 && results.length === 0 && (
         <div className="paper-card mt-6 p-6">
-          <p className="font-serif text-2xl">Nothing in the archive matches “{q}” yet.</p>
+          <p className="font-title text-2xl">Nothing in the archive matches “{q}” yet.</p>
           <p className="mt-2 text-sm text-ink-soft">
             The archive is small and growing carefully. Try a broader word, a region, or a year — or browse the{" "}
             <Link href="/passports" className="underline">

@@ -77,7 +77,7 @@ export default async function LabelPage({ params }: PageProps<"/passport/[slug]/
             <p className="label-sm text-center" style={{ color: accent }}>
               Scan for its story
             </p>
-            <p className="font-mono break-all text-center text-[7px] leading-tight text-ink-mute">{url.replace(/^https?:\/\//, "")}</p>
+            <p className="font-ui break-all text-center text-[7px] leading-tight text-ink-mute">{url.replace(/^https?:\/\//, "")}</p>
           </div>
         </article>
 

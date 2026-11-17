@@ -12,16 +12,16 @@ It is an education, documentation and attribution project. **It is not a legal o
 
 | Area | Route | Notes |
 | --- | --- | --- |
-| The living globe | `/` | Three.js / React Three Fiber globe built from Natural Earth country polygons. Hover picks countries by real geography. Clicking flies the camera in and opens the country chapter. Includes India → UAE → World routes, a country-index dialog, a passport-number picker, and a 2D atlas fallback (automatic without WebGL, or chosen by the visitor). |
-| Country chapters | `/country/[slug]` | India (active collection): contents, interactive map + filterable editorial gallery, attribution histories, connections, makers on record, traditions awaiting documentation. UAE (introductory). Ghana / Japan / Mexico ("stories being documented"). Pakistan / Nepal (shared traditions). Any other country gets an honest "not yet in the archive" page. |
-| Culture Passports | `/passport/[slug]` | Six chapters: Origins · Makers · Through Time (draggable timeline with certainty styling) · When Culture Travels (case files) · Evidence Room · Keep the Story Alive. Statically generated and revalidated, so QR scans load fast. |
-| Kolhapuri × Prada case file | `/passport/kolhapuri-chappal#travels` | Sourced chronology from June 2025 to April 2026, an interactive comparison, "What travelled, and what was left behind?", six questions with evidence labels, a legal note, and open questions. |
+| The living globe (Explore) | `/` | Three.js / React Three Fiber globe built from Natural Earth country polygons. Hover picks countries by real geography. Clicking flies the camera in and opens the country chapter. Includes India → UAE → World routes, a three-step "how to explore" guide, a country-index dialog, a passport-number picker, a search shortcut, and a 2D atlas fallback (automatic without WebGL, or chosen by the visitor). |
+| Country chapters | `/country/[slug]` | Every country page has a "Back to the globe" action. India (active collection): contents, interactive map + filterable editorial gallery, attribution histories, connections, makers on record, traditions awaiting documentation. UAE (introductory). Ghana / Japan / Mexico ("stories being documented"). Pakistan / Nepal (shared traditions). Any other country gets an honest "not yet in the archive" page. |
+| Culture Passports | `/passport/[slug]` | Six chapters: **Where It Began** (interactive places map) · **The People Behind It** (material → process → object flow) · **A Journey Through Time** (overview ruler + draggable timeline, details on demand) · **Across Borders** (connection diagram, case files) · **Sources & References** (evidence and source-mix charts, source library) · **Meet the Makers**. A sticky chapter bar (a compact selector with previous/next on phones), a back-to-country action, and citation markers that open a source drawer instead of jumping away. Longer text folds into "Keep reading". Chapter anchors (`#origins`, `#makers`, `#through-time`, `#travels`, `#evidence`, `#keep-alive`) are unchanged, so existing links keep working. Statically generated and revalidated, so QR scans load fast. |
+| Kolhapuri × Prada case file | `/passport/kolhapuri-chappal#travels` | Sourced chronology from June 2025 to April 2026 (colour-coded by phase, details on demand), a side-by-side comparison (a draggable slider appears only when both sides have licensed images), "What travelled, and what was left behind?", six questions with evidence labels, a legal note, and open questions. |
 | Identity card & Share with Credit | `/passport/[slug]/card`, `/api/card/[slug]` | PNG card (portrait 1080×1350, or `?layout=landscape`) with a QR code; a caption that carries the source link; native share where supported. |
 | QR system | `/api/qr/[slug]?format=svg\|png`, `/passport/[slug]/label`, `/p/NNN` | Downloadable codes, print-ready gallery label + product tag, permanent short links by passport number, slug history so renamed passports keep resolving. |
 | Roots & Routes | `/routes` | Evidence-labelled connection map. Visual similarity is drawn as its own faint kind and never presented as influence. |
 | Search | `/search` | Passports, attribution cases, timeline events, claims, countries, places, sources and trails, with type and country filters. `⌘K` or `/` from anywhere. |
 | Trails | `/trails`, `/trails/[slug]` | *Crafted by Hand*, *Threads Across Borders*, *Tradition Meets the Runway*, *From Walls to Paper*. Passports show a trail bar when visited from a trail. |
-| Method | `/method` | Principles, evidence labels, editorial process, corrections, languages, maps, image credits. |
+| About | `/method` | How we work: principles, evidence labels, editorial process, corrections, languages, maps, image credits. |
 | Editorial desk | `/admin` | Sign-in, dashboard with integrity check, passport editor (identity, story markup, claims with sources, timeline, places and people, advanced JSON, publication), new drafts, sources, permitted-image uploads, review queue for public corrections, QR labels, audit history, draft preview. |
 
 ### Content in the seed archive
@@ -36,6 +36,28 @@ It is an education, documentation and attribution project. **It is not a legal o
 | 006 | Al Sadu (UAE) | Starter | Built only from UNESCO decisions: inscribed 2011, moved to the Representative List in New Delhi in December 2025. |
 
 57 sources, 49 claims and 39 timeline events. Every source was located during research on 17 Nov 2026, and every claim cites at least one source. `npm run validate` checks that every reference resolves.
+
+### Navigation
+
+The header has four destinations — **Explore** (the globe), **Countries** (`/explore`), **Stories** (passports, trails and Roots & Routes, with section tabs) and **About** (`/method`) — plus Search (`⌘K` or `/`). On phones it becomes a full-screen menu of colour blocks. A passport never requires the globe: QR codes and short links open it directly.
+
+### Design language
+
+Flat colour blocks, condensed poster type and graphic devices (ticker bands, triangular tabs, notched ticket cards, chevron process steps, checker strips, offset print shadows), defined once in `src/app/globals.css`:
+
+| Token | Hex | Use |
+| --- | --- | --- |
+| `cream` | `#ECE2CA` | Page surface |
+| `bone` | `#F6F0E3` | Cards; the globe stage keeps this original paper colour |
+| `orange` | `#EEA53A` | Statement sections |
+| `cobalt` | `#1F4E9F` | Bold sections, maps |
+| `vermilion` | `#E04A2C` | Large type and shapes only |
+| `brick` | `#B0351E` | Small red text (AA on cream) |
+| `green` | `#27703F` | Contrasting sections |
+| `yellow` | `#F4BA2E` | Highlights |
+| `ink` | `#1B1616` | Text and dark sections |
+
+Each tradition's accent (`ACCENT` in `src/lib/labels.ts`) has a block colour, an ink colour for text on it, and a darker text colour that passes AA on cream. The globe's own colours (`src/components/globe/geo.ts`, `GlobeCanvas.tsx`) are unchanged.
 
 ---
 
@@ -107,7 +129,7 @@ The app never reads a Supabase service-role key, so one can't leak to the browse
 - **Uploads** go through `/admin/media` (JPEG, PNG, WebP or AVIF; max 8 MB; licence, credit and alt text required). They're stored in `.data/uploads/` in demo mode or the Supabase `media` bucket in production.
 - **For production**, consider mirroring the Commons images into Supabase Storage, keeping the credit fields intact.
 - **Boundaries** come from Natural Earth via `world-atlas` (`public/geo/`), shown for orientation only, with no position on disputed territories. Places are plotted at approximate centres.
-- **Fonts**: Bricolage Grotesque, Instrument Serif, Instrument Sans and IBM Plex Mono via `next/font` (fetched at build time), plus `@fontsource` files for generated images.
+- **Fonts**: Barlow Condensed (display), Space Grotesk (navigation, labels, numbers) and Manrope (reading text) via `next/font` (fetched at build time), plus the same families from `@fontsource` for generated card and Open Graph images. All are SIL Open Font Licence.
 
 ---
 
@@ -149,7 +171,7 @@ src/
   components/
     globe/                  R3F globe, textures, picking, flat atlas
     country/                region maps, collection explorer
-    passport/               chapters, timeline, case file, evidence room, sharing
+    passport/               chapters, chapter bar, timeline, process flow, connection web, case file, sources & source drawer, sharing
     routes/ search/ admin/ site/ motifs/
   lib/
     types.ts                content model

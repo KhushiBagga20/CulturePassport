@@ -50,7 +50,7 @@ export function CompareSlider({ traditional, adaptation, motif }: { traditional:
         {/* Handle */}
         <div className="pointer-events-none absolute inset-y-0" style={{ left: `${pos}%` }} aria-hidden>
           <span className="absolute inset-y-0 -left-px w-0.5 bg-mustard" />
-          <span className="absolute left-1/2 top-1/2 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-ink bg-mustard text-ink shadow-lg">
+          <span className="absolute left-1/2 top-1/2 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-ink bg-yellow text-ink">
             ⟷
           </span>
         </div>

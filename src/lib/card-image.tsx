@@ -11,21 +11,22 @@ async function font(pkg: string, file: string) {
   return readFile(path.join(process.cwd(), "node_modules", "@fontsource", pkg, "files", file));
 }
 
-let fontsPromise: Promise<{ name: string; data: Buffer; weight: 400 | 500 | 700 | 800; style: "normal" | "italic" }[]> | null = null;
+let fontsPromise: Promise<{ name: string; data: Buffer; weight: 500 | 600 | 700 | 800; style: "normal" | "italic" }[]> | null = null;
 function fonts() {
   fontsPromise ??= Promise.all([
-    font("bricolage-grotesque", "bricolage-grotesque-latin-800-normal.woff").then((data) => ({ name: "Display", data, weight: 800 as const, style: "normal" as const })),
-    font("instrument-serif", "instrument-serif-latin-400-italic.woff").then((data) => ({ name: "Serif", data, weight: 400 as const, style: "italic" as const })),
-    font("instrument-serif", "instrument-serif-latin-400-normal.woff").then((data) => ({ name: "Serif", data, weight: 400 as const, style: "normal" as const })),
-    font("ibm-plex-mono", "ibm-plex-mono-latin-400-normal.woff").then((data) => ({ name: "Mono", data, weight: 400 as const, style: "normal" as const })),
-    font("ibm-plex-mono", "ibm-plex-mono-latin-500-normal.woff").then((data) => ({ name: "Mono", data, weight: 500 as const, style: "normal" as const })),
+    font("barlow-condensed", "barlow-condensed-latin-800-normal.woff").then((data) => ({ name: "Display", data, weight: 800 as const, style: "normal" as const })),
+    font("barlow-condensed", "barlow-condensed-latin-600-italic.woff").then((data) => ({ name: "Title", data, weight: 600 as const, style: "italic" as const })),
+    font("manrope", "manrope-latin-500-normal.woff").then((data) => ({ name: "Body", data, weight: 500 as const, style: "normal" as const })),
+    font("space-grotesk", "space-grotesk-latin-500-normal.woff").then((data) => ({ name: "UI", data, weight: 500 as const, style: "normal" as const })),
+    font("space-grotesk", "space-grotesk-latin-700-normal.woff").then((data) => ({ name: "UI", data, weight: 700 as const, style: "normal" as const })),
   ]);
   return fontsPromise;
 }
 
+/** Checkerboard band, as on the site's colour blocks. */
 const STRIP = `data:image/svg+xml;base64,${Buffer.from(
-  `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="18"><rect width="1200" height="18" fill="#581D30"/>${Array.from({ length: 43 })
-    .map((_, i) => `<path d="M${i * 28 + 14} 2 L${i * 28 + 21} 9 L${i * 28 + 14} 16 L${i * 28 + 7} 9Z" fill="#E4AA29"/><circle cx="${i * 28 + 14}" cy="9" r="2" fill="#581D30"/>`)
+  `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="18"><rect width="1200" height="18" fill="#F4BA2E"/>${Array.from({ length: 67 })
+    .map((_, i) => `<rect x="${i * 18}" y="${i % 2 ? 9 : 0}" width="9" height="9" fill="#1B1616"/><rect x="${i * 18 + 9}" y="${i % 2 ? 0 : 9}" width="9" height="9" fill="#1B1616"/>`)
     .join("")}</svg>`,
 ).toString("base64")}`;
 
@@ -46,70 +47,78 @@ export async function renderCard(
   const shortUrl = url.replace(/^https?:\/\//, "");
   const story = t.summary.length > 210 ? `${t.summary.slice(0, 207).replace(/\s\S*$/, "")}…` : t.summary;
 
+  const label = { color: "#6B5F55", width: portrait ? 160 : 112, textTransform: "uppercase" as const, letterSpacing: 2, fontWeight: 700 };
   const element = (
-    <div style={{ width: W, height: H, display: "flex", flexDirection: "column", background: "#F6F0E3", color: "#211C19", fontFamily: "Mono" }}>
-      <img src={STRIP} width={W} height={18} alt="" style={{ objectFit: "cover" }} />
+    <div style={{ width: W, height: H, display: "flex", flexDirection: "column", background: "#ECE2CA", color: "#1B1616", fontFamily: "UI" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          background: "#1B1616",
+          color: "#F6F0E3",
+          padding: portrait ? "18px 44px" : "12px 30px",
+          fontSize: portrait ? 22 : 16,
+          letterSpacing: 4,
+          textTransform: "uppercase",
+          fontWeight: 700,
+        }}
+      >
+        <span style={{ color: "#F4BA2E" }}>Culture Passport</span>
+        <span>No. {t.passportNo}</span>
+      </div>
       <div
         style={{
           flex: 1,
           display: "flex",
           flexDirection: portrait ? "column" : "row",
-          margin: portrait ? 44 : 30,
-          border: `3px solid ${accent.hex}`,
-          padding: portrait ? 48 : 34,
-          gap: portrait ? 36 : 36,
+          margin: portrait ? 40 : 26,
+          border: "3px solid #1B1616",
+          background: "#F6F0E3",
+          padding: portrait ? 44 : 30,
+          gap: 36,
           position: "relative",
         }}
       >
         <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: portrait ? 22 : 17, letterSpacing: 4, textTransform: "uppercase" }}>
-            <span style={{ color: accent.hex, fontWeight: 500 }}>Culture Passport</span>
-            <span style={{ color: "#7A6D62" }}>No. {t.passportNo}</span>
-          </div>
           <div
             style={{
               display: "flex",
               fontFamily: "Display",
-              fontSize: portrait ? 104 : 68,
-              lineHeight: 0.92,
+              fontSize: portrait ? 112 : 74,
+              lineHeight: 0.9,
               textTransform: "uppercase",
-              marginTop: portrait ? 34 : 18,
-              letterSpacing: -2,
             }}
           >
             {t.name}
           </div>
-          <div style={{ display: "flex", fontFamily: "Serif", fontStyle: "italic", fontSize: portrait ? 44 : 30, color: accent.hex, marginTop: 14 }}>{t.tagline}</div>
-          <div style={{ display: "flex", flexDirection: "column", marginTop: portrait ? 34 : 18, fontSize: portrait ? 21 : 15, gap: 8 }}>
+          <div style={{ display: "flex", fontFamily: "Title", fontStyle: "italic", fontSize: portrait ? 46 : 32, color: accent.text, marginTop: 12 }}>{t.tagline}</div>
+          <div style={{ display: "flex", flexDirection: "column", marginTop: portrait ? 30 : 16, fontSize: portrait ? 21 : 15, gap: 8 }}>
             <div style={{ display: "flex", gap: 14 }}>
-              <span style={{ color: "#7A6D62", width: portrait ? 150 : 110, textTransform: "uppercase", letterSpacing: 2 }}>Region</span>
+              <span style={label}>Region</span>
               <span style={{ flex: 1 }}>{t.regionLabel}</span>
             </div>
             <div style={{ display: "flex", gap: 14 }}>
-              <span style={{ color: "#7A6D62", width: portrait ? 150 : 110, textTransform: "uppercase", letterSpacing: 2 }}>Community</span>
+              <span style={label}>Community</span>
               <span style={{ flex: 1 }}>{communities || "—"}</span>
             </div>
             <div style={{ display: "flex", gap: 14 }}>
-              <span style={{ color: "#7A6D62", width: portrait ? 150 : 110, textTransform: "uppercase", letterSpacing: 2 }}>Category</span>
+              <span style={label}>Category</span>
               <span style={{ flex: 1 }}>{CATEGORY[t.category]}</span>
             </div>
           </div>
-          {portrait && (
-            <div style={{ display: "flex", fontFamily: "Serif", fontSize: 34, lineHeight: 1.22, marginTop: 34 }}>{story}</div>
-          )}
+          {portrait && <div style={{ display: "flex", fontFamily: "Body", fontSize: 30, lineHeight: 1.35, marginTop: 30 }}>{story}</div>}
           <div style={{ display: "flex", flex: 1 }} />
-          <div style={{ display: "flex", fontSize: portrait ? 17 : 13, color: "#7A6D62", letterSpacing: 1 }}>
-            An archive reference — not a certificate of ownership.
-          </div>
+          <div style={{ display: "flex", fontSize: portrait ? 17 : 13, color: "#6B5F55", letterSpacing: 1 }}>An archive reference — not a certificate of ownership.</div>
         </div>
         <div style={{ display: "flex", flexDirection: portrait ? "row" : "column", alignItems: portrait ? "flex-end" : "center", justifyContent: "space-between", gap: 24 }}>
-          <div style={{ display: "flex", border: "2px solid #211C19" }}>
-            <Motif motif={t.motif} size={portrait ? 300 : 210} />
+          <div style={{ display: "flex", border: "3px solid #1B1616", background: accent.hex, padding: 10 }}>
+            <Motif motif={t.motif} size={portrait ? 290 : 196} />
           </div>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
             <img src={qr} width={portrait ? 230 : 150} height={portrait ? 230 : 150} alt="" />
             <span style={{ fontSize: portrait ? 16 : 12, letterSpacing: 1 }}>{shortUrl}</span>
-            <span style={{ fontSize: portrait ? 15 : 11, color: accent.hex, textTransform: "uppercase", letterSpacing: 3 }}>Scan for the story</span>
+            <span style={{ fontSize: portrait ? 15 : 11, color: accent.text, textTransform: "uppercase", letterSpacing: 3, fontWeight: 700 }}>Scan for the story</span>
           </div>
         </div>
       </div>

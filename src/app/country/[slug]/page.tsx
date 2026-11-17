@@ -89,65 +89,71 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
       <ArrivalCurtain slug={country.slug} color={status.color} title={country.iso2 === "AE" ? "UAE" : country.name} />
 
       {/* Hero */}
-      <section className="relative overflow-hidden border-b rule">
-        <div aria-hidden className="contour-bg absolute inset-0 opacity-60" />
-        <div className="relative mx-auto grid max-w-[1500px] gap-10 px-4 pb-16 pt-10 sm:px-6 lg:grid-cols-12 lg:px-10 lg:pb-24 lg:pt-16">
+      <section className="relative overflow-hidden border-b-2 border-ink bg-cream">
+        <div className="relative mx-auto flex max-w-[1500px] flex-wrap items-center justify-between gap-3 px-4 pt-5 sm:px-6 lg:px-10">
+          <nav aria-label="Breadcrumb" className="label-sm flex gap-2 text-ink-mute">
+            <Link href="/" className="hover:text-brick">
+              Explore
+            </Link>
+            <span aria-hidden>/</span>
+            <span aria-current="page" className="text-ink">
+              {country.name}
+            </span>
+          </nav>
+          <Link href="/" className="btn btn-cream">
+            ← Back to the globe
+          </Link>
+        </div>
+        <div className="relative mx-auto grid max-w-[1500px] gap-10 px-4 pb-16 pt-8 sm:px-6 lg:grid-cols-12 lg:px-10 lg:pb-20">
           <div className="lg:col-span-7">
-            <nav aria-label="Breadcrumb" className="label-sm flex gap-2 text-ink-mute">
-              <Link href="/" className="hover:text-terracotta">
-                The globe
-              </Link>
-              <span>/</span>
-              <span aria-current="page">{country.name}</span>
-            </nav>
-            <p className="label mt-8 flex items-center gap-3" style={{ color: status.color }}>
-              <span className="h-px w-8" style={{ background: status.color }} /> {country.plate} · {status.label}
+            <p className="label inline-flex items-center gap-2 bg-ink px-2.5 py-1.5 text-bone">
+              <span aria-hidden style={{ color: status.color }}>
+                ●
+              </span>
+              {country.plate} · {status.label}
             </p>
-            <h1 className="font-display reveal-rise mt-4 text-[clamp(4.5rem,17vw,15rem)]" style={{ color: country.iso2 === "IN" ? "#581D30" : "#146D68" }}>
+            <h1 className={`font-display reveal-rise mt-4 text-[clamp(4.5rem,17vw,15rem)] ${country.iso2 === "IN" ? "text-brick" : "text-teal"}`}>
               {country.iso2 === "AE" ? "UAE" : country.name}
             </h1>
-            <p className="font-serif mt-4 max-w-2xl text-[clamp(1.7rem,3.4vw,2.8rem)] leading-[1.08] balance">{country.headline}</p>
-            <p className="mt-5 max-w-xl text-ink-soft">{country.intro}</p>
-            <dl className="mt-10 grid max-w-xl grid-cols-3 border-t rule pt-5">
-              <div>
-                <dt className="label-sm text-ink-mute">Passports</dt>
-                <dd className="font-display mt-1 text-5xl">{own.length}</dd>
-              </div>
-              <div>
-                <dt className="label-sm text-ink-mute">Shared across borders</dt>
-                <dd className="font-display mt-1 text-5xl">{own.filter((t) => t.countries.length > 1).length}</dd>
-              </div>
-              <div>
-                <dt className="label-sm text-ink-mute">Awaiting documentation</dt>
-                <dd className="font-display mt-1 text-5xl">{country.candidates.length}</dd>
-              </div>
+            <p className="font-title mt-2 max-w-2xl text-[clamp(1.8rem,3.4vw,2.9rem)] leading-[1.05]">{country.headline}</p>
+            <p className="lead mt-5 max-w-xl text-ink-soft">{country.intro}</p>
+            <dl className="mt-10 grid max-w-2xl grid-cols-3 gap-3">
+              {[
+                ["Passports", own.length, "bg-orange text-ink"],
+                ["Shared across borders", own.filter((t) => t.countries.length > 1).length, "bg-cobalt text-bone"],
+                ["Awaiting documentation", country.candidates.length, "bg-green text-bone"],
+              ].map(([k, v, c]) => (
+                <div key={k as string} className={`${c} min-w-0 p-3 sm:p-4`}>
+                  <dd className="font-display text-6xl leading-none">{v}</dd>
+                  <dt className="label-sm mt-2 hyphens-auto [overflow-wrap:anywhere]">{k}</dt>
+                </div>
+              ))}
             </dl>
           </div>
           <div className="relative lg:col-span-5">
-            <div className="strip-diamond absolute -left-6 top-0 hidden h-full w-3.5 lg:block" style={{ ["--strip-bg" as string]: status.color }} />
-            <div className="lg:pl-6">
-              <p className="label text-ink-mute">Contents</p>
-              <ol className="mt-4 divide-y divide-ink/10 border-y rule">
+            <div className="print-shadow border-2 border-ink bg-ink p-5 text-bone" style={{ ["--shadow-color" as string]: status.color }}>
+              <p className="label text-yellow">In this collection</p>
+              <ol className="mt-3 divide-y divide-bone/15">
                 {[...own, ...shared].map((t) => (
                   <li key={t.slug}>
-                    <Link href={`/passport/${t.slug}`} className="group grid grid-cols-[3.2rem_1fr_auto] items-baseline gap-3 py-3">
-                      <span className="font-mono text-xs text-ink-mute">No. {t.passportNo}</span>
+                    <Link href={`/passport/${t.slug}`} className="group grid grid-cols-[3.4rem_1fr_auto] items-baseline gap-3 py-3">
+                      <span className="font-ui text-xs font-bold text-yellow">No. {t.passportNo}</span>
                       <span>
-                        <span className="font-display block text-[1.9rem] leading-none group-hover:text-terracotta">{t.name}</span>
-                        <span className="label-sm mt-1 block text-ink-mute">{whereLine(t, archive)}</span>
+                        <span className="font-display block text-[1.9rem] leading-none group-hover:text-yellow">{t.name}</span>
+                        <span className="label-sm mt-1 block text-bone/60">{whereLine(t, archive)}</span>
                       </span>
-                      <span aria-hidden className="text-ink-mute transition-transform group-hover:translate-x-1 group-hover:text-terracotta">
+                      <span aria-hidden className="font-display text-2xl transition-transform group-hover:translate-x-1 group-hover:text-yellow">
                         →
                       </span>
                     </Link>
                   </li>
                 ))}
               </ol>
-              <p className="mt-5 text-sm text-ink-soft">
-                Every passport labels its claims — <EvidenceBadge level="documented" compact /> <EvidenceBadge level="disputed" compact />{" "}
-                <EvidenceBadge level="unverified" compact /> — and drafts say so.
-              </p>
             </div>
+            <p className="mt-6 text-sm text-ink-soft">
+              Every passport labels its claims — <EvidenceBadge level="documented" compact /> <EvidenceBadge level="disputed" compact />{" "}
+              <EvidenceBadge level="unverified" compact /> — and drafts say so.
+            </p>
           </div>
         </div>
       </section>
@@ -155,37 +161,37 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
       {/* Gallery + map */}
       <section aria-labelledby="gallery-title" className="mx-auto max-w-[1500px] px-4 py-16 sm:px-6 lg:px-10 lg:py-24">
         <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
-          <h2 id="gallery-title" className="font-display text-[clamp(2.6rem,6vw,5rem)]">
+          <h2 id="gallery-title" className="font-display text-[clamp(3rem,6.5vw,5.6rem)]">
             The collection
           </h2>
-          <p className="max-w-sm text-sm text-ink-soft">Each card opens a full passport — origins, makers, a timeline, how it travelled, and every source.</p>
+          <p className="max-w-sm text-sm text-ink-soft">Filter by craft, pick a place on the map, or open a card for the full passport.</p>
         </div>
         <CollectionExplorer cards={[...own, ...shared].map(cardFor)} map={map} />
       </section>
 
       {/* Attribution histories */}
       {cases.length > 0 && (
-        <section className="bg-ink text-ivory">
-          <div className="strip-ladder" />
+        <section className="border-y-2 border-ink bg-ink text-bone">
+          <div className="strip-checker" />
           <div className="mx-auto max-w-[1500px] px-4 py-20 sm:px-6 lg:px-10">
             <p className="label text-mustard">Notable attribution histories</p>
             <div className="mt-8 grid gap-8 lg:grid-cols-2">
               {cases.map(({ t, c }) => (
                 <Reveal key={c.id}>
-                  <Link href={`/passport/${t.slug}#travels`} className="group block border border-ivory/20 p-6 hover:border-mustard sm:p-8">
-                    <p className="label-sm text-ivory/60">Case file {c.code} · {t.name}</p>
-                    <p className="font-display mt-3 text-5xl group-hover:text-mustard">{c.title}</p>
-                    <p className="mt-4 text-ivory/80">{c.summary}</p>
-                    <p className="label mt-6 text-mustard">{c.status}</p>
+                  <Link href={`/passport/${t.slug}#travels`} className="group block h-full border-2 border-yellow/70 p-6 transition-colors hover:bg-yellow hover:text-ink sm:p-8">
+                    <p className="label-sm inline-block bg-yellow px-2 py-1 text-ink">Case file {c.code} · {t.name}</p>
+                    <p className="font-display mt-4 text-5xl">{c.title}</p>
+                    <p className="mt-4 opacity-85">{c.summary}</p>
+                    <p className="label mt-6">{c.status} →</p>
                   </Link>
                 </Reveal>
               ))}
               <Reveal delay={0.1} className="flex flex-col justify-center">
-                <p className="font-serif text-3xl leading-tight">
+                <p className="font-title text-3xl leading-tight">
                   Not every inspiration is theft, and not every case is a scandal. We document the sequence — what travelled, what was credited, and
                   what changed — and let the evidence speak.
                 </p>
-                <Link href="/method" className="label mt-6 text-mustard underline">
+                <Link href="/method" className="btn btn-yellow mt-6 self-start">
                   How we document cases →
                 </Link>
               </Reveal>
@@ -202,18 +208,22 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
               <p className="label text-terracotta">Connections</p>
               <h2 className="font-display mt-3 text-5xl">Threads between traditions</h2>
               <p className="mt-4 text-sm text-ink-soft">Editorial links, each with a reason. Resemblance alone never counts as a connection.</p>
-              <Link href="/trails" className="label mt-6 inline-block underline hover:text-terracotta">
+              <Link href="/trails" className="btn btn-cream mt-6">
                 Follow a trail →
               </Link>
             </div>
-            <ul className="divide-y divide-ink/10 border-y rule lg:col-span-8">
+            <ul className="grid gap-3 lg:col-span-8">
               {connections.map((cn) => (
-                <li key={cn.key} className="grid gap-2 py-5 sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-6">
-                  <Link href={`/passport/${cn.a.slug}`} className="font-display text-3xl hover:text-terracotta">
+                <li key={cn.key} className="grid gap-2 border-2 border-ink bg-bone p-5 sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-6">
+                  <Link href={`/passport/${cn.a.slug}`} className="font-display text-3xl hover:text-brick">
                     {cn.a.name}
                   </Link>
-                  <span aria-hidden className="hidden h-px w-16 border-t-2 border-dotted border-ink/50 sm:block" />
-                  <Link href={`/passport/${cn.b.slug}`} className="font-display text-3xl hover:text-terracotta sm:text-right">
+                  <span aria-hidden className="hidden items-center gap-1 sm:flex">
+                    <span className="h-3 w-3 rotate-45 bg-brick" />
+                    <span className="h-0.5 w-12 bg-ink" />
+                    <span className="h-3 w-3 rotate-45 bg-brick" />
+                  </span>
+                  <Link href={`/passport/${cn.b.slug}`} className="font-display text-3xl hover:text-brick sm:text-right">
                     {cn.b.name}
                   </Link>
                   <p className="text-sm text-ink-soft sm:col-span-3">{cn.reason}</p>
@@ -225,10 +235,10 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
       )}
 
       {/* Makers on record */}
-      <section className="border-t rule bg-paper/60">
+      <section className="border-y-2 border-ink bg-sand">
         <div className="mx-auto grid max-w-[1500px] gap-10 px-4 py-20 sm:px-6 lg:grid-cols-12 lg:px-10">
           <div className="lg:col-span-4">
-            <p className="label text-terracotta">Featured makers</p>
+            <p className="label text-brick">Featured makers</p>
             <h2 className="font-display mt-3 text-5xl">Named in the record</h2>
             <p className="mt-4 text-sm text-ink-soft">
               Practitioners appear here only when a public record names them — a national honour, a published oral history. Verified artisan profiles
@@ -237,12 +247,12 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
           </div>
           <div className="lg:col-span-8">
             {practitioners.length ? (
-              <ul className="grid gap-px border rule bg-ink/10 sm:grid-cols-2">
-                {practitioners.map(({ t, p }) => (
-                  <li key={`${t.slug}-${p.name}`} className="bg-ivory p-5">
-                    <p className="font-serif text-2xl">{p.name}</p>
+              <ul className="grid gap-2 sm:grid-cols-2">
+                {practitioners.map(({ t, p }, i) => (
+                  <li key={`${t.slug}-${p.name}`} className={`notched px-7 py-5 ${["bg-yellow", "bg-bone", "bg-cream"][i % 3]}`}>
+                    <p className="font-title text-2xl">{p.name}</p>
                     <p className="mt-1 text-sm text-ink-soft">{p.note}</p>
-                    <Link href={`/passport/${t.slug}#makers`} className="label-sm mt-3 inline-block text-ink-mute hover:text-terracotta">
+                    <Link href={`/passport/${t.slug}#makers`} className="label-sm mt-3 inline-block text-ink-mute hover:text-brick">
                       {t.name} · sources →
                     </Link>
                   </li>
@@ -270,8 +280,8 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
           <ul className="mt-10 grid border-t rule sm:grid-cols-2 lg:grid-cols-3">
             {country.candidates.map((c, i) => (
               <li key={c.name} className="flex items-baseline gap-4 border-b rule py-4 sm:pr-6">
-                <span className="font-mono text-xs text-ink-mute">{String(i + 1).padStart(2, "0")}</span>
-                <span className="font-serif text-2xl">{c.name}</span>
+                <span className="font-display text-2xl text-brick">{String(i + 1).padStart(2, "0")}</span>
+                <span className="font-title text-2xl">{c.name}</span>
                 <span className="label-sm ml-auto text-right text-ink-mute">{c.note}</span>
               </li>
             ))}
@@ -325,18 +335,25 @@ function DocumentingCountry({ country, archive, shared, outline }: { country: Co
       <div aria-hidden className="contour-bg absolute inset-0 opacity-60" />
       <div className="relative mx-auto grid max-w-[1500px] gap-12 px-4 py-14 sm:px-6 lg:grid-cols-12 lg:px-10 lg:py-24">
         <div className="lg:col-span-7">
-          <nav aria-label="Breadcrumb" className="label-sm flex gap-2 text-ink-mute">
-            <Link href="/" className="hover:text-terracotta">
-              The globe
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <nav aria-label="Breadcrumb" className="label-sm flex gap-2 text-ink-mute">
+              <Link href="/" className="hover:text-brick">
+                Explore
+              </Link>
+              <span aria-hidden>/</span>
+              <span aria-current="page" className="text-ink">
+                {country.name}
+              </span>
+            </nav>
+            <Link href="/" className="btn btn-cream">
+              ← Back to the globe
             </Link>
-            <span>/</span>
-            <span aria-current="page">{country.name}</span>
-          </nav>
+          </div>
           <p className="label mt-8" style={{ color: status.color }}>
             {country.plate} · {status.label}
           </p>
           <h1 className="font-display reveal-rise mt-4 text-[clamp(4rem,14vw,12rem)] text-ink">{country.name}</h1>
-          <p className="font-serif mt-4 text-[clamp(1.8rem,3.4vw,3rem)] italic leading-tight">{country.headline}</p>
+          <p className="font-title mt-4 text-[clamp(1.8rem,3.4vw,3rem)] italic leading-tight text-brick">{country.headline}</p>
           <p className="mt-5 max-w-xl text-ink-soft">{country.intro}</p>
 
           {country.candidates.length > 0 && (
@@ -350,7 +367,7 @@ function DocumentingCountry({ country, archive, shared, outline }: { country: Co
                     {c.sources?.map((id) => {
                       const s = sources.get(id);
                       return s ? (
-                        <a key={id} href={s.url} target="_blank" rel="noreferrer" className="label-sm mt-2 inline-block text-ink-mute underline hover:text-terracotta">
+                        <a key={id} href={s.url} target="_blank" rel="noreferrer" className="label-sm mt-2 inline-block text-ink-mute underline hover:text-brick">
                           Source: {s.publisher}, {s.date} ↗
                         </a>
                       ) : null;
@@ -367,14 +384,14 @@ function DocumentingCountry({ country, archive, shared, outline }: { country: Co
               <ul className="mt-4 grid gap-3 sm:grid-cols-2">
                 {shared.map((t) => (
                   <li key={t.slug}>
-                    <Link href={`/passport/${t.slug}`} className="paper-card group flex items-center gap-4 p-4 hover:border-ink">
+                    <Link href={`/passport/${t.slug}`} className="group flex items-center gap-4 border-2 border-ink bg-bone p-4 transition-transform hover:-translate-y-0.5">
                       <span className="h-14 w-14 shrink-0 overflow-hidden border border-ink/20">
                         {/* motif thumbnails keep this page light */}
                         <span className="block h-full w-full" style={{ background: ACCENT[t.accent].hex }} />
                       </span>
                       <span>
-                        <span className="font-mono text-xs text-ink-mute">No. {t.passportNo}</span>
-                        <span className="font-display block text-2xl group-hover:text-terracotta">{t.name}</span>
+                        <span className="font-ui text-xs text-ink-mute">No. {t.passportNo}</span>
+                        <span className="font-display block text-2xl group-hover:text-brick">{t.name}</span>
                         <span className="label-sm text-ink-mute">{t.regionLabel}</span>
                       </span>
                     </Link>
@@ -392,11 +409,11 @@ function DocumentingCountry({ country, archive, shared, outline }: { country: Co
                   <line x1="0" y1="0" x2="0" y2="8" stroke={status.color} strokeWidth="2" strokeOpacity="0.6" />
                 </pattern>
               </defs>
-              <path d={outline} fill="url(#doc-hatch)" stroke="#211C19" strokeWidth="1.5" strokeDasharray="4 4" />
+              <path d={outline} fill="url(#doc-hatch)" stroke="#1B1616" strokeWidth="2" strokeDasharray="4 4" />
             </svg>
           )}
-          <div className="paper-card mt-8 p-6">
-            <p className="label text-terracotta">Before anything is published here</p>
+          <div className="mt-8 border-2 border-ink bg-bone p-6">
+            <p className="label text-brick">Before anything is published here</p>
             <ol className="mt-4 space-y-2 text-sm text-ink-soft">
               <li>1 · Research primary records, museum holdings and scholarship.</li>
               <li>2 · Speak with practitioners and community organisations, with consent.</li>
@@ -404,8 +421,8 @@ function DocumentingCountry({ country, archive, shared, outline }: { country: Co
               <li>4 · Credit and licence every image; use no generated imagery as evidence.</li>
               <li>5 · Editorial review, then publication — and corrections when we are wrong.</li>
             </ol>
-            <Link href="/method" className="label mt-5 inline-block underline hover:text-terracotta">
-              Read the editorial method →
+            <Link href="/method" className="btn btn-ink mt-5">
+              Read how we work →
             </Link>
           </div>
         </div>
@@ -420,13 +437,20 @@ async function UndocumentedCountry({ name, isoNumeric, archive }: { name: string
   return (
     <section className="mx-auto grid max-w-[1500px] gap-12 px-4 py-14 sm:px-6 lg:grid-cols-12 lg:px-10 lg:py-24">
       <div className="lg:col-span-7">
-        <nav aria-label="Breadcrumb" className="label-sm flex gap-2 text-ink-mute">
-          <Link href="/" className="hover:text-terracotta">
-            The globe
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <nav aria-label="Breadcrumb" className="label-sm flex gap-2 text-ink-mute">
+            <Link href="/" className="hover:text-brick">
+              Explore
+            </Link>
+            <span aria-hidden>/</span>
+            <span aria-current="page" className="text-ink">
+              {name}
+            </span>
+          </nav>
+          <Link href="/" className="btn btn-cream">
+            ← Back to the globe
           </Link>
-          <span>/</span>
-          <span aria-current="page">{name}</span>
-        </nav>
+        </div>
         <p className="label mt-8 text-ink-mute">Not yet in the archive</p>
         <h1 className="font-display mt-4 text-[clamp(3.5rem,12vw,10rem)]">{name}</h1>
         <p className="mt-5 max-w-xl text-ink-soft">
@@ -435,11 +459,11 @@ async function UndocumentedCountry({ name, isoNumeric, archive }: { name: string
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           {collections.map((c) => (
-            <Link key={c.slug} href={`/country/${c.slug}`} className="label rounded-full border rule px-4 py-2 hover:border-ink">
+            <Link key={c.slug} href={`/country/${c.slug}`} className="btn btn-cream">
               Visit {c.name} →
             </Link>
           ))}
-          <Link href="/method" className="label rounded-full border rule px-4 py-2 hover:border-ink">
+          <Link href="/method" className="btn btn-cream">
             How we choose
           </Link>
         </div>
@@ -447,7 +471,7 @@ async function UndocumentedCountry({ name, isoNumeric, archive }: { name: string
       <div className="lg:col-span-5">
         {outline && (
           <svg viewBox="0 0 500 500" className="w-full max-w-md opacity-80" role="img" aria-label={`Outline of ${name}`}>
-            <path d={outline} fill="none" stroke="#211C19" strokeWidth="1.5" strokeDasharray="3 5" />
+            <path d={outline} fill="#E1D4B5" stroke="#1B1616" strokeWidth="2" strokeDasharray="3 5" />
           </svg>
         )}
       </div>
