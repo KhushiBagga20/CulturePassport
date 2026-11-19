@@ -43,7 +43,7 @@ export default async function AdminDashboard() {
           </ul>
         )}
         <p className="mt-1 text-ink-soft">
-          Backend: <strong>{archive.backend === "supabase" ? "Supabase" : archive.backend === "local-store" ? "Local demo (seed + your edits)" : "Local demo (seed only)"}</strong>
+          Backend: <strong>{archive.backend === "postgres" ? "PostgreSQL" : archive.backend === "local-store" ? "Local files (seed + your edits)" : "Local files (seed only)"}</strong>
         </p>
       </div>
 

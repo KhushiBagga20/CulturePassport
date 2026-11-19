@@ -1,4 +1,4 @@
-// Generates supabase/seed.sql from the TypeScript seed archive.
+// Generates db/seed.sql from the TypeScript seed archive.
 // Run: npm run seed:sql   (or: node scripts/generate-seed-sql.mts --stdout)
 import { writeFileSync } from "node:fs";
 import { seedArchive, validateArchive } from "../src/lib/data/seed/index.ts";
@@ -43,6 +43,6 @@ const sql = [
 
 if (process.argv.includes("--stdout")) process.stdout.write(sql);
 else {
-  writeFileSync(new URL("../supabase/seed.sql", import.meta.url), sql);
-  console.log(`Wrote supabase/seed.sql (${total} rows across ${order.length} tables)`);
+  writeFileSync(new URL("../db/seed.sql", import.meta.url), sql);
+  console.log(`Wrote db/seed.sql (${total} rows across ${order.length} tables)`);
 }

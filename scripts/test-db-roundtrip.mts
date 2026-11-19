@@ -1,73 +1,48 @@
-// End-to-end database test against a local PostgreSQL (no Supabase project needed):
-//   migrations → generated seed.sql → read every table back → rowsToArchive → deep-compare with the seed,
-//   then exercise RLS (anon cannot see drafts, cannot write) and the save_tradition RPC as an editor.
-// Run: node scripts/test-db-roundtrip.mts      (needs `createdb`, `psql`, `dropdb` on PATH)
+// End-to-end database test against a throwaway local PostgreSQL database:
+//   npm run db:setup (migrations + seed) → the site's own loader (loadPostgresArchive) → deep-compare
+//   with the seed, then exercise the site's write paths: save_tradition, upserts, uploads, the
+//   research queue, corrections and the audit log.
+// Run: npm run test:db      (needs `createdb` and `dropdb` on PATH, and a local PostgreSQL server)
 import { execFileSync } from "node:child_process";
-import { readFileSync, writeFileSync, mkdtempSync } from "node:fs";
-import { tmpdir } from "node:os";
-import path from "node:path";
 import { seedArchive } from "../src/lib/data/seed/index.ts";
-import { archiveToRows, rowsToArchive, traditionToRows, GLOBAL_TABLES, TRADITION_CHILD_TABLES, LATE_TABLES } from "../src/lib/data/rows.ts";
+import { archiveToRows, countryToRow, sourceToRow, traditionToRows } from "../src/lib/data/rows.ts";
 
-const db = `cp_roundtrip_${process.pid}`;
+const name = `cp_roundtrip_${process.pid}`;
+const url = `postgresql:///${name}`;
 const root = new URL("..", import.meta.url).pathname;
-const work = mkdtempSync(path.join(tmpdir(), "cp-db-"));
-const EDITOR = "00000000-0000-4000-8000-000000000001";
-
-function psql(sql: string, opts: { quiet?: boolean } = {}): string {
-  const file = path.join(work, `q${Math.random().toString(36).slice(2)}.sql`);
-  writeFileSync(file, sql);
-  return execFileSync("psql", ["-v", "ON_ERROR_STOP=1", "-q", "-At", "-d", db, "-f", file], {
-    env: { ...process.env, PGOPTIONS: "-c client_min_messages=warning" },
-    encoding: "utf8",
-    stdio: ["ignore", "pipe", opts.quiet ? "ignore" : "inherit"],
-  });
-}
-const file = (p: string) => readFileSync(path.join(root, p), "utf8");
 const canon = (v: unknown): unknown =>
   Array.isArray(v) ? v.map(canon) : v && typeof v === "object" ? Object.fromEntries(Object.keys(v).sort().map((k) => [k, canon((v as Record<string, unknown>)[k])])) : v;
 
 let failures = 0;
-const check = (name: string, ok: boolean, detail = "") => {
-  console.log(`${ok ? "✓" : "✗"} ${name}${detail ? ` — ${detail}` : ""}`);
+const check = (label: string, ok: boolean, detail = "") => {
+  console.log(`${ok ? "✓" : "✗"} ${label}${!ok && detail ? ` — ${detail}` : ""}`);
   if (!ok) failures++;
 };
 
-execFileSync("createdb", [db]);
+execFileSync("createdb", [name]);
+process.env.DATABASE_URL = url;
+const { db, upsertRow } = await import("../src/lib/db.ts");
+const { loadPostgresArchive, ARCHIVE_TABLES } = await import("../src/lib/data/pg.ts");
+const sql = db();
 try {
-  // Minimal stand-ins for what Supabase provides: roles, auth schema, auth.uid().
-  psql(`
-    do $$ begin create role anon nologin; exception when duplicate_object then null; end $$;
-    do $$ begin create role authenticated nologin; exception when duplicate_object then null; end $$;
-    create schema auth;
-    create table auth.users (id uuid primary key);
-    create function auth.uid() returns uuid language sql stable as $f$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $f$;
-    grant usage on schema auth to anon, authenticated;
-    grant execute on function auth.uid() to anon, authenticated;
-  `);
-  psql(file("supabase/migrations/0001_schema.sql"));
-  psql(file("supabase/migrations/0002_policies.sql"));
-  psql(file("supabase/migrations/0004_research.sql"));
-  psql(`grant usage on schema public to anon, authenticated;
-        grant select, insert, update, delete on all tables in schema public to anon, authenticated;`);
-  check("migrations apply cleanly", true);
+  // ── setup script (the same command a user runs against Neon) ──
+  const run = (args: string[] = []) =>
+    execFileSync("node", ["scripts/db-setup.mts", ...args], { cwd: root, env: { ...process.env, DATABASE_URL: url }, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+  const first = run();
+  check("db:setup applies all four migrations", ["0001_schema", "0002_functions", "0003_media_files", "0004_research"].every((m) => first.includes(`applied ${m}`)), first);
+  check("db:setup loads the seed", first.includes("loaded the seed archive"));
+  const second = run();
+  check("db:setup is safe to re-run", !second.includes("applied") && second.includes("seed not loaded"), second);
+  check("db:setup never prints the connection string", !first.includes(url) && !second.includes(url));
 
-  psql(file("supabase/seed.sql"));
-  const tables = [...GLOBAL_TABLES, "traditions", ...TRADITION_CHILD_TABLES, ...LATE_TABLES];
+  // ── read path: the site's own loader ──
   const expected = archiveToRows(seedArchive);
-  const read = (role?: string) => {
-    const rows: Record<string, Record<string, unknown>[]> = {};
-    for (const t of tables) {
-      const prefix = role ? `set role ${role};` : "";
-      rows[t] = JSON.parse(psql(`${prefix} select coalesce(json_agg(x), '[]'::json) from ${t} x;`).trim() || "[]");
-    }
-    return rows;
-  };
-  const rows = read();
-  for (const t of tables) check(`row count ${t}`, rows[t].length === expected[t].length, `${rows[t].length}/${expected[t].length}`);
-
-  const back = rowsToArchive(rows);
-  const same = JSON.stringify(canon(back)) === JSON.stringify(canon(seedArchive));
+  for (const t of ARCHIVE_TABLES) {
+    const [{ n }] = await sql.unsafe(`select count(*)::int as n from "${t}"`);
+    check(`row count ${t}`, n === expected[t].length, `${n}/${expected[t].length}`);
+  }
+  const back = await loadPostgresArchive(sql);
+  const same = JSON.stringify(canon({ ...back, backend: undefined })) === JSON.stringify(canon({ ...seedArchive, backend: undefined }));
   if (!same) {
     for (const k of Object.keys(seedArchive) as (keyof typeof seedArchive)[]) {
       const a = JSON.stringify(canon(seedArchive[k]));
@@ -79,77 +54,76 @@ try {
       }
     }
   }
-  check("archive round-trips through Postgres unchanged", same);
+  check("archive round-trips through Postgres unchanged (loadPostgresArchive)", same);
+  check("backend is reported as postgres", back.backend === "postgres");
 
-  // ── RLS ──
-  psql(`update traditions set status = 'draft' where slug = 'warli-painting';`);
-  const anonRows = read("anon");
-  check("anon cannot read draft traditions", !anonRows.traditions.some((t) => t.slug === "warli-painting"));
-  check("anon cannot read claims of drafts", !anonRows.claims.some((c) => c.tradition_id === "trad-warli"));
-  check("anon still reads published traditions", anonRows.traditions.length === seedArchive.traditions.length - 1);
-  let denied = false;
-  try {
-    psql(`set role anon; update traditions set tagline = 'x' where slug = 'kolhapuri-chappal';
-          select count(*) from traditions where tagline = 'x';`, { quiet: true });
-    denied = psql(`select count(*) from traditions where tagline = 'x';`).trim() === "0";
-  } catch {
-    denied = true;
-  }
-  check("anon cannot modify content", denied);
-  psql(`set role anon; insert into correction_requests (tradition_id, message) values ('trad-kolhapuri', 'Please check the filing date of the GI application.');`);
-  check("anon can submit a correction request", psql(`select count(*) from correction_requests;`).trim() === "1");
-  let anonReadCorrections = "";
-  try {
-    anonReadCorrections = psql(`set role anon; select count(*) from correction_requests;`).trim();
-  } catch {
-    anonReadCorrections = "error";
-  }
-  check("anon cannot read correction requests", anonReadCorrections === "0" || anonReadCorrections === "error");
-
-  // ── save_tradition as an editor ──
-  psql(`insert into auth.users values ('${EDITOR}'); insert into editors (user_id, role) values ('${EDITOR}', 'admin');`);
+  // ── write paths, as src/lib/data/mutations.ts calls them ──
+  const idOf = (s: string) => seedArchive.traditions.find((t) => t.slug === s)?.id ?? s;
   const k = structuredClone(seedArchive.traditions[0]);
-  k.tagline = "Edited through the editor RPC.";
+  k.tagline = "Edited through save_tradition.";
   k.claims = k.claims.slice(0, 3);
-  const payload = traditionToRows(k, (s) => seedArchive.traditions.find((t) => t.slug === s)?.id ?? s);
-  psql(`set role authenticated; select set_config('request.jwt.claim.sub', '${EDITOR}', false);
-        select save_tradition($json$${JSON.stringify(payload)}$json$::jsonb);`);
-  const saved = psql(`select tagline || '|' || (select count(*) from claims where tradition_id = 'trad-kolhapuri') from traditions where id = 'trad-kolhapuri';`).trim();
-  check("editor save_tradition replaces fields and children atomically", saved === "Edited through the editor RPC.|3", saved);
-  let blocked = false;
-  try {
-    psql(`set role authenticated; select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000099', false);
-          select save_tradition($json$${JSON.stringify(payload)}$json$::jsonb);`, { quiet: true });
-  } catch {
-    blocked = true;
-  }
-  check("non-editors cannot call save_tradition", blocked);
+  await sql.unsafe("select save_tradition($1::jsonb)", [traditionToRows(k, idOf) as never]);
+  const [saved] = await sql`select tagline, (select count(*)::int from claims where tradition_id = ${k.id}) as claims from traditions where id = ${k.id}`;
+  check("save_tradition replaces fields and child rows atomically", saved.tagline === k.tagline && saved.claims === 3, JSON.stringify(saved));
+  const reloaded = await loadPostgresArchive(sql);
+  check("a saved passport reads back intact", JSON.stringify(canon(reloaded.traditions.find((t) => t.id === k.id))) === JSON.stringify(canon(k)));
 
-  // ── research review queue (0004) ──
-  psql(`insert into research_candidates (id, country_iso2, wikidata_id, name, data) values ('wd-Q1', 'GH', 'Q1', 'Test element', '{"name":"Test element"}');`);
-  const tryAs = (sql: string) => {
-    try {
-      return psql(sql, { quiet: true }).trim();
-    } catch {
-      return "error";
-    }
-  };
-  const anonSees = tryAs(`set role anon; select count(*) from research_candidates;`);
-  check("anon cannot read research candidates", anonSees === "0" || anonSees === "error", anonSees);
-  const strangerSees = tryAs(`set role authenticated; select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000099', false); select count(*) from research_candidates;`);
-  check("signed-in non-editors cannot read research candidates", strangerSees.endsWith("0") || strangerSees === "error", strangerSees);
-  const editorSees = tryAs(`set role authenticated; select set_config('request.jwt.claim.sub', '${EDITOR}', false); select count(*) from research_candidates;`);
-  check("editors can read research candidates", editorSees.endsWith("1"), editorSees);
-  tryAs(`set role authenticated; select set_config('request.jwt.claim.sub', '${EDITOR}', false);
-         update research_candidates set status = 'rejected', note = 'Not material culture' where id = 'wd-Q1';`);
-  check("editors can record a decision", psql(`select status from research_candidates where id = 'wd-Q1';`).trim() === "rejected");
-  tryAs(`set role authenticated; select set_config('request.jwt.claim.sub', '${EDITOR}', false);
-         insert into research_candidates (id, country_iso2, wikidata_id, name, data) values ('wd-Q2', 'GH', 'Q2', 'x', '{}');`);
-  check("editors cannot insert candidates (pipeline only)", psql(`select count(*) from research_candidates where id = 'wd-Q2';`).trim() === "0");
-  tryAs(`set role anon; update research_candidates set status = 'drafted' where id = 'wd-Q1';`);
-  check("anon cannot change a candidate", psql(`select status from research_candidates where id = 'wd-Q1';`).trim() === "rejected");
+  const draft = structuredClone(seedArchive.traditions[1]);
+  // A fresh draft with no content of its own yet (claim, event and case IDs are unique across the archive).
+  Object.assign(draft, {
+    id: "trad-draft-test", slug: "draft-test", passportNo: "999", status: "draft", slugHistory: [],
+    claims: [], timeline: [], origins: [], significance: [], related: [],
+    makers: { ...draft.makers, intro: [], materials: [], process: [], practitioners: [] },
+    travels: { intro: [], influences: [], cases: [] },
+  });
+  await sql.unsafe("select save_tradition($1::jsonb)", [traditionToRows(draft, idOf) as never]);
+  check("drafts are stored and read back (public pages filter them out)", (await loadPostgresArchive(sql)).traditions.find((t) => t.id === draft.id)?.status === "draft");
+
+  await upsertRow("sources", sourceToRow({ ...seedArchive.sources[0], title: "Updated title" }), ["id"], sql);
+  await upsertRow("sources", sourceToRow({ id: "test-source", title: "New source", publisher: "Test", url: "https://example.org", type: "reference", accessed: "2026-11-19" }), ["id"], sql);
+  const srcs = (await loadPostgresArchive(sql)).sources;
+  check("upsertRow updates an existing source", srcs.find((s) => s.id === seedArchive.sources[0].id)?.title === "Updated title");
+  check("upsertRow inserts a new source", srcs.some((s) => s.id === "test-source"));
+
+  const peru = { iso2: "PE", isoNumeric: "604", slug: "peru", name: "Peru", status: "documenting" as const, plate: "", headline: "Stories being documented", intro: "…", candidates: [], centroid: [-75, -10] as [number, number] };
+  await upsertRow("countries", countryToRow(peru), ["iso2"], sql);
+  check("a new country can be added to the atlas", (await loadPostgresArchive(sql)).countries.some((c) => c.iso2 === "PE" && c.status === "documenting"));
+
+  const bytes = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3, 4]);
+  await sql`insert into media_files (id, content_type, bytes) values ('upload-test0001.jpg', 'image/jpeg', ${bytes})`;
+  const [img] = await sql`select bytes from media_files where id = 'upload-test0001.jpg'`;
+  check("uploaded images are stored and returned byte for byte", Buffer.compare(Buffer.from(img.bytes as Uint8Array), bytes) === 0);
+
+  const upsertCandidate = (n: string) => sql`
+    insert into research_candidates (id, country_iso2, wikidata_id, name, data, fetched_at)
+    values ('wd-Q1', 'GH', 'Q1', ${n}, ${sql.json({ id: "wd-Q1", name: n })}, now())
+    on conflict (id) do update set name = excluded.name, data = excluded.data, fetched_at = excluded.fetched_at`;
+  await upsertCandidate("Test element");
+  await sql`update research_candidates set status = 'rejected', note = 'Not material culture', reviewed_by = 'QA' where id = 'wd-Q1'`;
+  await upsertCandidate("Test element (refreshed)");
+  const [c1] = await sql`select name, status, note from research_candidates where id = 'wd-Q1'`;
+  check("a pipeline refresh keeps the editor's decision", c1.status === "rejected" && c1.note === "Not material culture" && c1.name === "Test element (refreshed)", JSON.stringify(c1));
+
+  await sql`insert into correction_requests (tradition_id, message) values (${k.id}, 'Please check the filing date of the GI application.')`;
+  await sql`update correction_requests set status = 'accepted', resolution = 'Checked against the registry.', resolved_by = 'QA'`;
+  const [corr] = await sql`select status, resolved_by from correction_requests`;
+  check("corrections can be submitted and resolved", corr.status === "accepted" && corr.resolved_by === "QA");
+
+  await sql`insert into content_revisions (entity, entity_id, editor, summary, fields) values ('country', 'PE', 'QA', 'Added Peru', ${["country"]})`;
+  check("the audit log accepts country entries", (await sql`select count(*)::int as n from content_revisions where entity = 'country'`)[0].n === 1);
+
+  let rejected = false;
+  try {
+    await sql`insert into correction_requests (tradition_id, message) values (${k.id}, 'short')`;
+  } catch {
+    rejected = true;
+  }
+  check("database constraints still reject invalid input", rejected);
+} catch (e) {
+  check("unexpected error", false, (e as Error).message);
 } finally {
-  execFileSync("dropdb", ["--if-exists", db]);
+  await sql.end();
+  execFileSync("dropdb", ["--if-exists", name]);
 }
 console.log(failures ? `\n${failures} check(s) failed` : "\nAll database checks passed");
 process.exit(failures ? 1 : 0);

@@ -12,7 +12,7 @@ import { getCandidate, recordDecision } from "@/lib/data/research-store";
 import { candidateToDraft, countryRecordFor, slugify } from "@/lib/research";
 import { UPLOAD_DIR } from "@/lib/data/local-store";
 import { validateArchive } from "@/lib/data/seed";
-import { sessionClient, supabaseConfigured } from "@/lib/supabase/clients";
+import { db, dbConfigured } from "@/lib/db";
 import type { MediaAsset, Source, Tradition } from "@/lib/types";
 
 export interface ActionResult {
@@ -24,19 +24,7 @@ export interface ActionResult {
 // ───────────────────────────── session ─────────────────────────────
 
 export async function loginAction(_prev: ActionResult | null, form: FormData): Promise<ActionResult> {
-  if (supabaseConfigured()) {
-    const email = String(form.get("email") ?? "").trim();
-    const password = String(form.get("password") ?? "");
-    const client = await sessionClient();
-    const { error } = await client.auth.signInWithPassword({ email, password });
-    if (error) return { ok: false, message: error.message };
-    if (!(await getEditor())) {
-      await client.auth.signOut();
-      return { ok: false, message: "Signed in, but this account is not on the editors list. Ask an admin to add you to the `editors` table." };
-    }
-    redirect("/admin");
-  }
-  if (!localAdminConfigured()) return { ok: false, message: "Set DEMO_ADMIN_PASSWORD in .env.local to enable the local editorial desk." };
+  if (!localAdminConfigured()) return { ok: false, message: "Set EDITOR_PASSCODE in .env.local to enable the editorial desk." };
   const passcode = String(form.get("passcode") ?? "");
   const name = String(form.get("name") ?? "Editor").trim();
   if (!checkPasscode(passcode)) return { ok: false, message: "That passcode is not correct." };
@@ -213,12 +201,10 @@ export async function uploadMediaAction(_prev: ActionResult | null, form: FormDa
 
   let url: string;
   try {
-    if (supabaseConfigured()) {
-      const client = await sessionClient();
-      const objectPath = `${id}.${ext}`;
-      const { error } = await client.storage.from("media").upload(objectPath, bytes, { contentType: file.type, upsert: false });
-      if (error) return { ok: false, message: `Upload failed: ${error.message}` };
-      url = client.storage.from("media").getPublicUrl(objectPath).data.publicUrl;
+    if (dbConfigured()) {
+      // Stored in the database and served by /api/media/[file]; no separate file storage needed.
+      await db()`insert into media_files (id, content_type, bytes) values (${`${id}.${ext}`}, ${file.type}, ${bytes})`;
+      url = `/api/media/${id}.${ext}`;
     } else {
       await fs.mkdir(UPLOAD_DIR, { recursive: true });
       await fs.writeFile(path.join(UPLOAD_DIR, `${id}.${ext}`), bytes);
@@ -248,20 +234,20 @@ export async function uploadMediaAction(_prev: ActionResult | null, form: FormDa
 // ───────────────────────────── review & QR ─────────────────────────────
 
 export async function resolveCorrectionAction(_prev: ActionResult | null, form: FormData): Promise<ActionResult> {
-  await requireEditor();
+  const editor = await requireEditor();
   const id = String(form.get("id") ?? "");
   const status = String(form.get("status") ?? "") as "accepted" | "dismissed";
   const resolution = String(form.get("resolution") ?? "").trim();
   if (!["accepted", "dismissed"].includes(status)) return { ok: false, message: "Choose accept or dismiss." };
   if (resolution.length < 5) return { ok: false, message: "Write a short resolution note." };
-  await resolveCorrection(id, status, resolution);
+  await resolveCorrection(id, status, resolution, editor.name);
   revalidatePath("/admin/review");
   return { ok: true, message: `Marked as ${status}.` };
 }
 
 export async function recordQrAction(traditionId: string, url: string, format: "svg" | "png" | "label") {
-  await requireEditor();
-  await recordQr(traditionId, url, format);
+  const editor = await requireEditor();
+  await recordQr(traditionId, url, format, editor.name);
 }
 
 // ───────────────────────────── research queue ─────────────────────────────

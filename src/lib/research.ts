@@ -12,7 +12,7 @@ import type { Category, Claim, CountryRecord, MediaAsset, NativeName, Source, So
 
 export type CandidateStatus = "new" | "rejected" | "drafted";
 
-/** Local review queue (demo mode), relative to the project root. Supabase uses the research_candidates table. */
+/** Local review queue (demo mode), relative to the project root. With DATABASE_URL it is the research_candidates table. */
 export const RESEARCH_FILE = ".data/research.json";
 export interface ResearchFile {
   candidates: Record<string, ResearchCandidate>;

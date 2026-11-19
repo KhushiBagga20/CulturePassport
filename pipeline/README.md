@@ -36,20 +36,16 @@ Each candidate is triaged as "craft or visual art" or not, so the queue can show
 
 ## Where it writes
 
-- **No Supabase credentials:** writes to `.data/research.json`, the local demo queue, which the dev server reads.
-- **`pipeline/.env` with `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`:** writes to the `research_candidates` table (migration `0004_research.sql`).
-  - Row-level security hides that table from the public and from signed-in non-editors.
-  - Editors can read candidates and record decisions, but cannot insert.
-  - Only this pipeline, with the service-role key, adds candidates.
-  - That key must never reach the web app.
+- **`DATABASE_URL` set** (read from `.env.local`, or `pipeline/.env` to override): the `research_candidates` table (`db/migrations/0004_research.sql`). Run `npm run db:setup` once first.
+- **No `DATABASE_URL`:** `.data/research.json`, the local queue the dev server reads.
 
-Copy `pipeline/.env.example` to `pipeline/.env` to configure it.
+Candidates are never shown on public pages. Editors review them in the passcode-protected desk.
 
 ## Running it as a separate backend
 
-This folder has no dependencies beyond Node 24 and `@supabase/supabase-js`, and the logic it shares with the site lives in `src/lib/research.ts`. To move it to its own repository or a scheduled job:
-1. Copy `pipeline/` and `src/lib/research.ts`. Keep `research.ts` identical in both places, or publish it as a small package.
-2. Point it at the same Supabase project. The database schema in `supabase/migrations` is the contract between the two.
+This folder needs only Node 24 and the `postgres` package. The logic it shares with the site lives in `src/lib/research.ts` and `src/lib/db.ts`. To move it to its own repository or a scheduled job:
+1. Copy `pipeline/`, `src/lib/research.ts` and `src/lib/db.ts`. Keep them identical in both places, or publish them as a small package.
+2. Give it the same `DATABASE_URL` as the site. The schema in `db/migrations` is the contract between the two.
 3. Schedule it (for example weekly per country). Because decisions are kept, repeat runs only add or refresh leads.
 
 ## Wikimedia etiquette

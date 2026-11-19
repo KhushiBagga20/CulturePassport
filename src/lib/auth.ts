@@ -1,26 +1,27 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
-import { sessionClient, supabaseConfigured } from "./supabase/clients";
 
 /**
- * Editor authentication.
- *  - Supabase mode: Supabase Auth session + membership in the `editors` table (enforced again by RLS).
- *  - Local demo mode: a passcode from DEMO_ADMIN_PASSWORD (never hard-coded), exchanged for a
- *    signed, httpOnly session cookie. If the variable is unset, the editorial desk stays locked.
+ * Editor authentication: a passcode from EDITOR_PASSCODE (or the older DEMO_ADMIN_PASSWORD), never
+ * hard-coded, exchanged for a signed, httpOnly session cookie that lasts eight hours. If neither
+ * variable is set, the editorial desk stays locked. Every write checks this session (requireEditor);
+ * the database itself is reachable only from the server.
  */
 export interface Editor {
   id: string;
   name: string;
-  mode: "supabase" | "local";
+  mode: "passcode";
 }
 
 const COOKIE = "cp_editor";
 const TTL_SECONDS = 60 * 60 * 8;
 
+const passcode = () => (process.env.EDITOR_PASSCODE ?? process.env.DEMO_ADMIN_PASSWORD)?.trim() || null;
+
 function secret(): string | null {
-  const pass = process.env.DEMO_ADMIN_PASSWORD?.trim();
+  const pass = passcode();
   if (!pass) return null;
-  return `${pass}::${process.env.DEMO_SESSION_SECRET ?? "culture-passport-local"}`;
+  return `${pass}::${process.env.EDITOR_SESSION_SECRET ?? process.env.DEMO_SESSION_SECRET ?? "culture-passport-local"}`;
 }
 
 function sign(payload: string, key: string) {
@@ -32,7 +33,7 @@ export function localAdminConfigured() {
 }
 
 export function checkPasscode(input: string): boolean {
-  const pass = process.env.DEMO_ADMIN_PASSWORD?.trim();
+  const pass = passcode();
   if (!pass) return false;
   const a = Buffer.from(input);
   const b = Buffer.from(pass);
@@ -41,7 +42,7 @@ export function checkPasscode(input: string): boolean {
 
 export async function createLocalSession(name: string) {
   const key = secret();
-  if (!key) throw new Error("DEMO_ADMIN_PASSWORD is not set");
+  if (!key) throw new Error("EDITOR_PASSCODE is not set");
   const exp = Math.floor(Date.now() / 1000) + TTL_SECONDS;
   const payload = Buffer.from(JSON.stringify({ name: name.slice(0, 60) || "Editor", exp })).toString("base64url");
   const store = await cookies();
@@ -57,18 +58,9 @@ export async function createLocalSession(name: string) {
 export async function endSession() {
   const store = await cookies();
   store.delete(COOKIE);
-  if (supabaseConfigured()) await (await sessionClient()).auth.signOut();
 }
 
 export async function getEditor(): Promise<Editor | null> {
-  if (supabaseConfigured()) {
-    const client = await sessionClient();
-    const { data } = await client.auth.getUser();
-    if (!data.user) return null;
-    const { data: row } = await client.from("editors").select("user_id").eq("user_id", data.user.id).maybeSingle();
-    if (!row) return null;
-    return { id: data.user.id, name: data.user.email ?? "Editor", mode: "supabase" };
-  }
   const key = secret();
   if (!key) return null;
   const raw = (await cookies()).get(COOKIE)?.value;
@@ -80,7 +72,7 @@ export async function getEditor(): Promise<Editor | null> {
   try {
     const { name, exp } = JSON.parse(Buffer.from(payload, "base64url").toString()) as { name: string; exp: number };
     if (exp < Date.now() / 1000) return null;
-    return { id: `local:${name}`, name, mode: "local" };
+    return { id: `editor:${name}`, name, mode: "passcode" };
   } catch {
     return null;
   }

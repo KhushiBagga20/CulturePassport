@@ -2,12 +2,12 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import type { ResearchCandidate, ResearchFile } from "../research";
-import { sessionClient, supabaseConfigured } from "../supabase/clients";
+import { db, dbConfigured } from "../db";
 
 /**
- * The research review queue, as editors see it. In Supabase mode it is read with the editor's own
- * session (row-level security limits it to editors); locally it is .data/research.json, written by
- * `npm run research`. Callers must already have checked requireEditor().
+ * The research review queue, as editors see it: the research_candidates table when DATABASE_URL is
+ * set, otherwise .data/research.json. Both are written by `npm run research`.
+ * Callers must already have checked requireEditor().
  */
 // Same file as RESEARCH_FILE, written as literal segments so the build can trace it narrowly.
 const FILE = path.join(process.cwd(), ".data", "research.json");
@@ -56,10 +56,11 @@ const fromRow = (r: Row): ResearchCandidate => ({
 });
 
 export async function listCandidates(): Promise<ResearchCandidate[]> {
-  if (supabaseConfigured()) {
-    const { data, error } = await (await sessionClient()).from("research_candidates").select("id, data, status, reviewed_by, reviewed_at, note, draft_id").limit(5000);
-    if (error) throw new Error(error.message);
-    return (data as Row[]).map(fromRow);
+  if (dbConfigured()) {
+    const [{ rows }] = await db()`
+      select coalesce(json_agg(r), '[]'::json) as rows
+      from (select id, data, status, reviewed_by, reviewed_at, note, draft_id from research_candidates limit 5000) r`;
+    return (rows as Row[]).map(fromRow);
   }
   return Object.values((await readLocal()).candidates);
 }
@@ -73,12 +74,12 @@ export async function recordDecision(
   decision: { status: ResearchCandidate["status"]; reviewedBy: string; note?: string; draftId?: string },
 ): Promise<void> {
   const reviewedAt = new Date().toISOString();
-  if (supabaseConfigured()) {
-    const { error } = await (await sessionClient())
-      .from("research_candidates")
-      .update({ status: decision.status, reviewed_by: decision.reviewedBy, reviewed_at: reviewedAt, note: decision.note ?? null, draft_id: decision.draftId ?? null })
-      .eq("id", id);
-    if (error) throw new Error(error.message);
+  if (dbConfigured()) {
+    const done = await db()`
+      update research_candidates
+      set status = ${decision.status}, reviewed_by = ${decision.reviewedBy}, reviewed_at = ${reviewedAt}, note = ${decision.note ?? null}, draft_id = ${decision.draftId ?? null}
+      where id = ${id}`;
+    if (!done.count) throw new Error("Candidate not found");
     return;
   }
   await updateLocal((f) => {

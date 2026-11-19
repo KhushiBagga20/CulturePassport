@@ -6,7 +6,7 @@ import type { CorrectionRequest, CountryRecord, MediaAsset, Revision, Source, Tr
 /**
  * Local demo-mode store. Admin edits are written to .data/store.json as overrides on top
  * of the seed archive, so the seed itself is never modified. This works for `next dev`
- * and `next start` on a writable disk; serverless hosts need the Supabase backend.
+ * and `next start` on a writable disk; serverless hosts need the PostgreSQL backend (DATABASE_URL).
  */
 export interface LocalStore {
   traditions: Record<string, Tradition>;

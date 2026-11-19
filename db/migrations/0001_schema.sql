@@ -1,4 +1,5 @@
--- Culture Passport — core schema
+-- Culture Passport — core schema (plain PostgreSQL, e.g. Neon)
+-- Only the web server connects, with DATABASE_URL; the public never talks to the database directly.
 -- A tradition may belong to several countries, places and communities; a source may
 -- support many claims; events carry their own certainty. Stable text IDs + slugs.
 
@@ -413,11 +414,8 @@ create table if not exists trail_steps (
 
 -- ───────────────────────────── editorial operations ─────────────────────────────
 
-create table if not exists editors (
-  user_id    uuid primary key references auth.users(id) on delete cascade,
-  role       text not null default 'editor' check (role in ('editor', 'admin')),
-  created_at timestamptz not null default now()
-);
+-- Editors sign in with the editor passcode (src/lib/auth.ts); the database stores their names, not accounts.
+
 
 -- Every generated QR label is recorded, so printed codes can be audited.
 create table if not exists qr_records (
@@ -425,16 +423,15 @@ create table if not exists qr_records (
   tradition_id text not null references traditions(id) on delete cascade,
   target_url   text not null,
   format       text not null check (format in ('svg', 'png', 'label')),
-  created_by   uuid references auth.users(id) on delete set null,
+  created_by   text,
   created_at   timestamptz not null default now()
 );
 
 -- Audit trail for significant edits to cultural claims.
 create table if not exists content_revisions (
   id        uuid primary key default gen_random_uuid(),
-  entity    text not null check (entity in ('tradition', 'source', 'media')),
+  entity    text not null check (entity in ('tradition', 'source', 'media', 'country')),
   entity_id text not null,
-  editor_id uuid references auth.users(id) on delete set null,
   editor    text not null,
   at        timestamptz not null default now(),
   summary   text not null,
@@ -454,7 +451,7 @@ create table if not exists correction_requests (
   status       text not null default 'open' check (status in ('open', 'accepted', 'dismissed')),
   created_at   timestamptz not null default now(),
   resolution   text,
-  resolved_by  uuid references auth.users(id) on delete set null
+  resolved_by  text
 );
 create index if not exists correction_requests_status_idx on correction_requests (status, created_at desc);
 

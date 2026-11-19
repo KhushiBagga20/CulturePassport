@@ -74,13 +74,13 @@ npm install
 cp .env.example .env.local
 ```
 
-Set `DEMO_ADMIN_PASSWORD` in `.env.local` to a long passcode (it unlocks `/admin`), then:
+Set `EDITOR_PASSCODE` in `.env.local` to a long passcode (it unlocks `/admin`), then:
 
 ```bash
 npm run dev
 ```
 
-Open http://localhost:3000. Without Supabase variables, the app reads the TypeScript seed archive in `src/lib/data/seed/`. Editor changes are written to `.data/store.json` (gitignored), layered over the seed. The seed itself is never modified.
+Open http://localhost:3000. Without `DATABASE_URL`, the app reads the TypeScript seed archive in `src/lib/data/seed/`. Editor changes are written to `.data/store.json` (gitignored), layered over the seed. The seed itself is never modified.
 
 ### Try the QR journey on your phone
 
@@ -93,34 +93,39 @@ QR codes encode the address you are browsing on, unless `NEXT_PUBLIC_SITE_URL` i
 | Variable | Required | Purpose |
 | --- | --- | --- |
 | `NEXT_PUBLIC_SITE_URL` | Production | Public origin for QR codes, share captions, the sitemap and Open Graph tags. Leave empty in development. |
-| `DEMO_ADMIN_PASSWORD` | Local demo admin | Passcode for the editorial desk when Supabase isn't configured. If unset, the desk stays locked. Never hard-coded. |
-| `DEMO_SESSION_SECRET` | Optional | Extra secret mixed into the signed editor session cookie. |
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase mode | Your project URL. |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` (or `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`) | Supabase mode | The **public** anon/publishable key. Row-level security decides what each request can do. |
+| `EDITOR_PASSCODE` | To edit | Passcode for the editorial desk (`DEMO_ADMIN_PASSWORD` is still accepted). If unset, the desk stays locked. Never hard-coded. |
+| `EDITOR_SESSION_SECRET` | Optional | Extra secret mixed into the signed editor session cookie (`DEMO_SESSION_SECRET` is still accepted). |
+| `DATABASE_URL` | Database mode | A PostgreSQL connection string, for example from Neon. When set, the site, the research pipeline and `npm run db:setup` all use it. **Server-only**: never give it a `NEXT_PUBLIC_` name. |
+| `DATABASE_POOL_MAX` | Optional | Connections per server process (default 5). |
 
-The app never reads a Supabase service-role key, so one can't leak to the browser.
+Only the server ever talks to the database, so its connection string never reaches the browser. Editing requires the editor passcode; public pages show published passports only.
 
 ---
 
-## Supabase setup (production backend)
+## Database setup (PostgreSQL on Neon)
 
-1. **Create a project** at supabase.com.
-2. **Add the keys**, using your own editor so they never pass through chat or logs:
-   - `.env.local` (the web app): `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` (the public anon or publishable key).
-   - `pipeline/.env` (server-only, git-ignored): `SUPABASE_DB_URL` (Dashboard → Connect → connection string, with your database password), plus `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` (or a secret key) for the research pipeline. Copy `pipeline/.env.example`.
-3. **Set up the database:** `npm run db:setup`. It applies any pending migrations in order, records them in a private `cp_admin.migrations` table, loads `supabase/seed.sql` if the archive is empty, then reports what the public can see. It is safe to re-run.
-   - `0001_schema.sql` creates the normalised tables: countries, places, communities, traditions, names, tradition↔place/community/country links, chapter sections, translations, claims and `claim_sources`, events and `event_sources`, case studies and questions, materials, process steps, practitioners, organisations, resources, related traditions, relationships, trails, editors, QR records, content revisions and correction requests. It also adds indexes and timestamps.
-   - `0002_policies.sql` adds RLS: anyone can read published content; drafts, and everything linked to them, are visible to editors only; only rows in `editors` can write. Anyone can submit a correction, but only editors can read one. It also adds a public, non-personal change-log view, and a transactional `save_tradition(jsonb)` RPC used by the editor.
-   - `0003_storage.sql` creates the public `media` bucket (images up to 8 MB) with editor-only uploads.
-   - `0004_research.sql` adds the private `research_candidates` review queue. Editors can read candidates and record decisions; only the research pipeline (service-role key) can insert. It also allows `country` entries in the audit history.
+1. **Create a free project** at neon.tech.
+2. **Copy its connection string**: Dashboard → Connect. Use the pooled one if offered (the host contains `-pooler`); it should end in `?sslmode=require`. Paste it into `.env.local` as `DATABASE_URL=…`, and into your host's environment settings when you deploy.
+3. **Set up the database:** `npm run db:setup`. It applies the migrations in `db/migrations` in order, records them in a separate `cp_admin.migrations` table, loads `db/seed.sql` if the archive is empty, and reports what is there. It never prints the connection string and is safe to re-run.
+   - `0001_schema.sql`: the normalised tables (countries, places, communities, traditions, names, links, chapter sections, translations, claims and `claim_sources`, events and `event_sources`, case studies, materials, process steps, practitioners, organisations, resources, relationships, trails, QR records, content revisions, correction requests), with indexes, constraints and timestamps.
+   - `0002_functions.sql`: `save_tradition(jsonb)`, which replaces a passport and all its child rows in one transaction.
+   - `0003_media_files.sql`: images uploaded through the editorial desk (up to 8 MB each), served by `/api/media/[file]`.
+   - `0004_research.sql`: the research review queue.
+4. **Restart or redeploy.** The site switches to the database whenever `DATABASE_URL` is set. Editors sign in with `EDITOR_PASSCODE`, and `npm run research -- --country GH` writes candidates to the database.
 
-   Without the script, run the four files and `supabase/seed.sql` in the SQL editor, in order.
-4. **Add editors.** Create a user under Authentication → Users (you choose the password), then run `npm run db:setup -- --editor their@email`.
-5. **Restart or redeploy** the app. It switches to Supabase automatically when both public Supabase variables are present, and editors then sign in with email and password. `npm run research -- --country GH` now writes to the Supabase review queue.
+Any PostgreSQL 14+ database works the same way (Railway, Render, Supabase's database on its own, or your own server).
 
-### Database tests (no Supabase project needed)
+### Database tests (no Neon project needed)
 
-`npm run test:db` creates a throwaway local PostgreSQL database and applies the migrations (with minimal stand-ins for Supabase's `auth` schema and roles). It then loads the generated seed, reads every table back, and checks that the archive round-trips **unchanged** through the normalised schema. It also checks RLS (anonymous visitors can't see drafts or their claims, can't modify content, can submit but not read corrections) and that `save_tradition` works for editors and is refused for everyone else. It also checks that the research queue is invisible to the public and to non-editors, and that editors can review but not insert candidates. It needs `createdb`, `psql` and `dropdb` on your PATH.
+`npm run test:db` creates a throwaway local PostgreSQL database and runs `npm run db:setup` against it, checking that the setup is safe to re-run and never prints the connection string. It then reads the archive back through the site's own loader and checks it matches the seed **exactly**, before exercising the write paths the site uses:
+- `save_tradition`, including drafts
+- source and country upserts
+- uploaded images, returned byte for byte
+- the research queue keeping editors' decisions
+- corrections and the audit log
+- database constraints
+
+It needs a local PostgreSQL server plus `createdb` and `dropdb` on your PATH.
 
 ---
 
@@ -129,8 +134,8 @@ The app never reads a Supabase service-role key, so one can't leak to the browse
 - **Photographs** are hotlinked from Wikimedia Commons thumbnails, each with credit, licence and source page in `src/lib/data/seed/registry.ts`. They're shown on every image and listed at `/method#credits`. If an image can't load, the tradition's archive illustration appears instead, clearly labelled.
 - **Archive illustrations** (`src/components/motifs/Motif.tsx`) are original geometric studies for wayfinding. They're labelled as not being traditional artworks and are never used as evidence.
 - **No runway photography is reproduced.** The Kolhapuri comparison shows a CC0 museum photograph beside an explicit "image not licensed" panel. Editors can attach a properly licensed image later.
-- **Uploads** go through `/admin/media` (JPEG, PNG, WebP or AVIF; max 8 MB; licence, credit and alt text required). They're stored in `.data/uploads/` in demo mode or the Supabase `media` bucket in production.
-- **For production**, consider mirroring the Commons images into Supabase Storage, keeping the credit fields intact.
+- **Uploads** go through `/admin/media` (JPEG, PNG, WebP or AVIF; max 8 MB; licence, credit and alt text required). They're stored in `.data/uploads/` without a database, or in the `media_files` table with one.
+- **For production**, consider mirroring the Commons images to your own storage, keeping the credit fields intact.
 - **Boundaries** come from Natural Earth via `world-atlas` (`public/geo/`), shown for orientation only, with no position on disputed territories. Places are plotted at approximate centres.
 - **Fonts**: Inter for everything (headlines, labels and reading text), self-hosted from `src/app/fonts` via `next/font/local` (no Google Fonts request at build or run time), plus `@fontsource/inter` for generated card and Open Graph images. SIL Open Font Licence.
 
@@ -139,7 +144,7 @@ The app never reads a Supabase service-role key, so one can't leak to the browse
 ## Deployment
 
 - **Vercel or any Node host**: `npm run build`, then `npm start`. Set `NEXT_PUBLIC_SITE_URL`.
-- **Local demo store**: this needs a writable disk (`next dev`, or `next start` on a server). On serverless hosts, use the Supabase backend; in demo mode the editorial desk there will report that it can't save.
+- **Storage**: without `DATABASE_URL`, edits are files in `.data/`, which needs a writable, persistent disk (`next dev`, or `next start` on a server). On serverless hosts such as Vercel, set `DATABASE_URL` (Neon), run `npm run db:setup` once, and build with the variable present.
 - **Caching**: passports, country pages and trails are statically generated and revalidate every 5 minutes. Editor saves revalidate the affected pages immediately.
 - **Before printing labels**, set `NEXT_PUBLIC_SITE_URL` so codes point to the public address. The label page warns if they would point to `localhost`.
 
@@ -153,8 +158,9 @@ npm run build        # production build
 npm run typecheck    # TypeScript
 npm run lint         # ESLint
 npm run validate     # archive referential integrity (seed)
-npm run seed:sql     # regenerate supabase/seed.sql from the TypeScript seed
-npm run test:db      # migrations + seed + RLS + RPC round-trip against local PostgreSQL
+npm run seed:sql     # regenerate db/seed.sql from the TypeScript seed
+npm run db:setup     # apply migrations and load the seed into DATABASE_URL (safe to re-run)
+npm run test:db      # setup + round-trip + write paths against a throwaway local PostgreSQL
 npm run research -- --country GH   # gather research candidates for a country (see pipeline/README.md)
 npm run test:research               # offline tests for the research pipeline
 ```
@@ -181,14 +187,15 @@ src/
   lib/
     types.ts                content model
     data/seed/              researched seed archive + integrity validator
-    data/rows.ts            content model ⇄ normalised SQL rows (shared by seed SQL, Supabase adapter and tests)
-    data/archive.ts         repository: local seed + store, or Supabase
+    data/rows.ts            content model ⇄ normalised SQL rows (shared by seed SQL, the Postgres adapter and tests)
+    data/archive.ts         repository: local seed + store, or PostgreSQL (data/pg.ts, db.ts)
     data/mutations.ts       editor writes, corrections, audit trail
-    auth.ts                 Supabase Auth editors / local signed sessions
-supabase/
-  migrations/               schema, RLS + RPC, storage
+    auth.ts                 editor passcode → signed session cookie
+db/
+  migrations/               schema, save_tradition, uploaded images, research queue
   seed.sql                  generated seed content
-scripts/                    validator, seed generator, database round-trip test
+pipeline/                   research pipeline (see pipeline/README.md)
+scripts/                    validator, seed generator, db:setup, database round-trip test
 ```
 
 ---
@@ -208,7 +215,8 @@ Evidence labels: **Documented**, **Community testimony**, **Historical interpret
 
 ## Known limitations
 
-- The Supabase adapter's schema, seed, RLS policies and editor RPC are tested against local PostgreSQL 18 (`npm run test:db`). The app itself has not yet been run against a hosted Supabase project, including Supabase Auth sign-in and Storage uploads.
+- The PostgreSQL backend is tested end to end against local PostgreSQL 18: the site, the editor desk, uploads served from the database, the research pipeline and `db:setup`. It has not yet been run against a hosted Neon project.
+- Editors share one passcode; the audit log records the name each editor types when signing in. Individual editor accounts are not built.
 - Warli and Ajrakh are honest editorial drafts. Practitioner interviews, verified artisan profiles and process reviews have not been done, and the UI says so.
 - The Prada Group announcement page (27 Apr 2026) timed out during research, so its details rest on independent trade reporting (WWD), which is noted in the source library.
 - Image-sharing support depends on the device's Web Share API. Where it isn't available, the app offers download and copy instead.

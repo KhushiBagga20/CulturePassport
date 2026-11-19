@@ -3,22 +3,13 @@
 import { useActionState } from "react";
 import { loginAction, type ActionResult } from "@/app/admin/actions";
 
-export function LoginForm({ mode }: { mode: "supabase" | "local" }) {
+export function LoginForm() {
   const [state, action, pending] = useActionState<ActionResult | null, FormData>(loginAction, null);
   return (
     <form action={action} className="grid gap-4">
-      {mode === "supabase" ? (
-        <>
-          <Field label="Email" name="email" type="email" autoComplete="username" />
-          <Field label="Password" name="password" type="password" autoComplete="current-password" />
-        </>
-      ) : (
-        <>
-          <Field label="Your name (for the audit log)" name="name" autoComplete="name" />
-          <Field label="Editor passcode" name="passcode" type="password" autoComplete="current-password" />
-          <p className="text-xs text-ink-mute">Local demo mode. The passcode is read from DEMO_ADMIN_PASSWORD in .env.local.</p>
-        </>
-      )}
+      <Field label="Your name (for the audit log)" name="name" autoComplete="name" />
+      <Field label="Editor passcode" name="passcode" type="password" autoComplete="current-password" />
+      <p className="text-xs text-ink-mute">The passcode is set in EDITOR_PASSCODE on the server.</p>
       {state && !state.ok && (
         <p className="text-sm text-terracotta" role="alert">
           {state.message}

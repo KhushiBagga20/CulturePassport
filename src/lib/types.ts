@@ -1,8 +1,8 @@
 /**
  * Culture Passport content model.
  *
- * The same shapes are used by the local seed archive and by the Supabase adapter
- * (see supabase/migrations/0001_schema.sql for the normalised tables they map to).
+ * The same shapes are used by the local seed archive and by the PostgreSQL adapter
+ * (see db/migrations/0001_schema.sql for the normalised tables they map to).
  * Keep this file free of runtime code so the seed generator can strip types with Node.
  */
 
@@ -127,7 +127,7 @@ export interface MediaAsset {
   commonsFile?: string;
   /** two-level hash path used by upload.wikimedia.org, e.g. "8/8a" */
   commonsHash?: string;
-  /** direct URL for locally uploaded or Supabase Storage assets */
+  /** direct URL for images uploaded through the editorial desk (/api/media/…) */
   url?: string;
   width: number;
   height: number;
@@ -384,7 +384,7 @@ export interface Archive {
   relationships: Relationship[];
   trails: Trail[];
   /** which backend produced this archive */
-  backend: "local-seed" | "local-store" | "supabase";
+  backend: "local-seed" | "local-store" | "postgres";
 }
 
 export interface Revision {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getEditor, localAdminConfigured } from "@/lib/auth";
-import { supabaseConfigured } from "@/lib/supabase/clients";
+import { dbConfigured } from "@/lib/db";
 import { LoginForm } from "@/components/admin/LoginForm";
 
 export const dynamic = "force-dynamic";
@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "Editor sign-in", robots: { index: fa
 
 export default async function LoginPage() {
   if (await getEditor()) redirect("/admin");
-  const mode = supabaseConfigured() ? "supabase" : localAdminConfigured() ? "local" : "locked";
+  const locked = !localAdminConfigured();
   return (
     <div className="mx-auto grid max-w-5xl gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:py-24">
       <div>
@@ -22,22 +22,22 @@ export default async function LoginPage() {
         <dl className="mt-8 space-y-3 text-sm">
           <div>
             <dt className="label-sm text-ink-mute">Backend</dt>
-            <dd>{mode === "supabase" ? "Supabase (PostgreSQL + Auth, row-level security)" : "Local demo mode — seed archive + .data/store.json"}</dd>
+            <dd>{dbConfigured() ? "PostgreSQL (DATABASE_URL)" : "Local mode — seed archive + .data/store.json"}</dd>
           </div>
         </dl>
       </div>
       <div className="paper-card p-6 sm:p-8">
-        {mode === "locked" ? (
+        {locked ? (
           <div>
             <p className="label text-terracotta">The desk is locked</p>
             <p className="mt-3 text-sm text-ink-soft">
-              No editor credentials are configured. For local demo mode, add a passcode to <code className="font-mono">.env.local</code>:
+              No editor passcode is configured. Add one to <code className="font-mono">.env.local</code> (or your host&rsquo;s environment settings):
             </p>
-            <pre className="mt-3 overflow-x-auto bg-ink p-3 font-mono text-xs text-ivory">DEMO_ADMIN_PASSWORD=choose-a-long-passcode</pre>
-            <p className="mt-3 text-sm text-ink-soft">Then restart the dev server. For production, configure Supabase — see the README.</p>
+            <pre className="mt-3 overflow-x-auto bg-ink p-3 font-mono text-xs text-ivory">EDITOR_PASSCODE=choose-a-long-passcode</pre>
+            <p className="mt-3 text-sm text-ink-soft">Then restart the server.</p>
           </div>
         ) : (
-          <LoginForm mode={mode} />
+          <LoginForm />
         )}
       </div>
     </div>

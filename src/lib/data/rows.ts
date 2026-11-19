@@ -1,8 +1,8 @@
 /**
  * Pure mapping between the Culture Passport content model and the normalised
- * Postgres tables in supabase/migrations. Used by:
+ * Postgres tables in db/migrations. Used by:
  *   - scripts/generate-seed-sql.mts  (archive → rows → SQL)
- *   - the Supabase adapter           (rows → archive, tradition → rows on save)
+ *   - the PostgreSQL adapter         (rows → archive, tradition → rows on save)
  *   - scripts/test-db-roundtrip.mts  (archive → SQL → Postgres → rows → archive)
  * No runtime imports other than types, so Node can run it with type stripping.
  */

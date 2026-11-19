@@ -25,7 +25,7 @@ export default async function DeskLayout({ children }: LayoutProps<"/admin">) {
         <div className="lg:sticky lg:top-20">
           <p className="label-sm text-ink-mute">Signed in as</p>
           <p className="font-title text-xl">{editor.name}</p>
-          <p className="label-sm text-ink-mute">{editor.mode === "supabase" ? "Supabase editor" : "Local demo editor"}</p>
+          <p className="label-sm text-ink-mute">Editor</p>
           <nav aria-label="Editorial desk" className="no-scrollbar mt-6 flex gap-1 overflow-x-auto lg:flex-col">
             {NAV.map((n) => (
               <Link key={n.href} href={n.href} className="label shrink-0 rounded px-3 py-2 hover:bg-paper">

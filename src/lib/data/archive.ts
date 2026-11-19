@@ -1,13 +1,12 @@
 import { cache } from "react";
-import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Archive, MediaAsset, Source, Tradition } from "../types";
 import { seedArchive } from "./seed";
 import { readStore } from "./local-store";
-import { rowsToArchive, GLOBAL_TABLES, TRADITION_CHILD_TABLES, LATE_TABLES } from "./rows";
-import { publicClient, supabaseConfigured } from "../supabase/clients";
+import { dbConfigured } from "../db";
+import { loadPostgresArchive } from "./pg";
 
-export type Backend = "local" | "supabase";
-export const backend = (): Backend => (supabaseConfigured() ? "supabase" : "local");
+export type Backend = "local" | "postgres";
+export const backend = (): Backend => (dbConfigured() ? "postgres" : "local");
 
 function mergeById<T extends { id: string }>(base: T[], overrides: Record<string, T>): T[] {
   const seen = new Set<string>();
@@ -33,21 +32,9 @@ async function loadLocal(): Promise<Archive> {
   };
 }
 
-export async function loadSupabaseArchive(client: SupabaseClient): Promise<Archive> {
-  const tables = [...GLOBAL_TABLES, "traditions", ...TRADITION_CHILD_TABLES, ...LATE_TABLES];
-  const results = await Promise.all(
-    tables.map(async (t) => {
-      const { data, error } = await client.from(t).select("*").limit(10000);
-      if (error) throw new Error(`Supabase read failed for ${t}: ${error.message}`);
-      return [t, data ?? []] as const;
-    }),
-  );
-  return { ...rowsToArchive(Object.fromEntries(results)), backend: "supabase" };
-}
-
-/** The whole archive (it is small), memoised per request. Includes drafts in local mode. */
+/** The whole archive (it is small), memoised per request. Includes drafts; public pages filter with isPublic(). */
 export const getArchive = cache(async (): Promise<Archive> => {
-  if (supabaseConfigured()) return loadSupabaseArchive(publicClient());
+  if (dbConfigured()) return loadPostgresArchive();
   return loadLocal();
 });
 

@@ -1,7 +1,7 @@
 /**
  * Culture Passport research pipeline.
  *
- *   npm run research -- --country GH --country MX [--limit 40] [--dry-run] [--target local|supabase]
+ *   npm run research -- --country GH --country MX [--limit 40] [--dry-run] [--target local|postgres]
  *
  * For each country (ISO 3166-1 alpha-2) it finds UNESCO-listed intangible heritage on Wikidata,
  * fetches each element's record, image licence (Wikimedia Commons) and the country's languages,
@@ -9,10 +9,9 @@
  * an editor reviews candidates at /admin/research and can turn one into a draft.
  *
  * Targets
- *   local     .data/research.json (default when no Supabase service credentials are set)
- *   supabase  research_candidates table, using SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY from
- *             pipeline/.env. That key bypasses row-level security, so it lives only here and must
- *             never be given a NEXT_PUBLIC_ name or be put in the web app's environment.
+ *   local     .data/research.json (default when DATABASE_URL is not set)
+ *   postgres  the research_candidates table, using DATABASE_URL from .env.local (or pipeline/.env).
+ *             That connection string is server-only: never give it a NEXT_PUBLIC_ name.
  */
 import { createHash } from "node:crypto";
 import { promises as fs } from "node:fs";
@@ -47,15 +46,15 @@ const opt = (name: string) => argv.flatMap((a, i) => (a === `--${name}` ? [argv[
 const countries = opt("country").flatMap((c) => c.split(",")).map((c) => c.trim().toUpperCase()).filter(Boolean);
 const limit = Number(opt("limit")[0] ?? 60);
 const dryRun = argv.includes("--dry-run");
-const hasSupabase = !!(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
-const target = (opt("target")[0] ?? (hasSupabase ? "supabase" : "local")) as "local" | "supabase";
+const hasDb = !!process.env.DATABASE_URL?.trim();
+const target = (opt("target")[0] ?? (hasDb ? "postgres" : "local")) as "local" | "postgres";
 
 if (!countries.length || countries.some((c) => !/^[A-Z]{2}$/.test(c))) {
-  console.error("Usage: npm run research -- --country GH [--country MX] [--limit 60] [--dry-run] [--target local|supabase]");
+  console.error("Usage: npm run research -- --country GH [--country MX] [--limit 60] [--dry-run] [--target local|postgres]");
   process.exit(1);
 }
-if (target === "supabase" && !hasSupabase) {
-  console.error("--target supabase needs SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in pipeline/.env (see pipeline/README.md).");
+if (target === "postgres" && !hasDb) {
+  console.error("--target postgres needs DATABASE_URL (in .env.local or pipeline/.env).");
   process.exit(1);
 }
 
@@ -212,16 +211,19 @@ async function writeLocal(cands: ResearchCandidate[]) {
   console.log(`\nWrote ${cands.length} candidates to ${RESEARCH_FILE} (editor decisions were kept).`);
 }
 
-async function writeSupabase(cands: ResearchCandidate[]) {
-  const { createClient } = await import("@supabase/supabase-js");
-  const db = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } });
-  // Status and review columns are not sent, so an editor's decision survives a refresh.
-  const rows = cands.map((c) => ({ id: c.id, country_iso2: c.country.iso2, wikidata_id: c.wikidataId, name: c.name, data: c, fetched_at: c.fetchedAt }));
-  for (let i = 0; i < rows.length; i += 100) {
-    const { error } = await db.from("research_candidates").upsert(rows.slice(i, i + 100), { onConflict: "id" });
-    if (error) throw new Error(`Supabase: ${error.message}`);
+async function writePostgres(cands: ResearchCandidate[]) {
+  const { db } = await import("../src/lib/db.ts");
+  const sql = db();
+  // Status and review columns are not touched on conflict, so an editor's decision survives a refresh.
+  for (const c of cands) {
+    await sql`
+      insert into research_candidates (id, country_iso2, wikidata_id, name, data, fetched_at)
+      values (${c.id}, ${c.country.iso2}, ${c.wikidataId}, ${c.name}, ${sql.json(c as never)}, ${c.fetchedAt})
+      on conflict (id) do update set country_iso2 = excluded.country_iso2, wikidata_id = excluded.wikidata_id,
+        name = excluded.name, data = excluded.data, fetched_at = excluded.fetched_at`;
   }
-  console.log(`\nUpserted ${cands.length} candidates into research_candidates.`);
+  await sql.end();
+  console.log(`\nUpserted ${cands.length} candidates into research_candidates (editor decisions were kept).`);
 }
 
 // ───────────────────────────── main ─────────────────────────────
@@ -239,6 +241,6 @@ if (dryRun) {
   for (const c of all.slice(0, 15)) console.log(`  · ${c.country.iso2} ${c.name}${c.ich ? ` [${c.ich.id}${c.ich.year ? `, ${c.ich.year}` : ""}]` : ""}${c.materialCulture ? " ◆ craft" : ""}`);
   console.log(`\nDry run: ${all.length} candidates, nothing written.`);
 } else if (all.length) {
-  if (target === "supabase") await writeSupabase(all);
+  if (target === "postgres") await writePostgres(all);
   else await writeLocal(all);
 }
