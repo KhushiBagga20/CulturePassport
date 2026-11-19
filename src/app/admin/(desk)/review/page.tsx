@@ -4,10 +4,12 @@ import { getArchive } from "@/lib/data/archive";
 import { listCorrections } from "@/lib/data/mutations";
 import { resolveCorrectionAction } from "../../actions";
 import { ActionForm, inputClass } from "@/components/admin/ActionForm";
+import { requireEditorPage } from "@/lib/auth";
 
 export const metadata: Metadata = { title: "Review queue", robots: { index: false } };
 
 export default async function ReviewPage() {
+  await requireEditorPage();
   const archive = await getArchive();
   const corrections = await listCorrections();
   const byId = new Map(archive.traditions.map((t) => [t.id, t]));

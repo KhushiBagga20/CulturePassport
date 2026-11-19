@@ -4,10 +4,12 @@ import { notFound } from "next/navigation";
 import { getArchive } from "@/lib/data/archive";
 import { listRevisions } from "@/lib/data/mutations";
 import { TraditionEditor } from "@/components/admin/TraditionEditor";
+import { requireEditorPage } from "@/lib/auth";
 
 export const metadata: Metadata = { title: "Edit passport", robots: { index: false } };
 
 export default async function EditPassportPage({ params }: PageProps<"/admin/passports/[id]">) {
+  await requireEditorPage();
   const { id } = await params;
   const archive = await getArchive();
   const t = archive.traditions.find((x) => x.id === id);

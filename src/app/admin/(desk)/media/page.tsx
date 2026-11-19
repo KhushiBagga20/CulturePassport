@@ -3,10 +3,12 @@ import { getArchive } from "@/lib/data/archive";
 import { mediaUrl } from "@/lib/media";
 import { uploadMediaAction } from "../../actions";
 import { ActionForm, Field, inputClass } from "@/components/admin/ActionForm";
+import { requireEditorPage } from "@/lib/auth";
 
 export const metadata: Metadata = { title: "Media", robots: { index: false } };
 
 export default async function MediaPage() {
+  await requireEditorPage();
   const archive = await getArchive();
   return (
     <div>

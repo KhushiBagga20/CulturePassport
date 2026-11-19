@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { listRevisions } from "@/lib/data/mutations";
+import { requireEditorPage } from "@/lib/auth";
 
 export const metadata: Metadata = { title: "History", robots: { index: false } };
 
 export default async function HistoryPage() {
+  await requireEditorPage();
   const revisions = await listRevisions();
   return (
     <div>

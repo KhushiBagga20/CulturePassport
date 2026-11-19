@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 /**
  * Editor authentication: a passcode from EDITOR_PASSCODE (or the older DEMO_ADMIN_PASSWORD), never
@@ -81,5 +82,15 @@ export async function getEditor(): Promise<Editor | null> {
 export async function requireEditor(): Promise<Editor> {
   const e = await getEditor();
   if (!e) throw new Error("Not signed in as an editor");
+  return e;
+}
+
+/**
+ * Guard for editor pages. Call it first in every page under /admin: Next renders layouts and pages
+ * in parallel, so a check in the layout alone would still let a page's data stream to the browser.
+ */
+export async function requireEditorPage(): Promise<Editor> {
+  const e = await getEditor();
+  if (!e) redirect("/admin/login");
   return e;
 }

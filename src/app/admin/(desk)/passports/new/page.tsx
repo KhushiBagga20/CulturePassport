@@ -3,10 +3,12 @@ import { getArchive } from "@/lib/data/archive";
 import { CATEGORY } from "@/lib/labels";
 import { createTraditionAction } from "../../../actions";
 import { ActionForm, Field, inputClass } from "@/components/admin/ActionForm";
+import { requireEditorPage } from "@/lib/auth";
 
 export const metadata: Metadata = { title: "New passport", robots: { index: false } };
 
 export default async function NewPassportPage() {
+  await requireEditorPage();
   const archive = await getArchive();
   const nextNo = String(Math.max(0, ...archive.traditions.map((t) => Number(t.passportNo))) + 1).padStart(3, "0");
   return (

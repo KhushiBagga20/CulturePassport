@@ -3,10 +3,12 @@ import { getArchive } from "@/lib/data/archive";
 import { SOURCE_TYPE, formatSourceDate } from "@/lib/labels";
 import { saveSourceAction } from "../../actions";
 import { ActionForm, Field, inputClass } from "@/components/admin/ActionForm";
+import { requireEditorPage } from "@/lib/auth";
 
 export const metadata: Metadata = { title: "Sources", robots: { index: false } };
 
 export default async function SourcesPage({ searchParams }: PageProps<"/admin/sources">) {
+  await requireEditorPage();
   const { edit } = await searchParams;
   const archive = await getArchive();
   const editing = archive.sources.find((s) => s.id === edit);

@@ -6,12 +6,14 @@ import { mediaUrl } from "@/lib/media";
 import type { MediaAsset } from "@/lib/types";
 import { addCountryFromCandidateAction, draftFromCandidateAction, rejectCandidateAction, reopenCandidateAction } from "../../actions";
 import { ActionForm, inputClass } from "@/components/admin/ActionForm";
+import { requireEditorPage } from "@/lib/auth";
 
 export const metadata: Metadata = { title: "Research queue", robots: { index: false } };
 
 const STATUS = { new: "To review", rejected: "Rejected", drafted: "Drafted" } as const;
 
 export default async function ResearchPage({ searchParams }: PageProps<"/admin/research">) {
+  await requireEditorPage();
   const sp = await searchParams;
   const country = typeof sp.country === "string" ? sp.country : "all";
   const status = (typeof sp.status === "string" ? sp.status : "new") as keyof typeof STATUS | "all";

@@ -4,10 +4,12 @@ import { getArchive, isPublic } from "@/lib/data/archive";
 import { passportPath, requestOrigin } from "@/lib/site";
 import { qrSvg } from "@/lib/qr";
 import { recordQr } from "@/lib/data/mutations";
+import { requireEditorPage } from "@/lib/auth";
 
 export const metadata: Metadata = { title: "QR labels", robots: { index: false } };
 
 export default async function QrAdminPage() {
+  await requireEditorPage();
   const archive = await getArchive();
   const origin = await requestOrigin();
   const published = archive.traditions.filter(isPublic);
