@@ -4,17 +4,33 @@ export const SITE_NAME = "Culture Passport";
 export const CAMPAIGN = "When Culture Travels";
 export const TAGLINE = "When culture travels, let its story travel with it.";
 
+/**
+ * Turns "culture-passport.vercel.app", "https://example.org/" or "example.org/path" into a bare
+ * origin like "https://culture-passport.vercel.app". Returns null for anything that isn't a URL.
+ */
+export function normaliseOrigin(raw: string | undefined | null): string | null {
+  const v = raw?.trim().replace(/^["']|["']$/g, "");
+  if (!v) return null;
+  try {
+    const local = /^(localhost|127\.|\[::1\])/.test(v);
+    return new URL(/^[a-z][a-z0-9+.-]*:\/\//i.test(v) ? v : `${local ? "http" : "https"}://${v}`).origin;
+  } catch {
+    return null;
+  }
+}
+
 /** Canonical origin from configuration, if any. Never includes a trailing slash. */
 export function configuredOrigin(): string | null {
-  const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  if (!raw) return null;
-  return raw.replace(/\/+$/, "");
+  return normaliseOrigin(process.env.NEXT_PUBLIC_SITE_URL);
 }
 
 /** Used where no request is available (static generation, metadata base). On Vercel, falls back to the production domain. */
 export function staticOrigin(): string {
-  const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
-  return configuredOrigin() ?? (vercel ? `https://${vercel}` : `http://localhost:${process.env.PORT ?? 3000}`);
+  return (
+    configuredOrigin() ??
+    normaliseOrigin(process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL) ??
+    `http://localhost:${process.env.PORT ?? 3000}`
+  );
 }
 
 /**
