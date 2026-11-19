@@ -73,23 +73,15 @@ export default async function ExplorePage() {
                           </span>
                         </Link>
                         <p className="mt-1 text-sm text-ink-soft">{c.headline}</p>
-                        <p className="mt-3 flex flex-wrap gap-1.5">
-                          {own.map((t) => (
-                            <Link key={t.slug} href={`/passport/${t.slug}`} className="chip">
-                              No. {t.passportNo} {t.name}
-                            </Link>
-                          ))}
-                          {shared.map((t) => (
-                            <Link key={t.slug} href={`/passport/${t.slug}`} className="chip border-dashed">
-                              Shared · {t.name}
-                            </Link>
-                          ))}
-                          {own.length + shared.length === 0 &&
-                            c.candidates.map((x) => (
-                              <span key={x.name} className="chip border-dashed text-ink-mute">
-                                Candidate · {x.name}
-                              </span>
-                            ))}
+                        {/* Counts only: the passports themselves live on the country page and in Stories. */}
+                        <p className="label-sm mt-3 text-ink-mute">
+                          {[
+                            own.length && `${own.length} passport${own.length === 1 ? "" : "s"}`,
+                            shared.length && `${shared.length} shared across a border`,
+                            own.length + shared.length === 0 && c.candidates.length && `${c.candidates.length} being documented`,
+                          ]
+                            .filter(Boolean)
+                            .join(" · ")}
                         </p>
                       </li>
                     );

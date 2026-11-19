@@ -12,7 +12,7 @@ import { loadWorld, supportsWebGL, type GlobeCountry, type World, type WorldFeat
 import type { Flight, GlobeLabel } from "./GlobeCanvas";
 import { FlatAtlas } from "./FlatAtlas";
 import { Magnetic, SplitHeadline } from "@/components/site/Motion";
-import { RotatingSeal } from "@/components/site/Seal";
+import { WarliLoader } from "@/components/site/WarliLoader";
 
 const GlobeCanvas = dynamic(() => import("./GlobeCanvas"), { ssr: false });
 
@@ -255,9 +255,8 @@ export function GlobeExperience({ countries, passports }: { countries: GlobeCoun
 
         {/* archival loader */}
         {!ready && !error && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4" role="status">
-            <RotatingSeal id="loader" text="UNFOLDING THE ATLAS · WHEN CULTURE TRAVELS · " center="···" className="h-28 w-28 text-burgundy" />
-            <span className="label text-ink-mute">Unfolding the atlas…</span>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <WarliLoader label="Unfolding the atlas…" />
           </div>
         )}
         {error && (
@@ -323,46 +322,25 @@ export function GlobeExperience({ countries, passports }: { countries: GlobeCoun
             <SplitHeadline text="When culture travels" />
           </h1>
           <p className="font-title mt-3 text-[clamp(1.7rem,3.4vw,2.8rem)] italic leading-tight text-brick">Let its story travel with it.</p>
-          {/* How to use the globe, in three steps */}
-          <ol className="mt-5 grid max-w-md grid-cols-3 border-2 border-ink bg-bone" aria-label="How to explore">
-            {[
-              mode === "2d" ? "Hover or tab to a country" : "Drag to spin the globe",
-              "Pick a coloured country",
-              "Open its collection",
-            ].map((step, i) => (
-              <li key={step} className={`flex items-start gap-2 p-2.5 ${i < 2 ? "border-r-2 border-ink" : ""}`}>
-                <span className="font-display text-2xl leading-[0.8] text-brick">{i + 1}</span>
-                <span className="font-ui text-[0.68rem] font-semibold leading-tight">{step}</span>
-              </li>
-            ))}
-          </ol>
-          <div className="mt-5 flex flex-wrap items-center gap-2 sm:gap-3">
+          <p className="mt-4 text-sm text-ink-soft">
+            {mode === "2d" ? "Hover or tab to a country" : "Drag to spin"} · pick a coloured country to open its collection
+          </p>
+          <div className="mt-5">
             <Magnetic>
-              <button
-                type="button"
-                onClick={() => selectById("356", true)}
-                disabled={!world}
-                className="btn btn-red group px-3.5 disabled:opacity-60 sm:px-[1.15rem]"
-              >
+              <button type="button" onClick={() => selectById("356", true)} disabled={!world} className="btn btn-red group disabled:opacity-60">
                 <span>Explore the world</span>
                 <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
               </button>
             </Magnetic>
-            <button
-              type="button"
-              onClick={() => passportDialog.current?.showModal()}
-              className="btn btn-cream px-3.5 sm:px-[1.15rem]"
-            >
-              Enter a <span className="max-sm:hidden">Culture </span>Passport
-            </button>
           </div>
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            <button type="button" onClick={() => indexDialog.current?.showModal()} className="chip bg-bone">
-              ☰ Countries as a list
+          {/* Quiet alternatives to the globe: a passport number, a keyboard-friendly list, a flat map. */}
+          <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink-soft">
+            <button type="button" onClick={() => passportDialog.current?.showModal()} className="underline decoration-ink/30 underline-offset-4 hover:text-ink">
+              Open a passport by number
             </button>
-            <Link href="/search" className="chip bg-bone">
-              ⌕ Search a tradition
-            </Link>
+            <button type="button" onClick={() => indexDialog.current?.showModal()} className="underline decoration-ink/30 underline-offset-4 hover:text-ink">
+              Choose a country from a list
+            </button>
             {mode && detected === "3d" && (
               <button
                 type="button"
@@ -371,12 +349,12 @@ export function GlobeExperience({ countries, passports }: { countries: GlobeCoun
                   setReady(false);
                   setMode(mode === "3d" ? "2d" : detectMode());
                 }}
-                className="chip bg-bone max-sm:hidden"
+                className="underline decoration-ink/30 underline-offset-4 hover:text-ink max-sm:hidden"
               >
-                {mode === "3d" ? "Switch to flat atlas" : "Switch to 3D globe"}
+                {mode === "3d" ? "Flat map" : "3D globe"}
               </button>
             )}
-          </div>
+          </p>
           {/* Legend */}
           <ul className="mt-6 grid grid-cols-2 gap-x-4 gap-y-1.5 border-t rule pt-4 max-sm:hidden" aria-label="Map legend">
             {(Object.keys(COUNTRY_STATUS) as CountryStatus[]).map((s) => (

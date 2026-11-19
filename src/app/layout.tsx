@@ -1,16 +1,28 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { SITE_NAME, TAGLINE, staticOrigin } from "@/lib/site";
 
-/* One plain, highly legible family for everything: headlines, labels and reading text. */
-const inter = Inter({
+/*
+ * One plain, highly legible family for everything: headlines, labels and reading text.
+ * Self-hosted (Inter, SIL OFL 1.1, files from @fontsource/inter) so builds and dev servers never
+ * depend on reaching Google Fonts; a failed download used to fall back silently to Arial.
+ */
+const inter = localFont({
   variable: "--font-inter",
-  subsets: ["latin", "latin-ext"],
-  style: ["normal", "italic"],
   display: "swap",
+  fallback: ["system-ui", "-apple-system", "Segoe UI", "Arial", "sans-serif"],
+  src: [
+    { path: "./fonts/inter-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/inter-latin-500-normal.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/inter-latin-600-normal.woff2", weight: "600", style: "normal" },
+    { path: "./fonts/inter-latin-700-normal.woff2", weight: "700", style: "normal" },
+    { path: "./fonts/inter-latin-800-normal.woff2", weight: "800", style: "normal" },
+    { path: "./fonts/inter-latin-600-italic.woff2", weight: "600", style: "italic" },
+    { path: "./fonts/inter-latin-700-italic.woff2", weight: "700", style: "italic" },
+  ],
 });
 
 export const metadata: Metadata = {

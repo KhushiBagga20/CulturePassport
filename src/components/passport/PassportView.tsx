@@ -4,11 +4,9 @@ import type { Archive, Tradition } from "@/lib/types";
 import { citedSources, isPublic, lookups } from "@/lib/data/archive";
 import { publicChangeLog } from "@/lib/data/mutations";
 import { ACCENT, CATEGORY, MATURITY, RELATIONSHIP, SOURCE_TYPE, accentVars, formatSourceDate } from "@/lib/labels";
-import { shareCaption } from "@/lib/share";
 import { ArchiveImage } from "@/components/site/ArchiveImage";
 import { DiamondBadge, RotatingSeal } from "@/components/site/Seal";
 import { EvidenceBadge, SourceMarks } from "@/components/site/Evidence";
-import { Ticker } from "@/components/site/Ticker";
 import { Motif } from "@/components/motifs/Motif";
 import { Blocks, ChapterHeading, type BlockContext } from "./Blocks";
 import { ChapterBar } from "./ChapterBar";
@@ -16,7 +14,7 @@ import { Timeline, type TimelineItem } from "./Timeline";
 import { CaseFile } from "./CaseFile";
 import { SourcesReferences, type NumberedSource } from "./SourcesReferences";
 import { SourceDrawer, type DrawerSource } from "./SourceDrawer";
-import { QrPanel, ShareWithCredit } from "./SharePanel";
+import { QrPanel } from "./SharePanel";
 import { CorrectionForm } from "./CorrectionForm";
 import { PlacesMap } from "./PlacesMap";
 import { ProcessFlow } from "./ProcessFlow";
@@ -152,11 +150,6 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
       title: tr.title,
       steps: tr.steps.map((s) => ({ slug: s.tradition, name: L.tradition.get(s.tradition)?.name ?? s.tradition })),
     }));
-  const captionTemplate = shareCaption(
-    t,
-    "{url}",
-    communities.map((c) => c.name),
-  );
   const back = country ? { href: `/country/${country.slug}`, label: `${country.name === "United Arab Emirates" ? "UAE" : country.name} collection` } : undefined;
 
   return (
@@ -248,28 +241,18 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
               <a href="#origins" className="btn btn-ink">
                 Start the story ↓
               </a>
-              <a href="#evidence" className="btn btn-cream">
-                {order.length} sources
-              </a>
             </div>
           </div>
 
         </div>
       </section>
 
-      <Ticker
-        items={[`Culture Passport No. ${t.passportNo}`, t.name, t.regionLabel, CATEGORY[t.category], `${order.length} sources`, `Reviewed ${formatSourceDate(t.editorial.lastReviewed)}`]}
-        className="border-y-2 border-ink bg-ink py-2.5 font-display text-[1.28rem] uppercase text-bone"
-        dotClassName="text-[var(--accent)]"
-      />
-
       {/* ─────────── At a glance ─────────── */}
       <section aria-label="At a glance" className="border-b-2 border-ink bg-cream">
-        <dl className={`${WRAP} grid gap-3 py-8 sm:grid-cols-2 lg:grid-cols-4`}>
+        <dl className={`${WRAP} grid gap-3 py-8 sm:grid-cols-3`}>
           {[
             ["Category", CATEGORY[t.category], t.techniques.slice(0, 3).join(" · "), "bg-orange text-ink"],
             ["Where", t.regionLabel, country ? `Collection: ${country.name}` : "", "bg-cobalt text-bone"],
-            ["Communities", communities.map((c) => c.name).join(" · ") || "Not yet recorded", "", "bg-green text-bone"],
             ["Also known as", t.alternateNames.join(" · ") || "—", MATURITY[t.maturity].label, "border-2 border-ink bg-bone text-ink"],
           ].map(([k, v, sub, cls]) => (
             <div key={k} className={`relative flex min-h-36 flex-col p-5 ${cls}`}>
@@ -554,7 +537,15 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
             </div>
             <div className="space-y-6 lg:col-span-5">
               <QrPanel slug={t.slug} passportNo={t.passportNo} name={t.name} />
-              <ShareWithCredit slug={t.slug} passportNo={t.passportNo} name={t.name} captionTemplate={captionTemplate} />
+              <Link href={`/passport/${t.slug}/card`} className="group flex items-center justify-between gap-4 border-2 border-ink bg-yellow p-5 transition-transform hover:-translate-y-0.5">
+                <span>
+                  <span className="label block">Share with credit</span>
+                  <span className="font-title mt-1 block text-xl">Identity card, image and a caption that carries the source</span>
+                </span>
+                <span aria-hidden className="font-display text-3xl transition-transform group-hover:translate-x-1">
+                  →
+                </span>
+              </Link>
             </div>
           </div>
 
@@ -599,29 +590,10 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
 
       {/* ─────────── Related & next ─────────── */}
       <section aria-label="More stories" className="border-t-2 border-ink bg-sand">
-        <div className={`${WRAP} py-16 lg:py-20`}>
-          <p className="label text-brick">Related stories</p>
-          <div className="mt-6 grid gap-4 md:grid-cols-3">
-            {t.related.map((r) => {
-              const o = L.tradition.get(r.slug);
-              if (!o || !isPublic(o)) return null;
-              return (
-                <Link key={r.slug} href={`/passport/${o.slug}`} className="group flex gap-4 border-2 border-ink bg-bone p-4 transition-transform hover:-translate-y-1">
-                  <span className="h-24 w-20 shrink-0 overflow-hidden border-2 border-ink">
-                    <Motif motif={o.motif} className="h-full w-full" />
-                  </span>
-                  <span>
-                    <span className="font-ui text-xs font-bold text-ink-mute">No. {o.passportNo}</span>
-                    <span className="font-display block text-2xl group-hover:text-brick">{o.name}</span>
-                    <span className="mt-1 block text-sm text-ink-soft">{r.reason}</span>
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-          {trails.length > 0 && (
-            <p className="mt-8 text-sm text-ink-soft">
-              <span className="label-sm text-ink-mute">On the trails: </span>
+        {trails.length > 0 && (
+          <div className={`${WRAP} py-8`}>
+            <p className="text-sm text-ink-soft">
+              <span className="label-sm text-ink-mute">This passport is a stop on: </span>
               {trails.map((tr, i) => (
                 <span key={tr.slug}>
                   {i > 0 && " · "}
@@ -631,9 +603,9 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
                 </span>
               ))}
             </p>
-          )}
-        </div>
-        <nav aria-label="Passport register" className="grid border-t-2 border-ink sm:grid-cols-2">
+          </div>
+        )}
+        <nav aria-label="Passport register" className={`grid sm:grid-cols-2 ${trails.length > 0 ? "border-t-2 border-ink" : ""}`}>
           {prev && prev.slug !== t.slug && (
             <Link
               href={`/passport/${prev.slug}`}

@@ -31,14 +31,21 @@ export function RotatingSeal({
   spin?: boolean;
 }) {
   const pathId = `seal-path-${id}`;
+  // The ring text is stretched to exactly one lap of the circle, so its ends never overlap,
+  // and the ring spins around the seal's fixed centre (100, 100) rather than the text's own
+  // bounding box, which shifts while the web font loads and made the text drift off the seal.
+  const LAP = 2 * Math.PI * 74;
+  const fontSize = Math.min(12, LAP / (text.length * 0.7));
   return (
     <svg viewBox="0 0 200 200" className={className} role="img" aria-label={`${center} seal`}>
-      <g className={spin ? "origin-center animate-spin-slow [transform-box:fill-box]" : ""}>
-        <defs>
-          <path id={pathId} d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0" />
-        </defs>
-        <text fill={color} style={{ fontFamily: "var(--font-ui)", fontSize: 12, letterSpacing: "0.22em", fontWeight: 600 }}>
-          <textPath href={`#${pathId}`}>{text}</textPath>
+      <defs>
+        <path id={pathId} d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0" />
+      </defs>
+      <g className={spin ? "animate-spin-slow" : ""} style={{ transformBox: "view-box", transformOrigin: "100px 100px" }}>
+        <text fill={color} style={{ fontFamily: "var(--font-ui)", fontSize: Number(fontSize.toFixed(2)), fontWeight: 600 }}>
+          <textPath href={`#${pathId}`} textLength={Math.floor(LAP) - 2} lengthAdjust="spacing">
+            {text}
+          </textPath>
         </text>
       </g>
       <circle cx="100" cy="100" r="94" fill="none" stroke={color} strokeWidth="1.5" />

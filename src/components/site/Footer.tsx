@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { DiamondBadge } from "./Seal";
 
 const COLUMNS: { title: string; links: [string, string][] }[] = [
   {
@@ -35,7 +34,7 @@ export function Footer() {
     <footer className="no-print mt-auto bg-ink text-bone">
       <div className="strip-checker" />
       <div className="mx-auto grid max-w-[1500px] gap-12 px-4 py-16 sm:px-6 lg:grid-cols-12 lg:px-10">
-        <div className="lg:col-span-5">
+        <div className="lg:col-span-6">
           <p className="label text-yellow">Our purpose</p>
           <p className="font-display mt-4 text-[clamp(2.03rem,3.9vw,3.19rem)]">
             Culture becomes a bridge — <span className="text-vermilion">not a boundary.</span>
@@ -44,10 +43,7 @@ export function Footer() {
             We document where traditions come from, who carries them, and how they travel — so the story can travel with them.
           </p>
         </div>
-        <div className="flex items-start justify-center lg:col-span-2">
-          <DiamondBadge top="CULTURE PASSPORT" center="↗" bottom="INDIA · UAE · WORLD" className="h-auto w-48 text-yellow" />
-        </div>
-        <nav aria-label="Footer" className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:col-span-5">
+        <nav aria-label="Footer" className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:col-span-5 lg:col-start-8">
           {COLUMNS.map((c) => (
             <div key={c.title}>
               <p className="label text-bone/50">{c.title}</p>

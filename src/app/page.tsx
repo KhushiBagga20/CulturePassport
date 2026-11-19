@@ -1,12 +1,10 @@
 import Link from "next/link";
 import { getArchive, isPublic, lookups } from "@/lib/data/archive";
-import { globeCountries, passportIndex, whereLine } from "@/lib/data/views";
+import { globeCountries, passportIndex } from "@/lib/data/views";
 import { GlobeExperience } from "@/components/globe/GlobeExperience";
 import { Reveal } from "@/components/site/Motion";
 import { ArchiveImage } from "@/components/site/ArchiveImage";
-import { Ticker } from "@/components/site/Ticker";
 import { Motif } from "@/components/motifs/Motif";
-import { ACCENT, CATEGORY, MATURITY } from "@/lib/labels";
 
 export const revalidate = 300;
 
@@ -25,12 +23,6 @@ export default async function HomePage() {
   return (
     <>
       <GlobeExperience countries={globeCountries(archive)} passports={passportIndex(archive)} />
-
-      <Ticker
-        items={["When culture travels", "let its story travel with it", plural(published.length), "India → UAE → World", "Every claim sourced"]}
-        className="border-y-2 border-ink bg-ink py-3 font-display text-[1.36rem] uppercase text-bone"
-        dotClassName="text-vermilion"
-      />
 
       {/* ─────────── The gap ─────────── */}
       <section className="border-b-2 border-ink bg-orange">
@@ -114,60 +106,11 @@ export default async function HomePage() {
                 <Link href={`/passport/${flagship.slug}#travels`} className="btn btn-yellow">
                   Read the case file →
                 </Link>
-                <Link href={`/passport/${flagship.slug}`} className="btn btn-ghost">
-                  Open the passport
-                </Link>
               </div>
             </Reveal>
           </div>
         </section>
       )}
-
-      {/* ─────────── The register ─────────── */}
-      <section className="border-b-2 border-ink bg-cream">
-        <div className={`${WRAP} py-20 lg:py-28`}>
-          <Reveal className="flex flex-wrap items-end justify-between gap-6">
-            <div>
-              <p className="label text-brick">The register</p>
-              <h2 className="font-display mt-3 text-[clamp(2.34rem,5.07vw,4.56rem)]">{plural(published.length)}, so far</h2>
-            </div>
-            <div className="flex flex-col items-start gap-3 sm:items-end">
-              <p className="max-w-sm text-ink-soft sm:text-right">Some researched, some honestly marked as drafts. Every one shows its evidence.</p>
-              <Link href="/passports" className="btn btn-ink">
-                All stories →
-              </Link>
-            </div>
-          </Reveal>
-          <ol className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {published.map((t, i) => {
-              const a = ACCENT[t.accent];
-              return (
-                <Reveal as="li" key={t.slug} delay={i * 0.05}>
-                  <Link href={`/passport/${t.slug}`} className="group relative flex h-full flex-col border-2 border-ink bg-bone transition-transform hover:-translate-y-1">
-                    <div className="relative flex h-44 items-center justify-center overflow-hidden border-b-2 border-ink" style={{ background: a.hex }}>
-                      <Motif motif={t.motif} className="h-36 w-36 transition-transform duration-700 group-hover:scale-110 group-hover:rotate-3" />
-                      <span
-                        className="font-display absolute right-3 top-3 flex h-14 w-14 rotate-12 items-center justify-center rounded-full border-2 border-ink bg-yellow text-lg text-ink"
-                        aria-hidden
-                      >
-                        {t.passportNo}
-                      </span>
-                      <span className="label-sm absolute bottom-0 left-0 bg-ink px-2 py-1 text-bone">{MATURITY[t.maturity].label}</span>
-                    </div>
-                    <div className="flex flex-1 flex-col p-5">
-                      <span className="label-sm text-ink-mute">
-                        No. {t.passportNo} · {CATEGORY[t.category]}
-                      </span>
-                      <span className="font-display mt-2 text-[1.76rem] group-hover:text-brick">{t.name}</span>
-                      <span className="mt-auto pt-3 text-sm text-ink-soft">{whereLine(t, archive)}</span>
-                    </div>
-                  </Link>
-                </Reveal>
-              );
-            })}
-          </ol>
-        </div>
-      </section>
 
       {/* ─────────── How it works ─────────── */}
       <section className="border-b-2 border-ink bg-green text-bone">
@@ -248,14 +191,6 @@ export default async function HomePage() {
               India gives us the starting point. The UAE is a place where many cultures already meet — and where Al Sadu, its first passport, was moved to
               UNESCO&rsquo;s Representative List at a committee meeting held in New Delhi in 2025. Then the idea travels further.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/country/united-arab-emirates" className="btn btn-yellow">
-                The UAE bridge →
-              </Link>
-              <Link href="/explore" className="btn btn-ghost">
-                Stories being documented
-              </Link>
-            </div>
           </Reveal>
           <Reveal delay={0.1} className="lg:col-span-6">
             <ol className="grid gap-3">
@@ -283,32 +218,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ─────────── Trails teaser ─────────── */}
-      <section className="bg-cream">
-        <div className={`${WRAP} py-20 lg:py-28`}>
-          <Reveal className="flex flex-wrap items-end justify-between gap-6">
-            <h2 className="font-display text-[clamp(2.34rem,4.68vw,4.1rem)]">Follow a trail</h2>
-            <Link href="/trails" className="btn btn-cream">
-              All trails →
-            </Link>
-          </Reveal>
-          <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {archive.trails.map((tr, i) => (
-              <Reveal key={tr.slug} delay={i * 0.06}>
-                <Link href={`/trails/${tr.slug}`} className="group flex h-full flex-col border-2 border-ink bg-bone transition-transform hover:-translate-y-1">
-                  <span className="block h-3" style={{ background: ACCENT[tr.accent].hex }} />
-                  <span className="flex flex-1 flex-col p-5">
-                    <span className="label-sm text-ink-mute">{tr.kicker}</span>
-                    <span className="font-display mt-2 block text-2xl group-hover:text-brick">{tr.title}</span>
-                    <span className="mt-2 block text-sm text-ink-soft">{tr.intro}</span>
-                    <span className="label mt-auto pt-4 text-ink">{tr.steps.length} stops →</span>
-                  </span>
-                </Link>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
     </>
   );
 }

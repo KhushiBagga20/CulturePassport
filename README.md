@@ -12,7 +12,7 @@ It is an education, documentation and attribution project. **It is not a legal o
 
 | Area | Route | Notes |
 | --- | --- | --- |
-| The living globe (Explore) | `/` | Three.js / React Three Fiber globe built from Natural Earth country polygons. Hover picks countries by real geography. Clicking flies the camera in and opens the country chapter. Includes India → UAE → World routes, a three-step "how to explore" guide, a country-index dialog, a passport-number picker, a search shortcut, and a 2D atlas fallback (automatic without WebGL, or chosen by the visitor). |
+| The living globe (Explore) | `/` | Three.js / React Three Fiber globe built from Natural Earth country polygons. Hover picks countries by real geography. Clicking flies the camera in and opens the country chapter. Includes India → UAE → World routes, one primary action, quiet links to a passport-number picker and a keyboard-friendly country list, a Warli-style loading symbol, and a 2D atlas fallback (automatic without WebGL, or chosen by the visitor). |
 | Country chapters | `/country/[slug]` | Every country page has a "Back to the globe" action. India (active collection): contents, interactive map + filterable editorial gallery, attribution histories, connections, makers on record, traditions awaiting documentation. UAE (introductory). Ghana / Japan / Mexico ("stories being documented"). Pakistan / Nepal (shared traditions). Any other country gets an honest "not yet in the archive" page. |
 | Culture Passports | `/passport/[slug]` | Six chapters: **Where It Began** (interactive places map) · **The People Behind It** (material → process → object flow) · **A Journey Through Time** (overview ruler + draggable timeline, details on demand) · **Across Borders** (connection diagram, case files) · **Sources & References** (evidence and source-mix charts, source library) · **Meet the Makers**. A sticky chapter bar (a compact selector with previous/next on phones), a back-to-country action, and citation markers that open a source drawer instead of jumping away. Longer text folds into "Keep reading". Chapter anchors (`#origins`, `#makers`, `#through-time`, `#travels`, `#evidence`, `#keep-alive`) are unchanged, so existing links keep working. Statically generated and revalidated, so QR scans load fast. |
 | Kolhapuri × Prada case file | `/passport/kolhapuri-chappal#travels` | Sourced chronology from June 2025 to April 2026 (colour-coded by phase, details on demand), a side-by-side comparison (a draggable slider appears only when both sides have licensed images), "What travelled, and what was left behind?", six questions with evidence labels, a legal note, and open questions. |
@@ -43,7 +43,7 @@ The header has four destinations — **Explore** (the globe), **Countries** (`/e
 
 ### Design language
 
-Flat colour blocks, heavy uppercase headlines in Inter and graphic devices (ticker bands, triangular tabs, notched ticket cards, chevron process steps, checker strips, offset print shadows), defined once in `src/app/globals.css`:
+Flat colour blocks, heavy uppercase headlines in Inter and graphic devices (triangular tabs, notched ticket cards, chevron process steps, checker strips, offset print shadows), defined once in `src/app/globals.css`:
 
 | Token | Hex | Use |
 | --- | --- | --- |
@@ -129,7 +129,7 @@ The app never reads a Supabase service-role key, so one can't leak to the browse
 - **Uploads** go through `/admin/media` (JPEG, PNG, WebP or AVIF; max 8 MB; licence, credit and alt text required). They're stored in `.data/uploads/` in demo mode or the Supabase `media` bucket in production.
 - **For production**, consider mirroring the Commons images into Supabase Storage, keeping the credit fields intact.
 - **Boundaries** come from Natural Earth via `world-atlas` (`public/geo/`), shown for orientation only, with no position on disputed territories. Places are plotted at approximate centres.
-- **Fonts**: Inter for everything (headlines, labels and reading text) via `next/font` (fetched at build time), plus `@fontsource/inter` for generated card and Open Graph images. SIL Open Font Licence.
+- **Fonts**: Inter for everything (headlines, labels and reading text), self-hosted from `src/app/fonts` via `next/font/local` (no Google Fonts request at build or run time), plus `@fontsource/inter` for generated card and Open Graph images. SIL Open Font Licence.
 
 ---
 

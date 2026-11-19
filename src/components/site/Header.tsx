@@ -97,7 +97,6 @@ export function Header() {
               <path d="M13 13l4.5 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="square" />
             </svg>
             <span className="hidden sm:inline">Search</span>
-            <kbd className="hidden border border-ink/30 px-1 font-ui text-[0.6rem] text-ink-mute md:inline">⌘K</kbd>
           </Link>
           <button
             type="button"

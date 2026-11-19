@@ -88,18 +88,19 @@ export function ChapterBar({
   return (
     <nav aria-label="Passport chapters" className="no-print sticky top-14 z-30 border-b-2 border-ink bg-ink text-bone">
       {/* Desktop */}
-      <div className="mx-auto hidden max-w-[1500px] items-stretch lg:flex lg:px-10">
-        <span className="label flex shrink-0 items-center border-r border-bone/20 pr-4 text-yellow">No. {passportNo}</span>
-        <ol ref={rail} className="no-scrollbar flex min-w-0 flex-1 overflow-x-auto">
+      {/* Spans the full screen width; every chapter gets an equal share, so none is ever cut off. */}
+      <div className="hidden w-full items-stretch lg:flex">
+        <span className="label flex shrink-0 items-center border-r border-bone/20 px-4 text-yellow xl:px-6">No. {passportNo}</span>
+        <ol ref={rail} className="grid min-w-0 flex-1 grid-cols-6">
           {chapters.map((c) => {
             const on = active === c.id;
             return (
-              <li key={c.id} data-chapter={c.id} className="shrink-0">
+              <li key={c.id} data-chapter={c.id} className="min-w-0 border-r border-bone/15 last:border-r-0">
                 <a
                   href={`#${c.id}`}
                   onClick={(e) => go(e, c.id)}
                   aria-current={on ? "location" : undefined}
-                  className={`flex h-12 items-center gap-1.5 whitespace-nowrap px-2.5 font-ui text-[0.68rem] font-bold uppercase tracking-[0.03em] no-underline transition-colors xl:px-3.5 ${on ? "bg-[var(--accent)] text-[var(--accent-ink)]" : "text-bone/75 hover:bg-bone/10 hover:text-bone"}`}
+                  className={`flex h-full min-h-12 items-center gap-2 px-3 py-2 font-ui text-[0.68rem] font-bold uppercase leading-tight tracking-[0.03em] no-underline transition-colors xl:px-4 xl:text-[0.72rem] ${on ? "bg-[var(--accent)] text-[var(--accent-ink)]" : "text-bone/75 hover:bg-bone/10 hover:text-bone"}`}
                 >
                   <span className={on ? "" : "text-yellow"}>{c.n}</span>
                   {c.label}
@@ -109,7 +110,7 @@ export function ChapterBar({
           })}
         </ol>
         {back && (
-          <Link href={back.href} className="label flex shrink-0 items-center gap-2 border-l border-bone/20 pl-4 text-bone/80 hover:text-yellow">
+          <Link href={back.href} className="label flex shrink-0 items-center gap-2 border-l border-bone/20 px-4 text-bone/80 hover:text-yellow xl:px-6">
             <span aria-hidden>←</span> {back.label}
           </Link>
         )}

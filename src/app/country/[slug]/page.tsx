@@ -8,7 +8,6 @@ import { byIso, countrySlug, loadCountries } from "@/lib/geo-server";
 import { buildRegionMap } from "@/components/country/regionMap";
 import { CollectionExplorer, type ExplorerCard } from "@/components/country/CollectionExplorer";
 import { ArrivalCurtain } from "@/components/country/ArrivalCurtain";
-import { Reveal } from "@/components/site/Motion";
 import { EvidenceBadge } from "@/components/site/Evidence";
 import { ACCENT, CATEGORY, COUNTRY_STATUS, MATURITY } from "@/lib/labels";
 import type { Archive, CountryRecord, Tradition } from "@/lib/types";
@@ -76,9 +75,6 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
     ? buildRegionMap(countriesGeo, country.isoNumeric, sharedIsos, mapTraditions, archive, country.iso2 === "AE" ? { width: 640, height: 520 } : undefined)
     : null;
 
-  const cases = own.flatMap((t) => t.travels.cases.map((c) => ({ t, c })));
-  const connections = dedupeConnections(own);
-  const practitioners = own.flatMap((t) => t.makers.practitioners.map((p) => ({ t, p })));
 
   if (country.status === "documenting" || (country.status === "shared" && own.length === 0)) {
     return <DocumentingCountry country={country} archive={archive} shared={shared} outline={await outlinePath(country.isoNumeric)} />;
@@ -117,39 +113,20 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
             </h1>
             <p className="font-title mt-2 max-w-2xl text-[clamp(1.8rem,3.4vw,2.9rem)] leading-[1.05]">{country.headline}</p>
             <p className="lead mt-5 max-w-xl text-ink-soft">{country.intro}</p>
-            <dl className="mt-10 grid max-w-2xl grid-cols-3 gap-3">
+          </div>
+          <div className="relative self-end lg:col-span-4 lg:col-start-9">
+            <dl className="grid grid-cols-3 gap-3 lg:grid-cols-1">
               {[
                 ["Passports", own.length, "bg-orange text-ink"],
                 ["Shared across borders", own.filter((t) => t.countries.length > 1).length, "bg-cobalt text-bone"],
                 ["Awaiting documentation", country.candidates.length, "bg-green text-bone"],
               ].map(([k, v, c]) => (
-                <div key={k as string} className={`${c} min-w-0 p-3 sm:p-4`}>
-                  <dd className="font-display text-5xl leading-none">{v}</dd>
+                <div key={k as string} className={`${c} flex min-w-0 flex-col-reverse justify-end p-3 sm:p-4`}>
                   <dt className="label-sm mt-2 hyphens-auto [overflow-wrap:anywhere]">{k}</dt>
+                  <dd className="font-display text-5xl leading-none">{v}</dd>
                 </div>
               ))}
             </dl>
-          </div>
-          <div className="relative lg:col-span-5">
-            <div className="print-shadow border-2 border-ink bg-ink p-5 text-bone" style={{ ["--shadow-color" as string]: status.color }}>
-              <p className="label text-yellow">In this collection</p>
-              <ol className="mt-3 divide-y divide-bone/15">
-                {[...own, ...shared].map((t) => (
-                  <li key={t.slug}>
-                    <Link href={`/passport/${t.slug}`} className="group grid grid-cols-[3.4rem_1fr_auto] items-baseline gap-3 py-3">
-                      <span className="font-ui text-xs font-bold text-yellow">No. {t.passportNo}</span>
-                      <span>
-                        <span className="font-display block text-[1.52rem] leading-none group-hover:text-yellow">{t.name}</span>
-                        <span className="label-sm mt-1 block text-bone/60">{whereLine(t, archive)}</span>
-                      </span>
-                      <span aria-hidden className="font-display text-2xl transition-transform group-hover:translate-x-1 group-hover:text-yellow">
-                        →
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ol>
-            </div>
             <p className="mt-6 text-sm text-ink-soft">
               Every passport labels its claims — <EvidenceBadge level="documented" compact /> <EvidenceBadge level="disputed" compact />{" "}
               <EvidenceBadge level="unverified" compact /> — and drafts say so.
@@ -167,102 +144,6 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
           <p className="max-w-sm text-sm text-ink-soft">Filter by craft, pick a place on the map, or open a card for the full passport.</p>
         </div>
         <CollectionExplorer cards={[...own, ...shared].map(cardFor)} map={map} />
-      </section>
-
-      {/* Attribution histories */}
-      {cases.length > 0 && (
-        <section className="border-y-2 border-ink bg-ink text-bone">
-          <div className="strip-checker" />
-          <div className="mx-auto max-w-[1500px] px-4 py-20 sm:px-6 lg:px-10">
-            <p className="label text-mustard">Notable attribution histories</p>
-            <div className="mt-8 grid gap-8 lg:grid-cols-2">
-              {cases.map(({ t, c }) => (
-                <Reveal key={c.id}>
-                  <Link href={`/passport/${t.slug}#travels`} className="group block h-full border-2 border-yellow/70 p-6 transition-colors hover:bg-yellow hover:text-ink sm:p-8">
-                    <p className="label-sm inline-block bg-yellow px-2 py-1 text-ink">Case file {c.code} · {t.name}</p>
-                    <p className="font-display mt-4 text-4xl">{c.title}</p>
-                    <p className="mt-4 opacity-85">{c.summary}</p>
-                    <p className="label mt-6">{c.status} →</p>
-                  </Link>
-                </Reveal>
-              ))}
-              <Reveal delay={0.1} className="flex flex-col justify-center">
-                <p className="font-title text-3xl leading-tight">
-                  Not every inspiration is theft, and not every case is a scandal. We document the sequence — what travelled, what was credited, and
-                  what changed — and let the evidence speak.
-                </p>
-                <Link href="/method" className="btn btn-yellow mt-6 self-start">
-                  How we document cases →
-                </Link>
-              </Reveal>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Connections */}
-      {connections.length > 0 && (
-        <section className="mx-auto max-w-[1500px] px-4 py-20 sm:px-6 lg:px-10">
-          <div className="grid gap-10 lg:grid-cols-12">
-            <div className="lg:col-span-4">
-              <p className="label text-terracotta">Connections</p>
-              <h2 className="font-display mt-3 text-4xl">Threads between traditions</h2>
-              <p className="mt-4 text-sm text-ink-soft">Editorial links, each with a reason. Resemblance alone never counts as a connection.</p>
-              <Link href="/trails" className="btn btn-cream mt-6">
-                Follow a trail →
-              </Link>
-            </div>
-            <ul className="grid gap-3 lg:col-span-8">
-              {connections.map((cn) => (
-                <li key={cn.key} className="grid gap-2 border-2 border-ink bg-bone p-5 sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-6">
-                  <Link href={`/passport/${cn.a.slug}`} className="font-display text-2xl hover:text-brick">
-                    {cn.a.name}
-                  </Link>
-                  <span aria-hidden className="hidden items-center gap-1 sm:flex">
-                    <span className="h-3 w-3 rotate-45 bg-brick" />
-                    <span className="h-0.5 w-12 bg-ink" />
-                    <span className="h-3 w-3 rotate-45 bg-brick" />
-                  </span>
-                  <Link href={`/passport/${cn.b.slug}`} className="font-display text-2xl hover:text-brick sm:text-right">
-                    {cn.b.name}
-                  </Link>
-                  <p className="text-sm text-ink-soft sm:col-span-3">{cn.reason}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-      )}
-
-      {/* Makers on record */}
-      <section className="border-y-2 border-ink bg-sand">
-        <div className="mx-auto grid max-w-[1500px] gap-10 px-4 py-20 sm:px-6 lg:grid-cols-12 lg:px-10">
-          <div className="lg:col-span-4">
-            <p className="label text-brick">Featured makers</p>
-            <h2 className="font-display mt-3 text-4xl">Named in the record</h2>
-            <p className="mt-4 text-sm text-ink-soft">
-              Practitioners appear here only when a public record names them — a national honour, a published oral history. Verified artisan profiles
-              will be added with each maker&rsquo;s consent. We do not invent people.
-            </p>
-          </div>
-          <div className="lg:col-span-8">
-            {practitioners.length ? (
-              <ul className="grid gap-2 sm:grid-cols-2">
-                {practitioners.map(({ t, p }, i) => (
-                  <li key={`${t.slug}-${p.name}`} className={`notched px-7 py-5 ${["bg-yellow", "bg-bone", "bg-cream"][i % 3]}`}>
-                    <p className="font-title text-2xl">{p.name}</p>
-                    <p className="mt-1 text-sm text-ink-soft">{p.note}</p>
-                    <Link href={`/passport/${t.slug}#makers`} className="label-sm mt-3 inline-block text-ink-mute hover:text-brick">
-                      {t.name} · sources →
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="paper-card p-6 text-ink-soft">No practitioners are named in this collection&rsquo;s public record yet.</p>
-            )}
-          </div>
-        </div>
       </section>
 
       {/* Awaiting documentation */}
@@ -295,22 +176,6 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
       </p>
     </>
   );
-}
-
-function dedupeConnections(ts: Tradition[]) {
-  const seen = new Set<string>();
-  const out: { key: string; a: Tradition; b: Tradition; reason: string }[] = [];
-  const by = new Map(ts.map((t) => [t.slug, t]));
-  for (const t of ts)
-    for (const r of t.related) {
-      const other = by.get(r.slug);
-      if (!other) continue;
-      const key = [t.slug, r.slug].sort().join("|");
-      if (seen.has(key)) continue;
-      seen.add(key);
-      out.push({ key, a: t, b: other, reason: r.reason });
-    }
-  return out;
 }
 
 async function outlinePath(isoNumeric: string): Promise<string | null> {

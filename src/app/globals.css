@@ -59,10 +59,6 @@
   from { clip-path: circle(150% at 50% 50%); }
   to { clip-path: circle(0% at 50% 50%); }
 }
-@keyframes ticker {
-  from { transform: translate3d(0, 0, 0); }
-  to { transform: translate3d(-50%, 0, 0); }
-}
 @keyframes drawer-in {
   from { transform: translate3d(0, 24px, 0); opacity: 0; }
   to { transform: none; opacity: 1; }
@@ -274,19 +270,6 @@ h1, h2, h3, h4 {
   mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--zz)) 100%;
 }
 
-/* Scrolling marquee band. Content is duplicated; the copy is aria-hidden. */
-.ticker {
-  overflow: hidden;
-  white-space: nowrap;
-}
-.ticker-track {
-  display: inline-flex;
-  width: max-content;
-  animation: ticker var(--ticker-speed, 40s) linear infinite;
-}
-.ticker:hover .ticker-track {
-  animation-play-state: paused;
-}
 
 /* Folk-pattern strips (original geometric bands). */
 .strip-diamond {
@@ -408,9 +391,6 @@ h1, h2, h3, h4 {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
-  }
-  .ticker-track {
-    animation: none !important;
   }
 }
 
