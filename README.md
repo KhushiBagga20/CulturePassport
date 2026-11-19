@@ -36,7 +36,9 @@ It is an education, documentation and attribution project. **It is not a legal o
 | 005 | Ajrakh | Editorial draft | Shared by Sindh, Kutch and Barmer; the Kutch GI (2024) covers Kutch only; the Indus "priest-king" link is shown as a disputed resemblance. |
 | 006 | Al Sadu (UAE) | Starter | Built only from UNESCO decisions: inscribed 2011, moved to the Representative List in New Delhi in December 2025. |
 
-57 sources, 49 claims and 39 timeline events. Every source was located during research on 17 Nov 2026, and every claim cites at least one source. `npm run validate` checks that every reference resolves.
+**Research passports.** A further 102 passports (Ghana 2, Japan 69, Mexico 13, Peru 18) were published from the research pipeline (`npm run research`, then `npm run research:publish`). They are built only from UNESCO listings, Wikidata and Wikimedia Commons, carry the "Editorial draft" label, and mark every claim "Further verification needed". They live in the database, not in the seed. Each country page also lists them with their UNESCO references.
+
+The six researched passports have 57 sources, 49 claims and 39 timeline events. Every source was located during research on 17 Nov 2026, and every claim cites at least one source. `npm run validate` checks that every reference resolves.
 
 ### Navigation
 
@@ -141,11 +143,20 @@ It needs a local PostgreSQL server plus `createdb` and `dropdb` on your PATH.
 
 ---
 
-## Deployment
+## Deployment (Vercel)
 
-- **Vercel or any Node host**: `npm run build`, then `npm start`. Set `NEXT_PUBLIC_SITE_URL`.
-- **Storage**: without `DATABASE_URL`, edits are files in `.data/`, which needs a writable, persistent disk (`next dev`, or `next start` on a server). On serverless hosts such as Vercel, set `DATABASE_URL` (Neon), run `npm run db:setup` once, and build with the variable present.
-- **Caching**: passports, country pages and trails are statically generated and revalidate every 5 minutes. Editor saves revalidate the affected pages immediately.
+1. **Import** the GitHub repository at vercel.com → Add New → Project. The framework is detected as Next.js; keep the default build command (`next build`).
+2. **Environment variables** (Settings → Environment Variables, for Production and Preview):
+   - `DATABASE_URL`: your Neon connection string. Use the pooled one (its host contains `-pooler`). It is needed at **build** time too, because pages are generated from the database.
+   - `EDITOR_PASSCODE`: a long passcode for `/admin`.
+   - `EDITOR_SESSION_SECRET`: any long random string.
+   - `NEXT_PUBLIC_SITE_URL` (optional): your public address, for example `https://culturepassport.example`. Without it, QR codes, share links and metadata use the address the visitor is on, or Vercel's production domain.
+3. **Deploy.** The database must already be set up (`npm run db:setup` from your machine, with the same `DATABASE_URL` in `.env.local`).
+
+Notes:
+- **Storage:** with `DATABASE_URL`, edits, uploads, corrections and the research queue all live in Postgres. Without it, they are files in `.data/`, which needs a writable, persistent disk (`next start` on a server), not Vercel.
+- **Caching:** passports, country pages and trails are statically generated and revalidate every 5 minutes. Editor saves revalidate the affected pages immediately. Content added outside the site (for example `npm run research:publish`) appears within 5 minutes, or straight away after a redeploy.
+- **Uploads** are limited to 4 MB per image (Vercel caps request bodies at 4.5 MB).
 - **Before printing labels**, set `NEXT_PUBLIC_SITE_URL` so codes point to the public address. The label page warns if they would point to `localhost`.
 
 ---
@@ -163,6 +174,7 @@ npm run db:setup     # apply migrations and load the seed into DATABASE_URL (saf
 npm run test:db      # setup + round-trip + write paths against a throwaway local PostgreSQL
 npm run research -- --country GH   # gather research candidates for a country (see pipeline/README.md)
 npm run test:research               # offline tests for the research pipeline
+npm run research:publish            # publish the research queue as labelled passports + country leads (add --dry-run to preview)
 ```
 
 ---

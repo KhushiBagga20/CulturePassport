@@ -20,7 +20,8 @@ export async function generateMetadata({ params }: PageProps<"/passport/[slug]">
   const title = `${t.name} — Culture Passport`;
   const description = `${t.tagline} ${t.summary}`;
   return {
-    title,
+    // The layout's title template already appends "· Culture Passport".
+    title: t.name,
     description,
     alternates: { canonical: `/passport/${t.slug}` },
     openGraph: { title, description, type: "article", url: `/passport/${t.slug}` },

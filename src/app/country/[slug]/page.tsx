@@ -76,6 +76,14 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
     : null;
 
 
+  // Country leads that already have a passport here are shown as UNESCO references; the rest are still being documented.
+  const byName = new Map(own.map((t) => [t.name.toLowerCase(), t]));
+  const listed = country.candidates.flatMap((lead) => {
+    const t = byName.get(lead.name.toLowerCase());
+    return t ? [{ lead, t, src: lead.sources?.[0] ? L.source.get(lead.sources[0]) : undefined }] : [];
+  });
+  const waiting = country.candidates.filter((lead) => !byName.has(lead.name.toLowerCase()));
+
   if (country.status === "documenting" || (country.status === "shared" && own.length === 0)) {
     return <DocumentingCountry country={country} archive={archive} shared={shared} outline={await outlinePath(country.isoNumeric)} />;
   }
@@ -119,7 +127,7 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
               {[
                 ["Passports", own.length, "bg-orange text-ink"],
                 ["Shared across borders", own.filter((t) => t.countries.length > 1).length, "bg-cobalt text-bone"],
-                ["Awaiting documentation", country.candidates.length, "bg-green text-bone"],
+                ["Awaiting documentation", waiting.length, "bg-green text-bone"],
               ].map(([k, v, c]) => (
                 <div key={k as string} className={`${c} flex min-w-0 flex-col-reverse justify-end p-3 sm:p-4`}>
                   <dt className="label-sm mt-2 hyphens-auto [overflow-wrap:anywhere]">{k}</dt>
@@ -146,8 +154,40 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
         <CollectionExplorer cards={[...own, ...shared].map(cardFor)} map={map} />
       </section>
 
-      {/* Awaiting documentation */}
-      {country.candidates.length > 0 && (
+      {/* UNESCO references for passports in this collection, and leads still being documented */}
+      {listed.length > 0 && (
+        <section className="mx-auto max-w-[1500px] px-4 py-16 sm:px-6 lg:px-10">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="label text-brick">UNESCO references</p>
+              <h2 className="font-display mt-3 text-4xl">On UNESCO&rsquo;s lists</h2>
+            </div>
+            <p className="max-w-md text-sm text-ink-soft">Each passport above with its UNESCO listing, as recorded on Wikidata. Follow the source to confirm it.</p>
+          </div>
+          <ul className="mt-8 grid gap-x-8 border-t-2 border-ink sm:grid-cols-2 lg:grid-cols-3">
+            {listed.map(({ lead, t, src }) => (
+              <li key={lead.name} className="flex items-baseline justify-between gap-3 border-b border-ink/15 py-3">
+                <Link href={`/passport/${t.slug}`} className="min-w-0 font-semibold [overflow-wrap:anywhere] hover:text-brick">
+                  {t.name}
+                </Link>
+                {src ? (
+                  <a href={src.url} target="_blank" rel="noreferrer" className="label-sm min-w-0 text-right text-ink-mute underline hover:text-brick">
+                    {lead.note
+                      .split(" · ")
+                      .filter((part) => /^UNESCO |^\d{4}$/.test(part))
+                      .join(" · ")}{" "}
+                    ↗
+                  </a>
+                ) : (
+                  <span className="label-sm min-w-0 text-right text-ink-mute">{lead.note}</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {waiting.length > 0 && (
         <section className="mx-auto max-w-[1500px] px-4 py-20 sm:px-6 lg:px-10">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
@@ -159,7 +199,7 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
             </p>
           </div>
           <ul className="mt-10 grid border-t rule sm:grid-cols-2 lg:grid-cols-3">
-            {country.candidates.map((c, i) => (
+            {waiting.map((c, i) => (
               <li key={c.name} className="flex items-baseline gap-4 border-b rule py-4 sm:pr-6">
                 <span className="font-display text-2xl text-brick">{String(i + 1).padStart(2, "0")}</span>
                 <span className="font-title text-2xl">{c.name}</span>

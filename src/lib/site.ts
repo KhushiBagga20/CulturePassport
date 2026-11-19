@@ -11,9 +11,10 @@ export function configuredOrigin(): string | null {
   return raw.replace(/\/+$/, "");
 }
 
-/** Used where no request is available (static generation, metadata base). */
+/** Used where no request is available (static generation, metadata base). On Vercel, falls back to the production domain. */
 export function staticOrigin(): string {
-  return configuredOrigin() ?? `http://localhost:${process.env.PORT ?? 3000}`;
+  const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
+  return configuredOrigin() ?? (vercel ? `https://${vercel}` : `http://localhost:${process.env.PORT ?? 3000}`);
 }
 
 /**

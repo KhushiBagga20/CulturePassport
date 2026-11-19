@@ -32,7 +32,12 @@ export type Category =
   | "jewelry"
   | "architecture"
   | "folk-art"
-  | "decorative-technique";
+  | "decorative-technique"
+  // Intangible heritage beyond crafts (used by research passports from UNESCO listings)
+  | "performing-arts"
+  | "food"
+  | "festival"
+  | "knowledge";
 
 export type SourceType =
   | "official-record"
@@ -252,7 +257,8 @@ export interface NativeName {
   note?: string;
 }
 
-export type MotifKey = "kolhapuri" | "madhubani" | "phulkari" | "warli" | "ajrakh" | "sadu";
+/** "atlas" is a neutral mark for passports that have no illustration of their own yet. */
+export type MotifKey = "kolhapuri" | "madhubani" | "phulkari" | "warli" | "ajrakh" | "sadu" | "atlas";
 export type AccentKey = "terracotta" | "burgundy" | "indigo" | "forest" | "teal" | "mustard";
 
 export interface TraditionPlace {

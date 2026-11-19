@@ -45,7 +45,7 @@ export function CollectionExplorer({ cards, map }: { cards: ExplorerCard[]; map:
   const visibleSet = new Set(visible.map((c) => c.slug));
 
   return (
-    <div className="grid gap-12 lg:grid-cols-12">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-12 lg:grid-cols-12">
       {/* Map */}
       {map && (
         <div className="lg:col-span-5">
@@ -176,8 +176,8 @@ export function CollectionExplorer({ cards, map }: { cards: ExplorerCard[]; map:
                   </div>
                   <div className="p-5">
                     <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="font-display text-[1.76rem] group-hover:text-brick">{c.name}</p>
+                      <div className="min-w-0">
+                        <p className="font-display text-[1.76rem] hyphens-auto [overflow-wrap:anywhere] group-hover:text-brick">{c.name}</p>
                         {c.nativeName && <p className="mt-0.5 text-sm text-ink-mute">{c.nativeName}</p>}
                       </div>
                       <span className="mt-1 h-10 w-10 shrink-0 overflow-hidden border-2 border-ink">

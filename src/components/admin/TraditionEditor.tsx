@@ -15,7 +15,7 @@ interface Opt {
 const TABS = ["Identity", "Story", "Claims", "Timeline", "Places & people", "Advanced JSON", "Publish"] as const;
 type Tab = (typeof TABS)[number];
 const ACCENTS: AccentKey[] = ["terracotta", "burgundy", "indigo", "forest", "teal", "mustard"];
-const MOTIFS: MotifKey[] = ["kolhapuri", "madhubani", "phulkari", "warli", "ajrakh", "sadu"];
+const MOTIFS: MotifKey[] = ["kolhapuri", "madhubani", "phulkari", "warli", "ajrakh", "sadu", "atlas"];
 
 const input = "w-full border rule bg-ivory px-2.5 py-2 text-sm outline-none focus:border-ink";
 const lines = (s: string) => s.split("\n").map((x) => x.trim()).filter(Boolean);

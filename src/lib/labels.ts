@@ -62,6 +62,10 @@ export const CATEGORY: Record<Category, string> = {
   architecture: "Architecture & ornament",
   "folk-art": "Folk art",
   "decorative-technique": "Decorative technique",
+  "performing-arts": "Music, dance & performance",
+  food: "Food & cuisine",
+  festival: "Festival & ritual",
+  knowledge: "Knowledge & practice",
 };
 
 export const MATURITY: Record<ContentMaturity, { label: string; description: string }> = {

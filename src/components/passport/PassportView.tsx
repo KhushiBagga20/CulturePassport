@@ -207,7 +207,7 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
             <p className="label relative inline-flex items-center gap-2 bg-ink px-2.5 py-1.5 text-bone">
               Culture Passport <span className="text-yellow">·</span> {countryNames}
             </p>
-            <h1 className="font-display reveal-rise relative mt-6 text-[clamp(2.65rem,8.19vw,7.3rem)]">{t.displayTitle}</h1>
+            <h1 className="font-display reveal-rise relative mt-6 text-[clamp(2.65rem,8.19vw,7.3rem)] hyphens-auto [overflow-wrap:anywhere]">{t.displayTitle}</h1>
             <p className="font-title relative mt-3 text-[clamp(1.7rem,3.4vw,2.8rem)] italic text-[var(--accent-text)]">{t.tagline}</p>
           </div>
 
@@ -370,6 +370,7 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
           </div>
         </div>
 
+        {(t.makers.materials.length > 0 || t.makers.process.length > 0) && (
         <div className="mt-16 border-y-2 border-ink bg-cobalt py-14 text-bone lg:mt-20">
           <div className={WRAP}>
             <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
@@ -391,6 +392,7 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
             />
           </div>
         </div>
+        )}
       </section>
 
       {/* ─────────── 03 A Journey Through Time ─────────── */}
@@ -404,7 +406,13 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
             intro="Dates appear exactly as the evidence allows: precise where a record exists, approximate where it doesn't, and dashed where a claim is disputed or unverified."
             tone="accent"
           />
-          <Timeline items={timeline} motif={t.motif} />
+          {timeline.length ? (
+            <Timeline items={timeline} motif={t.motif} />
+          ) : (
+            <p className="max-w-2xl border-2 border-dashed border-ink/50 bg-bone/60 p-6">
+              No dated milestones have been recorded for {t.name} yet. Dates are added only when a source gives them.
+            </p>
+          )}
         </div>
       </section>
 
@@ -418,6 +426,7 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
             </div>
             <div className="lg:col-span-6">
               <p className="label text-ink-mute">Documented journeys</p>
+              {t.travels.influences.length === 0 && <p className="mt-3 text-ink-soft">No journeys beyond its home have been documented yet.</p>}
               <ol className="mt-3 grid gap-3">
                 {t.travels.influences.map((inf, i) => (
                   <li key={inf.title} className="grid grid-cols-[auto_1fr] gap-4 border-2 border-ink bg-bone p-4">
@@ -487,6 +496,9 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
           </div>
           <div className={`${WRAP} pb-16`}>
             <p className="label text-yellow">Organisations &amp; collections</p>
+            {t.keepAlive.organizations.length === 0 && (
+              <p className="mt-3 max-w-2xl text-bone/85">No organisations or collections are recorded for {t.name} yet. We add them only from published sources.</p>
+            )}
             <ul className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
               {t.keepAlive.organizations.map((id) => {
                 const o = L.organization.get(id);
@@ -526,7 +538,7 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
                 </p>
               </div>
 
-              <p className="label mt-10 text-ink-mute">Working with this tradition?</p>
+              {t.keepAlive.collaborationNotes.length > 0 && <p className="label mt-10 text-ink-mute">Working with this tradition?</p>}
               <ul className="mt-3 grid gap-2 sm:grid-cols-2">
                 {t.keepAlive.collaborationNotes.map((n) => (
                   <li key={n} className="flex gap-3 border-2 border-ink bg-bone p-3 text-sm">
@@ -538,7 +550,7 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
                 ))}
               </ul>
 
-              <p className="label mt-10 text-ink-mute">Learn more</p>
+              {t.keepAlive.resources.length > 0 && <p className="label mt-10 text-ink-mute">Learn more</p>}
               <ul className="mt-3 grid gap-3 sm:grid-cols-2">
                 {t.keepAlive.resources.map((r) => (
                   <li key={r.url}>

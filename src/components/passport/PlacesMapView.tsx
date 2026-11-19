@@ -76,6 +76,7 @@ export function PlacesMapView({ slug, name, width, height, lands, links, markers
         )}
       </svg>
       <figcaption className="border-t-2 border-ink">
+        {legend.length === 0 && <p className="border-b border-ink/15 px-3 py-2 text-sm text-ink-soft">No specific places have been recorded yet; the country is shown.</p>}
         <ol className="grid sm:grid-cols-2">
           {legend.map((l) => (
             <li key={l.n} className="border-b border-ink/15 sm:odd:border-r">

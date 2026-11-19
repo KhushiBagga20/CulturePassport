@@ -20,7 +20,7 @@ export default async function MediaPage() {
         </p>
         <ActionForm action={uploadMediaAction} submitLabel="Upload" className="mt-4" resetOnSuccess>
           <div className="grid gap-4 md:grid-cols-2">
-            <Field label="Image (JPEG, PNG, WebP, AVIF · max 8 MB)">
+            <Field label="Image (JPEG, PNG, WebP, AVIF · max 4 MB)">
               <input name="file" type="file" accept="image/jpeg,image/png,image/webp,image/avif" required className={inputClass} />
             </Field>
             <Field label="Licence">

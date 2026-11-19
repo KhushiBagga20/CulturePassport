@@ -8,7 +8,7 @@
  *
  * Used by both the Node CLI and the Next.js app, so it imports types only.
  */
-import type { Category, Claim, CountryRecord, MediaAsset, NativeName, Source, SourceType, Tradition } from "./types.ts";
+import type { AccentKey, Category, Claim, CountryRecord, MediaAsset, NativeName, Source, SourceType, Tradition } from "./types.ts";
 
 export type CandidateStatus = "new" | "rejected" | "drafted";
 
@@ -195,9 +195,13 @@ export function categoryFor(c: Pick<ResearchCandidate, "kinds" | "name" | "descr
   if (/pottery|ceramic|potter|clay/.test(t)) return "ceramics";
   if (/paint/.test(t)) return "painting";
   if (/jewel|silver|gold/.test(t)) return "jewelry";
-  if (/architect|building|house/.test(t)) return "architecture";
+  if (/architect|building|house|bridge/.test(t)) return "architecture";
   if (/footwear|shoe|sandal/.test(t)) return "footwear";
-  return "handicraft";
+  if (/craft|carv|lacquer|basket|woodwork|metalwork|leather|paper|making|technique/.test(t)) return "handicraft";
+  if (/music|song|danc|theatre|theater|drama|puppet|perform|genre|recit|poetry|chant/.test(t)) return "performing-arts";
+  if (/cuisine|food|dish|culinary|cook|drink|bread/.test(t)) return "food";
+  if (/festival|ritual|ceremony|carnival|pilgrimage|procession|feast|celebration|parade/.test(t)) return "festival";
+  return "knowledge";
 }
 
 /**
@@ -378,8 +382,9 @@ export function countryRecordFor(c: CandidateCountry): CountryRecord {
  */
 export function candidateToDraft(
   c: ResearchCandidate,
-  ctx: { id: string; slug: string; passportNo: string; editor: string; today: string },
+  ctx: { id: string; slug: string; passportNo: string; editor: string; today: string; publish?: boolean },
 ): { tradition: Tradition; sources: Source[]; media?: MediaAsset } {
+  const publish = !!ctx.publish;
   const sid = (key: string) => `research-${c.wikidataId.toLowerCase()}-${key}`;
   const sources: Source[] = c.sources.map((s) => ({
     id: sid(s.key),
@@ -406,8 +411,8 @@ export function candidateToDraft(
           commonsHash: c.image.hash,
           width: c.image.width,
           height: c.image.height,
-          alt: `Image associated with ${c.name} on Wikimedia Commons — describe what it actually shows before publishing.`,
-          caption: c.image.description || `${c.name} (Wikimedia Commons).`,
+          alt: c.image.description ? c.image.description.slice(0, 200) : `Photograph from Wikimedia Commons associated with ${c.name}.`,
+          caption: c.image.description || `${c.image.file.replace(/_/g, " ").replace(/\.[a-z]+$/i, "")} (Wikimedia Commons).`,
           credit: c.image.credit,
           license: c.image.license,
           licenseUrl: c.image.licenseUrl,
@@ -419,29 +424,33 @@ export function candidateToDraft(
   const where = c.places.length ? `${c.places.slice(0, 2).map((p) => p.name).join(", ")} — ${c.country.name}` : c.country.name;
   const native: NativeName[] = c.nativeNames.map((n) => ({ text: n.text, lang: n.lang, script: n.script, note: "From Wikidata; confirm spelling and language with the community." }));
   const summary = c.description ? c.description[0].toUpperCase() + c.description.slice(1) + "." : "";
+  const category = categoryFor(c);
+  const accent: AccentKey =
+    category === "performing-arts" ? "indigo" : category === "food" ? "mustard" : category === "festival" ? "terracotta" : category === "knowledge" ? "teal" : "forest";
+  const country = c.country.name === "United Arab Emirates" ? "the UAE" : c.country.name;
 
   const tradition: Tradition = {
     id: ctx.id,
     slug: ctx.slug,
     passportNo: ctx.passportNo,
-    status: "draft",
+    status: publish ? "published" : "draft",
     maturity: "editorial-draft",
-    name: c.name,
-    displayTitle: c.name,
-    tagline: "",
+    name: c.name[0].toUpperCase() + c.name.slice(1),
+    displayTitle: c.name[0].toUpperCase() + c.name.slice(1),
+    tagline: c.ich ? `A UNESCO-listed tradition of ${country}.` : `A tradition of ${country}.`,
     nativeNames: native,
     alternateNames: c.aliases,
-    category: categoryFor(c),
+    category,
     techniques: [],
     regionLabel: where,
     countries: [c.country.iso2],
     collection: c.country.iso2,
     places: [],
     communities: [],
-    summary,
-    intro: "",
-    accent: "forest",
-    motif: "kolhapuri",
+    summary: summary || `A tradition of ${country}.`,
+    intro: `${summary ? `${summary} ` : ""}This passport was compiled from UNESCO listings and Wikidata and has not yet been reviewed by an editor; every claim below is marked "Further verification needed" and links to its source.`,
+    accent,
+    motif: "atlas",
     hero: media?.id,
     gallery: [],
     periods: [],
@@ -463,7 +472,9 @@ export function candidateToDraft(
     editorial: {
       lastReviewed: ctx.today,
       reviewedBy: ctx.editor,
-      notes: `Drafted from research candidate ${c.wikidataId} (fetched ${c.fetchedAt.slice(0, 10)}). All text is placeholder and every claim is unverified.`,
+      notes: publish
+        ? `Compiled automatically from UNESCO listings and Wikidata (${c.wikidataId}, fetched ${c.fetchedAt.slice(0, 10)}). Not yet reviewed by an editor.`
+        : `Drafted from research candidate ${c.wikidataId} (fetched ${c.fetchedAt.slice(0, 10)}). All text is placeholder and every claim is unverified.`,
       openQuestions: [
         ...(c.ich ? ["Confirm the element title, list and inscription year on the UNESCO page."] : []),
         "Identify the communities and makers involved, and ask for their consent before naming anyone.",

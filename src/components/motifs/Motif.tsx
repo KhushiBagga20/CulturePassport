@@ -169,4 +169,19 @@ const DRAW: Record<MotifKey, React.ReactNode> = {
       })}
     </g>
   ),
+  // Neutral archive mark: a globe of meridians and parallels with a compass point. Represents no tradition.
+  atlas: (
+    <g>
+      <rect width="200" height="200" fill="#E1D4B5" />
+      <g fill="none" stroke={INK} strokeWidth="2">
+        <circle cx="100" cy="100" r="70" fill="#F6F0E3" />
+        <ellipse cx="100" cy="100" rx="35" ry="70" />
+        <ellipse cx="100" cy="100" rx="70" ry="24" />
+        <path d="M100 30 V170 M30 100 H170" />
+        <path d="M44 62 H156 M44 138 H156" strokeDasharray="3 4" />
+      </g>
+      <path d="M100 82 L108 100 L100 118 L92 100 Z" fill="#E04A2C" stroke={INK} strokeWidth="1.5" />
+      <circle cx="100" cy="100" r="76" fill="none" stroke={IVORY} strokeWidth="3" strokeDasharray="1 7" />
+    </g>
+  ),
 };

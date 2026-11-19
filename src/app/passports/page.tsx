@@ -52,7 +52,7 @@ export default async function PassportsPage({ searchParams }: PageProps<"/passpo
                   <Motif motif={t.motif} className="h-full w-full transition-transform duration-700 group-hover:scale-110" />
                 </span>
                 <span className="min-w-0 py-4">
-                  <span className="font-display block text-[clamp(1.56rem,3.12vw,2.58rem)] group-hover:text-brick">{t.name}</span>
+                  <span className="font-display block text-[clamp(1.56rem,3.12vw,2.58rem)] hyphens-auto [overflow-wrap:anywhere] group-hover:text-brick">{t.name}</span>
                   <span className="mt-1 block text-sm text-ink-soft">
                     {CATEGORY[t.category]} · {t.regionLabel} · {t.communities.map((c) => L.community.get(c.community)?.name).join(", ")}
                   </span>

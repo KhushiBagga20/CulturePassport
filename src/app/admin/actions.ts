@@ -5,7 +5,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { checkPasscode, createLocalSession, endSession, getEditor, localAdminConfigured, requireEditor } from "@/lib/auth";
+import { checkPasscode, createLocalSession, endSession, localAdminConfigured, requireEditor } from "@/lib/auth";
 import { getArchive } from "@/lib/data/archive";
 import { recordQr, resolveCorrection, saveCountry, saveMedia, saveSource, saveTradition } from "@/lib/data/mutations";
 import { getCandidate, recordDecision } from "@/lib/data/research-store";
@@ -185,7 +185,7 @@ export async function uploadMediaAction(_prev: ActionResult | null, form: FormDa
   if (!(file instanceof File) || !file.size) return { ok: false, message: "Choose an image to upload." };
   const ext = IMAGE_TYPES[file.type];
   if (!ext) return { ok: false, message: "Only JPEG, PNG, WebP or AVIF images are accepted." };
-  if (file.size > 8 * 1024 * 1024) return { ok: false, message: "Images must be 8 MB or smaller." };
+  if (file.size > 4 * 1024 * 1024) return { ok: false, message: "Images must be 4 MB or smaller." };
   const license = String(form.get("license") ?? "");
   if (!LICENSES.includes(license)) return { ok: false, message: "Choose the image's licence. Unlicensed images cannot be published." };
   const credit = String(form.get("credit") ?? "").trim();

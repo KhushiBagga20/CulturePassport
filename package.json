@@ -15,7 +15,8 @@
     "test:db": "node scripts/test-db-roundtrip.mts",
     "research": "node --env-file-if-exists=.env.local --env-file-if-exists=pipeline/.env pipeline/run.mts",
     "test:research": "node pipeline/test.mts",
-    "db:setup": "node --env-file-if-exists=.env.local --env-file-if-exists=pipeline/.env scripts/db-setup.mts"
+    "db:setup": "node --env-file-if-exists=.env.local --env-file-if-exists=pipeline/.env scripts/db-setup.mts",
+    "research:publish": "node --env-file-if-exists=.env.local --env-file-if-exists=pipeline/.env scripts/publish-research.mts"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",
@@ -47,5 +48,8 @@
     "eslint-config-next": "16.4.6",
     "tailwindcss": "4.3.3",
     "typescript": "~5.9.3"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }
