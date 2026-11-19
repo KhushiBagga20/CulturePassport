@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: PageProps<"/passport/[slug]">
   const found = findTradition(a, slug);
   if (!found || !isPublic(found.tradition)) return { title: "Passport not found" };
   const t = found.tradition;
-  const title = `${t.name} — Culture Passport No. ${t.passportNo}`;
+  const title = `${t.name} — Culture Passport`;
   const description = `${t.tagline} ${t.summary}`;
   return {
     title,
@@ -41,7 +41,7 @@ export default async function PassportPage({ params }: PageProps<"/passport/[slu
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
-    name: `${t.name} — Culture Passport No. ${t.passportNo}`,
+    name: `${t.name} — Culture Passport`,
     alternateName: [...t.nativeNames.map((n) => n.text), ...t.alternateNames],
     about: t.name,
     description: t.summary,

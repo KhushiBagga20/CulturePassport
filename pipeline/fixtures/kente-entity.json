@@ -1,0 +1,724 @@
+{
+ "entities": {
+  "Q1428368": {
+   "type": "item",
+   "id": "Q1428368",
+   "labels": {
+    "en": {
+     "language": "en",
+     "value": "kente cloth"
+    }
+   },
+   "descriptions": {
+    "en": {
+     "language": "en",
+     "value": "Ghanaian fabric made of strips that are woven from silk, cotton or rayon using horizontal looms"
+    }
+   },
+   "aliases": {
+    "en": [
+     {
+      "language": "en",
+      "value": "nwentom"
+     },
+     {
+      "language": "en",
+      "value": "kente"
+     },
+     {
+      "language": "en",
+      "value": "adanudo"
+     },
+     {
+      "language": "en",
+      "value": "Kente"
+     }
+    ]
+   },
+   "claims": {
+    "P18": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P18",
+       "hash": "def38f4496e32e23040c803a2c4e0b1dde07aedb",
+       "datavalue": {
+        "value": "Ewe kente 2, Ghana.JPG",
+        "type": "string"
+       },
+       "datatype": "commonsMedia"
+      },
+      "type": "statement",
+      "qualifiers": {
+       "P2096": [
+        {
+         "snaktype": "value",
+         "property": "P2096",
+         "hash": "2c53891aec6a11499ad8036b6bcebe05491aa0ed",
+         "datavalue": {
+          "value": {
+           "text": "Kente cloth",
+           "language": "en"
+          },
+          "type": "monolingualtext"
+         },
+         "datatype": "monolingualtext"
+        }
+       ]
+      },
+      "qualifiers-order": [
+       "P2096"
+      ],
+      "id": "Q1428368$49d2293c-4dcc-da00-f99e-a472bd50c43f",
+      "rank": "normal"
+     },
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P18",
+       "hash": "4e48e14d02a6ca0ac0d29427314a7887d675d194",
+       "datavalue": {
+        "value": "A woman weaving kente in northern Ghana 01.jpg",
+        "type": "string"
+       },
+       "datatype": "commonsMedia"
+      },
+      "type": "statement",
+      "id": "Q1428368$bc4259d6-4d54-5ac2-2dbc-e0c7097b05e7",
+      "rank": "normal"
+     },
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P18",
+       "hash": "5616af9bc23237d3bc6db3f39ba6e16508537efa",
+       "datavalue": {
+        "value": "Weaved cloths (kente) in northern Ghana 09.jpg",
+        "type": "string"
+       },
+       "datatype": "commonsMedia"
+      },
+      "type": "statement",
+      "id": "Q1428368$fd9f4747-4506-c7e9-47da-90e970aded16",
+      "rank": "preferred"
+     }
+    ],
+    "P3259": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P3259",
+       "hash": "4f1c49b03e1cfc088bdebab0ca6bbbc734f9b0ed",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 119105007,
+         "id": "Q119105007"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "type": "statement",
+      "qualifiers": {
+       "P17": [
+        {
+         "snaktype": "value",
+         "property": "P17",
+         "hash": "99d3977c7f1cef8fba49c1ab6fa99c2fa20a7f04",
+         "datavalue": {
+          "value": {
+           "entity-type": "item",
+           "numeric-id": 117,
+           "id": "Q117"
+          },
+          "type": "wikibase-entityid"
+         },
+         "datatype": "wikibase-item"
+        }
+       ],
+       "P1476": [
+        {
+         "snaktype": "value",
+         "property": "P1476",
+         "hash": "92d7886b4ef3c93a16ecda788ec89ddb6169b6ae",
+         "datavalue": {
+          "value": {
+           "text": "Craftsmanship of Traditional Woven Textile – KENTE (Bonwire, Adanwomase, Ntonso, Agotime, Tafi and Agbozume)",
+           "language": "en"
+          },
+          "type": "monolingualtext"
+         },
+         "datatype": "monolingualtext"
+        }
+       ],
+       "P217": [
+        {
+         "snaktype": "value",
+         "property": "P217",
+         "hash": "05fca95fee68d1fda2916e84decf809037222cd5",
+         "datavalue": {
+          "value": "1",
+          "type": "string"
+         },
+         "datatype": "string"
+        }
+       ]
+      },
+      "qualifiers-order": [
+       "P17",
+       "P1476",
+       "P217"
+      ],
+      "id": "Q1428368$10178BD7-1F9B-4DA8-9B01-EC1AF927F21C",
+      "rank": "normal",
+      "references": [
+       {
+        "hash": "addb0d384dc8f46f7d1964db236073fb5394aca3",
+        "snaks": {
+         "P854": [
+          {
+           "snaktype": "value",
+           "property": "P854",
+           "hash": "3a45ad4307a84a68a767cdd9f12c9abba27ae842",
+           "datavalue": {
+            "value": "https://www.motac.gov.gh/en/wp-content/uploads/Craftsmanship_of_Traditional_Woven_Textile_KENTE.pdf",
+            "type": "string"
+           },
+           "datatype": "url"
+          }
+         ],
+         "P813": [
+          {
+           "snaktype": "value",
+           "property": "P813",
+           "hash": "6300fde528d04ab5410cf9f8655fb59d271be2ef",
+           "datavalue": {
+            "value": {
+             "time": "+2023-06-05T00:00:00Z",
+             "timezone": 0,
+             "before": 0,
+             "after": 0,
+             "precision": 11,
+             "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+            },
+            "type": "time"
+           },
+           "datatype": "time"
+          }
+         ]
+        },
+        "snaks-order": [
+         "P854",
+         "P813"
+        ]
+       }
+      ]
+     },
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P3259",
+       "hash": "64ecf2ee72f5a4e54871278ff7f126da15fe8c5c",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 110319947,
+         "id": "Q110319947"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "type": "statement",
+      "qualifiers": {
+       "P580": [
+        {
+         "snaktype": "value",
+         "property": "P580",
+         "hash": "54ca0c06a3c87207ceccf47a31d90afeb2f2585b",
+         "datavalue": {
+          "value": {
+           "time": "+2024-00-00T00:00:00Z",
+           "timezone": 0,
+           "before": 0,
+           "after": 0,
+           "precision": 9,
+           "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+          },
+          "type": "time"
+         },
+         "datatype": "time"
+        }
+       ],
+       "P17": [
+        {
+         "snaktype": "value",
+         "property": "P17",
+         "hash": "99d3977c7f1cef8fba49c1ab6fa99c2fa20a7f04",
+         "datavalue": {
+          "value": {
+           "entity-type": "item",
+           "numeric-id": 117,
+           "id": "Q117"
+          },
+          "type": "wikibase-entityid"
+         },
+         "datatype": "wikibase-item"
+        }
+       ],
+       "P10221": [
+        {
+         "snaktype": "value",
+         "property": "P10221",
+         "hash": "747461ee949860333393a0bcf1da6fed860f185e",
+         "datavalue": {
+          "value": "RL/02130",
+          "type": "string"
+         },
+         "datatype": "external-id"
+        }
+       ]
+      },
+      "qualifiers-order": [
+       "P580",
+       "P17",
+       "P10221"
+      ],
+      "id": "Q1428368$0DF84F40-604D-4ABC-B307-82BEBAE6577C",
+      "rank": "normal",
+      "references": [
+       {
+        "hash": "3aed5d64a66d75387fb9caba0281c54f944a781c",
+        "snaks": {
+         "P813": [
+          {
+           "snaktype": "value",
+           "property": "P813",
+           "hash": "ac23e459e695c7fe6b686acb0b1485ae79e729d2",
+           "datavalue": {
+            "value": {
+             "time": "+2024-12-06T00:00:00Z",
+             "timezone": 0,
+             "before": 0,
+             "after": 0,
+             "precision": 11,
+             "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+            },
+            "type": "time"
+           },
+           "datatype": "time"
+          }
+         ],
+         "P407": [
+          {
+           "snaktype": "value",
+           "property": "P407",
+           "hash": "daf1c4fcb58181b02dff9cc89deb084004ddae4b",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 1860,
+             "id": "Q1860"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          }
+         ],
+         "P854": [
+          {
+           "snaktype": "value",
+           "property": "P854",
+           "hash": "ae9f842bc08d1b70e7ff59267d9c9387fabf3b9a",
+           "datavalue": {
+            "value": "https://ich.unesco.org/en/RL/02130",
+            "type": "string"
+           },
+           "datatype": "url"
+          }
+         ],
+         "P1476": [
+          {
+           "snaktype": "value",
+           "property": "P1476",
+           "hash": "b616f8a975e3552cfce4ff5b1293be2df09eccb6",
+           "datavalue": {
+            "value": {
+             "text": "Craftsmanship of traditional woven textile Kente",
+             "language": "en"
+            },
+            "type": "monolingualtext"
+           },
+           "datatype": "monolingualtext"
+          }
+         ]
+        },
+        "snaks-order": [
+         "P813",
+         "P407",
+         "P854",
+         "P1476"
+        ]
+       },
+       {
+        "hash": "87645fdd13cc105e1a5df52ac663092966ba086e",
+        "snaks": {
+         "P813": [
+          {
+           "snaktype": "value",
+           "property": "P813",
+           "hash": "ac23e459e695c7fe6b686acb0b1485ae79e729d2",
+           "datavalue": {
+            "value": {
+             "time": "+2024-12-06T00:00:00Z",
+             "timezone": 0,
+             "before": 0,
+             "after": 0,
+             "precision": 11,
+             "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+            },
+            "type": "time"
+           },
+           "datatype": "time"
+          }
+         ],
+         "P407": [
+          {
+           "snaktype": "value",
+           "property": "P407",
+           "hash": "d197d0a5efa4b4c23a302a829dd3ef43684fe002",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 150,
+             "id": "Q150"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          }
+         ],
+         "P854": [
+          {
+           "snaktype": "value",
+           "property": "P854",
+           "hash": "eaf25129cfaf44f6b5a542d2f8e839070dd5fcc3",
+           "datavalue": {
+            "value": "https://ich.unesco.org/fr/RL/02130",
+            "type": "string"
+           },
+           "datatype": "url"
+          }
+         ],
+         "P1476": [
+          {
+           "snaktype": "value",
+           "property": "P1476",
+           "hash": "47bb9b708e58e748ba0e3db3665dced1c357f17d",
+           "datavalue": {
+            "value": {
+             "text": "L'artisanat du kente, un textile traditionnel tissé",
+             "language": "fr"
+            },
+            "type": "monolingualtext"
+           },
+           "datatype": "monolingualtext"
+          }
+         ]
+        },
+        "snaks-order": [
+         "P813",
+         "P407",
+         "P854",
+         "P1476"
+        ]
+       },
+       {
+        "hash": "d0dfda07fb63a442849918fb211987f2f104b88e",
+        "snaks": {
+         "P813": [
+          {
+           "snaktype": "value",
+           "property": "P813",
+           "hash": "ac23e459e695c7fe6b686acb0b1485ae79e729d2",
+           "datavalue": {
+            "value": {
+             "time": "+2024-12-06T00:00:00Z",
+             "timezone": 0,
+             "before": 0,
+             "after": 0,
+             "precision": 11,
+             "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+            },
+            "type": "time"
+           },
+           "datatype": "time"
+          }
+         ],
+         "P407": [
+          {
+           "snaktype": "value",
+           "property": "P407",
+           "hash": "ffe70325d10cfc55f0dca807ed80ca0b5b97c472",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 1321,
+             "id": "Q1321"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          }
+         ],
+         "P854": [
+          {
+           "snaktype": "value",
+           "property": "P854",
+           "hash": "64192701b84f81ae503c347ae978997eccb5ee66",
+           "datavalue": {
+            "value": "https://ich.unesco.org/es/RL/02130",
+            "type": "string"
+           },
+           "datatype": "url"
+          }
+         ],
+         "P1476": [
+          {
+           "snaktype": "value",
+           "property": "P1476",
+           "hash": "69332247e3a13d4b2e7f5cbb802c2345d8d2a9a8",
+           "datavalue": {
+            "value": {
+             "text": "Artesanía de tejido tradicional Kente",
+             "language": "es"
+            },
+            "type": "monolingualtext"
+           },
+           "datatype": "monolingualtext"
+          }
+         ]
+        },
+        "snaks-order": [
+         "P813",
+         "P407",
+         "P854",
+         "P1476"
+        ]
+       }
+      ]
+     }
+    ],
+    "P276": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P276",
+       "hash": "3484126ab576740c80e3f82805784cc86042019a",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 398417,
+         "id": "Q398417"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "type": "statement",
+      "id": "Q1428368$AC3ED863-7B00-4773-99C6-AB5050CDD7E9",
+      "rank": "normal",
+      "references": [
+       {
+        "hash": "addb0d384dc8f46f7d1964db236073fb5394aca3",
+        "snaks": {
+         "P854": [
+          {
+           "snaktype": "value",
+           "property": "P854",
+           "hash": "3a45ad4307a84a68a767cdd9f12c9abba27ae842",
+           "datavalue": {
+            "value": "https://www.motac.gov.gh/en/wp-content/uploads/Craftsmanship_of_Traditional_Woven_Textile_KENTE.pdf",
+            "type": "string"
+           },
+           "datatype": "url"
+          }
+         ],
+         "P813": [
+          {
+           "snaktype": "value",
+           "property": "P813",
+           "hash": "6300fde528d04ab5410cf9f8655fb59d271be2ef",
+           "datavalue": {
+            "value": {
+             "time": "+2023-06-05T00:00:00Z",
+             "timezone": 0,
+             "before": 0,
+             "after": 0,
+             "precision": 11,
+             "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+            },
+            "type": "time"
+           },
+           "datatype": "time"
+          }
+         ]
+        },
+        "snaks-order": [
+         "P854",
+         "P813"
+        ]
+       }
+      ]
+     }
+    ],
+    "P10221": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P10221",
+       "hash": "747461ee949860333393a0bcf1da6fed860f185e",
+       "datavalue": {
+        "value": "RL/02130",
+        "type": "string"
+       },
+       "datatype": "external-id"
+      },
+      "type": "statement",
+      "id": "Q1428368$0467C23E-FF5E-40E7-B8E3-C368DE0F2A75",
+      "rank": "normal"
+     }
+    ],
+    "P17": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P17",
+       "hash": "99d3977c7f1cef8fba49c1ab6fa99c2fa20a7f04",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 117,
+         "id": "Q117"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "type": "statement",
+      "id": "Q1428368$AB210C20-F688-44EF-AD9B-BD8727AD9797",
+      "rank": "normal",
+      "references": [
+       {
+        "hash": "8c2322aa78d6c059d84bd558477b467b18e99b61",
+        "snaks": {
+         "P248": [
+          {
+           "snaktype": "value",
+           "property": "P248",
+           "hash": "a5389400df5179fb8ad80281d590d808f23e8d31",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 110319947,
+             "id": "Q110319947"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          }
+         ],
+         "P10221": [
+          {
+           "snaktype": "value",
+           "property": "P10221",
+           "hash": "747461ee949860333393a0bcf1da6fed860f185e",
+           "datavalue": {
+            "value": "RL/02130",
+            "type": "string"
+           },
+           "datatype": "external-id"
+          }
+         ]
+        },
+        "snaks-order": [
+         "P248",
+         "P10221"
+        ]
+       }
+      ]
+     }
+    ],
+    "P31": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P31",
+       "hash": "33159a56748e3207394fc034260842c2c525fa50",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 1314278,
+         "id": "Q1314278"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "type": "statement",
+      "id": "Q1428368$8035a375-40f8-ee0c-9207-ec4474a8b3e4",
+      "rank": "normal",
+      "references": [
+       {
+        "hash": "6e9510899b3896d65b8ed04eb5eb0864db5668c1",
+        "snaks": {
+         "P248": [
+          {
+           "snaktype": "value",
+           "property": "P248",
+           "hash": "8e91b1edb7287894f82400b8bf4e364391f8eda4",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 55437492,
+             "id": "Q55437492"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          }
+         ],
+         "P304": [
+          {
+           "snaktype": "value",
+           "property": "P304",
+           "hash": "b0c1fe98e081cd22c5d9609cdad084184c8240c6",
+           "datavalue": {
+            "value": "23-24",
+            "type": "string"
+           },
+           "datatype": "string"
+          }
+         ]
+        },
+        "snaks-order": [
+         "P248",
+         "P304"
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "sitelinks": {
+    "enwiki": {
+     "site": "enwiki",
+     "title": "Kente cloth",
+     "badges": []
+    }
+   }
+  }
+ },
+ "success": 1
+}

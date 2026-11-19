@@ -22,6 +22,7 @@ export function RotatingSeal({
   className = "",
   color = "currentColor",
   spin = true,
+  shape,
 }: {
   id: string;
   text: string;
@@ -29,6 +30,8 @@ export function RotatingSeal({
   className?: string;
   color?: string;
   spin?: boolean;
+  /** a country silhouette (countryShape) shown in the centre instead of the `center` text */
+  shape?: { primary: string[]; shared: string[] };
 }) {
   const pathId = `seal-path-${id}`;
   // The ring text is stretched to exactly one lap of the circle, so its ends never overlap,
@@ -37,7 +40,7 @@ export function RotatingSeal({
   const LAP = 2 * Math.PI * 74;
   const fontSize = Math.min(12, LAP / (text.length * 0.7));
   return (
-    <svg viewBox="0 0 200 200" className={className} role="img" aria-label={`${center} seal`}>
+    <svg viewBox="0 0 200 200" className={className} role="img" aria-label={shape ? `${center} — country seal` : `${center} seal`}>
       <defs>
         <path id={pathId} d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0" />
       </defs>
@@ -51,64 +54,76 @@ export function RotatingSeal({
       <circle cx="100" cy="100" r="94" fill="none" stroke={color} strokeWidth="1.5" />
       <circle cx="100" cy="100" r="58" fill="none" stroke={color} strokeWidth="1.2" />
       <circle cx="100" cy="100" r="52" fill="none" stroke={color} strokeWidth="0.6" strokeDasharray="2 3" />
-      <text
-        x="100"
-        y="96"
-        textAnchor="middle"
-        fill={color}
-        style={{ fontFamily: "var(--font-ui)", fontSize: 10, letterSpacing: "0.22em" }}
-      >
-        NO.
-      </text>
-      <text
-        x="100"
-        y="126"
-        textAnchor="middle"
-        fill={color}
-        style={{ fontFamily: "var(--font-display)", fontSize: 34, fontWeight: 800, letterSpacing: "-0.03em" }}
-      >
-        {center}
-      </text>
+      {shape ? (
+        <g transform="translate(68 68) scale(0.64)" color={color === "currentColor" ? undefined : color}>
+          <defs>
+            <pattern id={`seal-hatch-${id}`} width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <line x1="0" y1="0" x2="0" y2="3" stroke="currentColor" strokeWidth="1.2" />
+            </pattern>
+          </defs>
+          {shape.shared.map((d, i) => (
+            <path key={`s${i}`} d={d} fill={`url(#seal-hatch-${id})`} stroke="currentColor" strokeWidth="0.8" />
+          ))}
+          {shape.primary.map((d, i) => (
+            <path key={`p${i}`} d={d} fill="currentColor" stroke="currentColor" strokeWidth="0.6" />
+          ))}
+        </g>
+      ) : (
+        <>
+        <text
+          x="100"
+          y="96"
+          textAnchor="middle"
+          fill={color}
+          style={{ fontFamily: "var(--font-ui)", fontSize: 10, letterSpacing: "0.22em" }}
+        >
+          NO.
+        </text>
+        <text
+          x="100"
+          y="126"
+          textAnchor="middle"
+          fill={color}
+          style={{ fontFamily: "var(--font-display)", fontSize: 34, fontWeight: 800, letterSpacing: "-0.03em" }}
+        >
+          {center}
+        </text>
+        </>
+      )}
     </svg>
   );
 }
 
 /**
- * Diamond passport badge: a double-ruled lozenge with flag tips, holding the passport number.
- * An original graphic frame for the archive's identity.
+ * A passport's country silhouette. The country it is filed under is solid; other countries the
+ * tradition belongs to are hatched, so a shared tradition is never shown as one country's alone.
+ * `shape` comes from countryShape() on the server (a 100×100 box).
  */
-export function DiamondBadge({
-  top,
-  center,
-  bottom,
+export function CountryMark({
+  shape,
+  id,
   className = "",
-  color = "currentColor",
-  fill = "none",
+  title,
 }: {
-  top: string;
-  center: string;
-  bottom?: string;
+  shape: { primary: string[]; shared: string[] };
+  id: string;
   className?: string;
-  color?: string;
-  fill?: string;
+  title?: string;
 }) {
+  const hatch = `cm-hatch-${id}`;
   return (
-    <svg viewBox="0 0 320 200" className={className} role="img" aria-label={`${top} ${center}${bottom ? ` · ${bottom}` : ""}`}>
-      <path d="M160 6 L300 100 L160 194 L20 100 Z" fill={fill} stroke={color} strokeWidth="4" strokeLinejoin="miter" />
-      <path d="M160 20 L279 100 L160 180 L41 100 Z" fill="none" stroke={color} strokeWidth="1.6" />
-      <path d="M2 100 L20 88 L20 112 Z M318 100 L300 88 L300 112 Z" fill={color} />
-      <path d="M96 100 H64 M256 100 H224" stroke={color} strokeWidth="1.6" />
-      <text x="160" y="72" textAnchor="middle" fill={color} style={{ fontFamily: "var(--font-ui)", fontSize: 10.5, letterSpacing: "0.16em", fontWeight: 700 }}>
-        {top}
-      </text>
-      <text x="160" y="121" textAnchor="middle" fill={color} style={{ fontFamily: "var(--font-display)", fontSize: 42, fontWeight: 800, letterSpacing: "-0.03em" }}>
-        {center}
-      </text>
-      {bottom && (
-        <text x="160" y="146" textAnchor="middle" fill={color} style={{ fontFamily: "var(--font-ui)", fontSize: 9.5, letterSpacing: "0.14em", fontWeight: 600 }}>
-          {bottom}
-        </text>
-      )}
+    <svg viewBox="0 0 100 100" className={className} role={title ? "img" : undefined} aria-label={title} aria-hidden={title ? undefined : true}>
+      <defs>
+        <pattern id={hatch} width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="3" stroke="currentColor" strokeWidth="1.2" />
+        </pattern>
+      </defs>
+      {shape.shared.map((d, i) => (
+        <path key={`s${i}`} d={d} fill={`url(#${hatch})`} stroke="currentColor" strokeWidth="0.8" strokeLinejoin="round" />
+      ))}
+      {shape.primary.map((d, i) => (
+        <path key={`p${i}`} d={d} fill="currentColor" stroke="currentColor" strokeWidth="0.6" strokeLinejoin="round" />
+      ))}
     </svg>
   );
 }

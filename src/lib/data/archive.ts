@@ -21,9 +21,11 @@ function mergeById<T extends { id: string }>(base: T[], overrides: Record<string
 
 async function loadLocal(): Promise<Archive> {
   const store = await readStore();
-  const edited = Object.keys(store.traditions).length + Object.keys(store.sources).length + Object.keys(store.media).length > 0;
+  const edited = Object.keys(store.traditions).length + Object.keys(store.sources).length + Object.keys(store.media).length + Object.keys(store.countries).length > 0;
+  const countries = [...seedArchive.countries.filter((c) => !store.countries[c.iso2]), ...Object.values(store.countries)];
   return {
     ...seedArchive,
+    countries,
     traditions: mergeById<Tradition>(seedArchive.traditions, store.traditions).sort((a, b) => a.passportNo.localeCompare(b.passportNo)),
     sources: mergeById<Source>(seedArchive.sources, store.sources),
     media: mergeById<MediaAsset>(seedArchive.media, store.media),

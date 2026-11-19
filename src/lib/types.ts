@@ -389,7 +389,7 @@ export interface Archive {
 
 export interface Revision {
   id: string;
-  entity: "tradition" | "source" | "media";
+  entity: "tradition" | "source" | "media" | "country";
   entityId: string;
   editor: string;
   at: string;

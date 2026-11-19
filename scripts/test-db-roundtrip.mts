@@ -47,6 +47,7 @@ try {
   `);
   psql(file("supabase/migrations/0001_schema.sql"));
   psql(file("supabase/migrations/0002_policies.sql"));
+  psql(file("supabase/migrations/0004_research.sql"));
   psql(`grant usage on schema public to anon, authenticated;
         grant select, insert, update, delete on all tables in schema public to anon, authenticated;`);
   check("migrations apply cleanly", true);
@@ -123,6 +124,30 @@ try {
     blocked = true;
   }
   check("non-editors cannot call save_tradition", blocked);
+
+  // ── research review queue (0004) ──
+  psql(`insert into research_candidates (id, country_iso2, wikidata_id, name, data) values ('wd-Q1', 'GH', 'Q1', 'Test element', '{"name":"Test element"}');`);
+  const tryAs = (sql: string) => {
+    try {
+      return psql(sql, { quiet: true }).trim();
+    } catch {
+      return "error";
+    }
+  };
+  const anonSees = tryAs(`set role anon; select count(*) from research_candidates;`);
+  check("anon cannot read research candidates", anonSees === "0" || anonSees === "error", anonSees);
+  const strangerSees = tryAs(`set role authenticated; select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000099', false); select count(*) from research_candidates;`);
+  check("signed-in non-editors cannot read research candidates", strangerSees.endsWith("0") || strangerSees === "error", strangerSees);
+  const editorSees = tryAs(`set role authenticated; select set_config('request.jwt.claim.sub', '${EDITOR}', false); select count(*) from research_candidates;`);
+  check("editors can read research candidates", editorSees.endsWith("1"), editorSees);
+  tryAs(`set role authenticated; select set_config('request.jwt.claim.sub', '${EDITOR}', false);
+         update research_candidates set status = 'rejected', note = 'Not material culture' where id = 'wd-Q1';`);
+  check("editors can record a decision", psql(`select status from research_candidates where id = 'wd-Q1';`).trim() === "rejected");
+  tryAs(`set role authenticated; select set_config('request.jwt.claim.sub', '${EDITOR}', false);
+         insert into research_candidates (id, country_iso2, wikidata_id, name, data) values ('wd-Q2', 'GH', 'Q2', 'x', '{}');`);
+  check("editors cannot insert candidates (pipeline only)", psql(`select count(*) from research_candidates where id = 'wd-Q2';`).trim() === "0");
+  tryAs(`set role anon; update research_candidates set status = 'drafted' where id = 'wd-Q1';`);
+  check("anon cannot change a candidate", psql(`select status from research_candidates where id = 'wd-Q1';`).trim() === "rejected");
 } finally {
   execFileSync("dropdb", ["--if-exists", db]);
 }

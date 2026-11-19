@@ -19,7 +19,6 @@ export function QrPanel({ slug, passportNo, name }: { slug: string; passportNo: 
       <div className="relative mx-auto w-40 sm:mx-0">
         {/* eslint-disable-next-line @next/next/no-img-element -- generated QR code */}
         <img src={`/api/qr/${slug}?format=svg`} alt={`QR code that opens the ${name} passport`} width={160} height={160} className="h-40 w-40" />
-        <span className="label-sm absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap bg-ink px-2 py-0.5 text-bone">No. {passportNo}</span>
       </div>
       <div className="min-w-0">
         <p className="label text-ink-mute">Scan to open the story</p>

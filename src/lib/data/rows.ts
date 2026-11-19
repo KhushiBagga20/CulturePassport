@@ -245,7 +245,7 @@ export function traditionToRows(t: Tradition, slugToId: (slug: string) => string
   return out;
 }
 
-function countryToRow(c: CountryRecord): Row {
+export function countryToRow(c: CountryRecord): Row {
   return {
     iso2: c.iso2,
     iso_numeric: c.isoNumeric,

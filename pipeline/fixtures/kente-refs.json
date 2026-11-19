@@ -1,0 +1,156 @@
+{
+ "entities": {
+  "Q110319947": {
+   "type": "item",
+   "id": "Q110319947",
+   "labels": {
+    "en": {
+     "language": "en",
+     "value": "Representative List of the Intangible Cultural Heritage of Humanity"
+    }
+   },
+   "claims": {}
+  },
+  "Q119105007": {
+   "type": "item",
+   "id": "Q119105007",
+   "labels": {
+    "en": {
+     "language": "en",
+     "value": "National Register – Intangible Cultural Heritage of Ghana"
+    }
+   },
+   "claims": {}
+  },
+  "Q1314278": {
+   "type": "item",
+   "id": "Q1314278",
+   "labels": {
+    "en": {
+     "language": "en",
+     "value": "woven fabric"
+    }
+   },
+   "claims": {}
+  },
+  "Q398417": {
+   "type": "item",
+   "id": "Q398417",
+   "labels": {
+    "en": {
+     "language": "en",
+     "value": "Ashanti Region"
+    }
+   },
+   "claims": {
+    "P625": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P625",
+       "hash": "805576ebbe58a40cf44b920a986ffecec69ccab8",
+       "datavalue": {
+        "value": {
+         "latitude": 6.75,
+         "longitude": -1.5,
+         "altitude": null,
+         "precision": 0.016666666666667,
+         "globe": "http://www.wikidata.org/entity/Q2"
+        },
+        "type": "globecoordinate"
+       },
+       "datatype": "globe-coordinate"
+      },
+      "type": "statement",
+      "id": "q398417$55E5680D-7A4A-4909-BB40-B65C95AB7999",
+      "rank": "normal",
+      "references": [
+       {
+        "hash": "a29a646602abf65105ed0f39a44231c962ece9ee",
+        "snaks": {
+         "P143": [
+          {
+           "snaktype": "value",
+           "property": "P143",
+           "hash": "c6f1777471211df31724ac60175786f3872c83e9",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 177837,
+             "id": "Q177837"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          }
+         ]
+        },
+        "snaks-order": [
+         "P143"
+        ]
+       },
+       {
+        "hash": "50a1550f3eb880da806e635556be92a698bae4f5",
+        "snaks": {
+         "P1566": [
+          {
+           "snaktype": "value",
+           "property": "P1566",
+           "hash": "207354b8b159913b2ddadf798aa6c06bcedccdc9",
+           "datavalue": {
+            "value": "2304116",
+            "type": "string"
+           },
+           "datatype": "external-id"
+          }
+         ],
+         "P248": [
+          {
+           "snaktype": "value",
+           "property": "P248",
+           "hash": "1b3ef912a2bd61e18dd43abd184337eb010b2e96",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 830106,
+             "id": "Q830106"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          }
+         ],
+         "P813": [
+          {
+           "snaktype": "value",
+           "property": "P813",
+           "hash": "aad95c7c8a6cce985c4f8618962b356e6fefc55e",
+           "datavalue": {
+            "value": {
+             "time": "+2025-05-21T00:00:00Z",
+             "timezone": 0,
+             "before": 0,
+             "after": 0,
+             "precision": 11,
+             "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+            },
+            "type": "time"
+           },
+           "datatype": "time"
+          }
+         ]
+        },
+        "snaks-order": [
+         "P1566",
+         "P248",
+         "P813"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "success": 1
+}

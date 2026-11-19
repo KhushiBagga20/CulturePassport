@@ -5,7 +5,8 @@ import { citedSources, isPublic, lookups } from "@/lib/data/archive";
 import { publicChangeLog } from "@/lib/data/mutations";
 import { ACCENT, CATEGORY, MATURITY, RELATIONSHIP, SOURCE_TYPE, accentVars, formatSourceDate } from "@/lib/labels";
 import { ArchiveImage } from "@/components/site/ArchiveImage";
-import { DiamondBadge, RotatingSeal } from "@/components/site/Seal";
+import { CountryMark, RotatingSeal } from "@/components/site/Seal";
+import { countryShape } from "@/lib/geo-server";
 import { EvidenceBadge, SourceMarks } from "@/components/site/Evidence";
 import { Motif } from "@/components/motifs/Motif";
 import { Blocks, ChapterHeading, type BlockContext } from "./Blocks";
@@ -48,6 +49,10 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
   const hero = t.hero ? L.media.get(t.hero) : undefined;
   const communities = t.communities.map((c) => L.community.get(c.community)).filter((c): c is NonNullable<typeof c> => !!c);
   const country = L.country.get(t.collection);
+  // The passport's identity mark: its country (and any country it is shared with) instead of a number.
+  const isoOrder = [t.collection, ...t.countries.filter((c) => c !== t.collection)];
+  const shape = await countryShape(isoOrder.map((iso) => L.country.get(iso)?.isoNumeric).filter((x): x is string => !!x));
+  const countryNames = isoOrder.map((iso) => L.country.get(iso)?.name ?? iso).map((n) => (n === "United Arab Emirates" ? "UAE" : n)).join(" · ");
   const changeLog = preview ? [] : await publicChangeLog(t.id);
 
   // Which claims/events/answers each source supports, for the source library.
@@ -110,7 +115,7 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
           id: `p-${o.slug}`,
           type: "passport",
           label: o.name,
-          sub: `Passport No. ${o.passportNo}`,
+          sub: `Passport · ${o.regionLabel}`,
           description: r.reason,
           color: ACCENT[o.accent].hex,
           href: `/passport/${o.slug}`,
@@ -191,10 +196,19 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
         </div>
 
         <div className={`${WRAP} relative grid gap-x-12 gap-y-10 pb-16 pt-8 lg:grid-cols-12 lg:pb-20`}>
-          <div className="lg:col-span-7 lg:row-start-1">
-            <DiamondBadge top="CULTURE PASSPORT" center={`No. ${t.passportNo}`} className="h-auto w-44 text-[var(--accent-text)] sm:w-60" />
-            <h1 className="font-display reveal-rise mt-6 text-[clamp(2.65rem,8.19vw,7.3rem)]">{t.displayTitle}</h1>
-            <p className="font-title mt-3 text-[clamp(1.7rem,3.4vw,2.8rem)] italic text-[var(--accent-text)]">{t.tagline}</p>
+          <div className="relative lg:col-span-7 lg:row-start-1">
+            {shape && (
+              <CountryMark
+                shape={shape}
+                id={`hero-${t.slug}`}
+                className="pointer-events-none absolute -top-4 right-0 h-48 w-48 text-[var(--accent)] opacity-[0.16] sm:h-64 sm:w-64 lg:-right-6"
+              />
+            )}
+            <p className="label relative inline-flex items-center gap-2 bg-ink px-2.5 py-1.5 text-bone">
+              Culture Passport <span className="text-yellow">·</span> {countryNames}
+            </p>
+            <h1 className="font-display reveal-rise relative mt-6 text-[clamp(2.65rem,8.19vw,7.3rem)]">{t.displayTitle}</h1>
+            <p className="font-title relative mt-3 text-[clamp(1.7rem,3.4vw,2.8rem)] italic text-[var(--accent-text)]">{t.tagline}</p>
           </div>
 
           {/* On phones the photograph sits between the title and the introduction. */}
@@ -216,7 +230,8 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
               <RotatingSeal
                 id={`hero-${t.passportNo}`}
                 text={`CULTURE PASSPORT · ${t.name.toUpperCase()} · WHEN CULTURE TRAVELS · `}
-                center={t.passportNo}
+                center={countryNames}
+                shape={shape ?? undefined}
                 className="absolute -bottom-8 -left-6 h-32 w-32 rounded-full border-2 border-ink bg-yellow text-ink sm:h-36 sm:w-36"
               />
             </div>
@@ -273,7 +288,7 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
         </div>
       )}
 
-      <ChapterBar chapters={CHAPTERS} passportNo={t.passportNo} back={back} />
+      <ChapterBar chapters={CHAPTERS} shape={shape} place={countryNames} back={back} />
 
       {/* ─────────── 01 Where It Began ─────────── */}
       <section aria-labelledby="h-origins" id="origins" className="bg-cream py-20 outline-none lg:py-28">
@@ -612,7 +627,7 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
               className="group border-b-2 border-ink p-6 sm:border-b-0 sm:border-r-2 lg:px-10 lg:py-10"
               style={{ background: ACCENT[prev.accent].text, color: "#F6F0E3" }}
             >
-              <span className="label-sm opacity-80">← Previous passport · No. {prev.passportNo}</span>
+              <span className="label-sm opacity-80">← Previous passport</span>
               <span className="font-display mt-1 block text-[clamp(1.87rem,3.9vw,3.04rem)] transition-transform group-hover:-translate-x-1">{prev.name}</span>
             </Link>
           )}
@@ -622,7 +637,7 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
               className="group p-6 text-right lg:px-10 lg:py-10"
               style={{ background: ACCENT[next.accent].text, color: "#F6F0E3" }}
             >
-              <span className="label-sm opacity-80">Next passport · No. {next.passportNo} →</span>
+              <span className="label-sm opacity-80">Next passport →</span>
               <span className="font-display mt-1 block text-[clamp(1.87rem,3.9vw,3.04rem)] transition-transform group-hover:translate-x-1">{next.name}</span>
             </Link>
           )}

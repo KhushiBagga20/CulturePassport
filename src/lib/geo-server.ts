@@ -28,3 +28,27 @@ export function countrySlug(name: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 }
+
+/**
+ * A country silhouette (or several, for traditions shared across borders) fitted into a 100×100 box,
+ * for the passport's identity mark. The projection is centred on the shapes themselves, so countries
+ * that cross the antimeridian still draw correctly. Coordinates are rounded to keep the markup small.
+ */
+export async function countryShape(isoNumerics: string[]): Promise<{ primary: string[]; shared: string[] } | null> {
+  const { geoAzimuthalEqualArea, geoCentroid, geoPath } = await import("d3-geo");
+  const fc = await loadCountries("50m");
+  const feats = isoNumerics.map((iso) => byIso(fc, iso)).filter((f): f is Feature<Geometry, { name: string }> => !!f);
+  if (!feats.length) return null;
+  const all: FeatureCollection = { type: "FeatureCollection", features: feats };
+  const [lon, lat] = geoCentroid(all);
+  const proj = geoAzimuthalEqualArea().rotate([-lon, -lat]).fitExtent(
+    [
+      [4, 4],
+      [96, 96],
+    ],
+    all,
+  );
+  const path = geoPath(proj);
+  const round = (d: string | null) => (d ?? "").replace(/-?\d+\.\d+/g, (n) => String(Math.round(Number(n) * 10) / 10));
+  return { primary: [round(path(feats[0]))], shared: feats.slice(1).map((f) => round(path(f))) };
+}

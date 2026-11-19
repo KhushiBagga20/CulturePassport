@@ -7,7 +7,9 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { checkPasscode, createLocalSession, endSession, getEditor, localAdminConfigured, requireEditor } from "@/lib/auth";
 import { getArchive } from "@/lib/data/archive";
-import { recordQr, resolveCorrection, saveMedia, saveSource, saveTradition } from "@/lib/data/mutations";
+import { recordQr, resolveCorrection, saveCountry, saveMedia, saveSource, saveTradition } from "@/lib/data/mutations";
+import { getCandidate, recordDecision } from "@/lib/data/research-store";
+import { candidateToDraft, countryRecordFor, slugify } from "@/lib/research";
 import { UPLOAD_DIR } from "@/lib/data/local-store";
 import { validateArchive } from "@/lib/data/seed";
 import { sessionClient, supabaseConfigured } from "@/lib/supabase/clients";
@@ -260,4 +262,82 @@ export async function resolveCorrectionAction(_prev: ActionResult | null, form: 
 export async function recordQrAction(traditionId: string, url: string, format: "svg" | "png" | "label") {
   await requireEditor();
   await recordQr(traditionId, url, format);
+}
+
+// ───────────────────────────── research queue ─────────────────────────────
+// Candidates come from `npm run research`. Nothing here publishes: a candidate can be rejected,
+// reopened, or turned into a *draft* passport whose claims are all "Further verification needed".
+
+export async function rejectCandidateAction(_prev: ActionResult | null, form: FormData): Promise<ActionResult> {
+  const editor = await requireEditor();
+  const id = String(form.get("id") ?? "");
+  const note = String(form.get("note") ?? "").trim();
+  try {
+    await recordDecision(id, { status: "rejected", reviewedBy: editor.name, note: note || undefined });
+  } catch (e) {
+    return { ok: false, message: (e as Error).message };
+  }
+  revalidatePath("/admin/research");
+  return { ok: true, message: "Rejected. A later pipeline run will keep this decision." };
+}
+
+export async function reopenCandidateAction(_prev: ActionResult | null, form: FormData): Promise<ActionResult> {
+  const editor = await requireEditor();
+  try {
+    await recordDecision(String(form.get("id") ?? ""), { status: "new", reviewedBy: editor.name });
+  } catch (e) {
+    return { ok: false, message: (e as Error).message };
+  }
+  revalidatePath("/admin/research");
+  return { ok: true, message: "Back in the queue." };
+}
+
+export async function addCountryFromCandidateAction(_prev: ActionResult | null, form: FormData): Promise<ActionResult> {
+  const editor = await requireEditor();
+  const c = await getCandidate(String(form.get("id") ?? ""));
+  if (!c) return { ok: false, message: "Candidate not found." };
+  const archive = await getArchive();
+  if (archive.countries.some((x) => x.iso2 === c.country.iso2)) return { ok: true, message: `${c.country.name} is already on the atlas.` };
+  if (!c.country.centroid) return { ok: false, message: "Wikidata gave no coordinates for this country; it cannot be placed on the globe yet." };
+  try {
+    await saveCountry(countryRecordFor(c.country), editor.name);
+  } catch (e) {
+    return { ok: false, message: `Could not add the country: ${(e as Error).message}` };
+  }
+  refresh();
+  return { ok: true, message: `${c.country.name} is now on the atlas as "Stories being documented". Nothing about it is published yet.` };
+}
+
+export async function draftFromCandidateAction(_prev: ActionResult | null, form: FormData): Promise<ActionResult> {
+  const editor = await requireEditor();
+  const c = await getCandidate(String(form.get("id") ?? ""));
+  if (!c) return { ok: false, message: "Candidate not found." };
+  if (c.status === "drafted" && c.draftId) redirect(`/admin/passports/${c.draftId}`);
+  const archive = await getArchive();
+  if (!archive.countries.some((x) => x.iso2 === c.country.iso2)) return { ok: false, message: `Add ${c.country.name} to the atlas first.` };
+
+  let slug = slugify(c.name) || c.wikidataId.toLowerCase();
+  const taken = (s: string) => archive.traditions.some((t) => t.slug === s || t.slugHistory?.includes(s));
+  for (let n = 2; taken(slug); n++) slug = `${slugify(c.name)}-${n}`;
+  const passportNo = String(Math.max(0, ...archive.traditions.map((t) => Number(t.passportNo))) + 1).padStart(3, "0");
+  const draft = candidateToDraft(c, { id: `trad-${randomUUID().slice(0, 8)}`, slug, passportNo, editor: editor.name, today: new Date().toISOString().slice(0, 10) });
+
+  const next = {
+    ...archive,
+    traditions: [...archive.traditions, draft.tradition],
+    sources: [...archive.sources.filter((s) => !draft.sources.some((d) => d.id === s.id)), ...draft.sources],
+    media: [...archive.media, ...(draft.media ? [draft.media] : [])],
+  };
+  const problems = [...checkTradition(draft.tradition, archive.traditions), ...validateArchive(next).filter((e) => e.includes(`tradition ${slug}`))];
+  if (problems.length) return { ok: false, message: problems.join(" ") };
+  try {
+    for (const s of draft.sources) await saveSource(s, editor.name);
+    if (draft.media) await saveMedia(draft.media, editor.name);
+    await saveTradition(draft.tradition, editor.name, `Drafted from research candidate ${c.wikidataId}`);
+    await recordDecision(c.id, { status: "drafted", reviewedBy: editor.name, draftId: draft.tradition.id });
+  } catch (e) {
+    return { ok: false, message: `Could not create the draft: ${(e as Error).message}` };
+  }
+  refresh();
+  redirect(`/admin/passports/${draft.tradition.id}`);
 }

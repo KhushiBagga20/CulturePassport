@@ -1,9 +1,9 @@
 import { randomUUID } from "node:crypto";
-import type { CorrectionRequest, MediaAsset, Revision, Source, Tradition } from "../types";
+import type { CorrectionRequest, CountryRecord, MediaAsset, Revision, Source, Tradition } from "../types";
 import { readStore, updateStore } from "./local-store";
 import { getArchive } from "./archive";
 import { supabaseConfigured, publicClient, sessionClient } from "../supabase/clients";
-import { mediaToRow, sourceToRow, traditionToRows } from "./rows";
+import { countryToRow, mediaToRow, sourceToRow, traditionToRows } from "./rows";
 
 /** Field-level diff summary for the audit trail. */
 export function changedFields(before: unknown, after: unknown, prefix = ""): string[] {
@@ -139,6 +139,19 @@ export async function saveMedia(m: MediaAsset, editor: string): Promise<void> {
     });
   }
   await recordRevision({ entity: "media", entityId: m.id, editor, summary: `Media: ${m.caption}`, fields: ["media"] });
+}
+
+/** Adds (or updates) a country on the atlas. New countries start as "Stories being documented". */
+export async function saveCountry(c: CountryRecord, editor: string): Promise<void> {
+  if (supabaseConfigured()) {
+    const { error } = await (await sessionClient()).from("countries").upsert(countryToRow(c));
+    if (error) throw new Error(error.message);
+  } else {
+    await updateStore((s) => {
+      s.countries[c.iso2] = c;
+    });
+  }
+  await recordRevision({ entity: "country", entityId: c.iso2, editor, summary: `Added ${c.name} to the atlas (${c.status})`, fields: ["country"] });
 }
 
 export async function resolveCorrection(id: string, status: CorrectionRequest["status"], resolution: string): Promise<void> {

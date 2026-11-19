@@ -14,7 +14,7 @@ It is an education, documentation and attribution project. **It is not a legal o
 | --- | --- | --- |
 | The living globe (Explore) | `/` | Three.js / React Three Fiber globe built from Natural Earth country polygons. Hover picks countries by real geography. Clicking flies the camera in and opens the country chapter. Includes India → UAE → World routes, one primary action, quiet links to a passport-number picker and a keyboard-friendly country list, a Warli-style loading symbol, and a 2D atlas fallback (automatic without WebGL, or chosen by the visitor). |
 | Country chapters | `/country/[slug]` | Every country page has a "Back to the globe" action. India (active collection): contents, interactive map + filterable editorial gallery, attribution histories, connections, makers on record, traditions awaiting documentation. UAE (introductory). Ghana / Japan / Mexico ("stories being documented"). Pakistan / Nepal (shared traditions). Any other country gets an honest "not yet in the archive" page. |
-| Culture Passports | `/passport/[slug]` | Six chapters: **Where It Began** (interactive places map) · **The People Behind It** (material → process → object flow) · **A Journey Through Time** (overview ruler + draggable timeline, details on demand) · **Across Borders** (connection diagram, case files) · **Sources & References** (evidence and source-mix charts, source library) · **Meet the Makers**. A sticky chapter bar (a compact selector with previous/next on phones), a back-to-country action, and citation markers that open a source drawer instead of jumping away. Longer text folds into "Keep reading". Chapter anchors (`#origins`, `#makers`, `#through-time`, `#travels`, `#evidence`, `#keep-alive`) are unchanged, so existing links keep working. Statically generated and revalidated, so QR scans load fast. |
+| Culture Passports | `/passport/[slug]` | A country silhouette (solid for its collection, hatched for countries it is shared with) marks each passport instead of a number. Six chapters: **Where It Began** (interactive places map) · **The People Behind It** (material → process → object flow) · **A Journey Through Time** (overview ruler + draggable timeline, details on demand) · **Across Borders** (connection diagram, case files) · **Sources & References** (evidence and source-mix charts, source library) · **Meet the Makers**. A sticky chapter bar (a compact selector with previous/next on phones), a back-to-country action, and citation markers that open a source drawer instead of jumping away. Longer text folds into "Keep reading". Chapter anchors (`#origins`, `#makers`, `#through-time`, `#travels`, `#evidence`, `#keep-alive`) are unchanged, so existing links keep working. Statically generated and revalidated, so QR scans load fast. |
 | Kolhapuri × Prada case file | `/passport/kolhapuri-chappal#travels` | Sourced chronology from June 2025 to April 2026 (colour-coded by phase, details on demand), a side-by-side comparison (a draggable slider appears only when both sides have licensed images), "What travelled, and what was left behind?", six questions with evidence labels, a legal note, and open questions. |
 | Identity card & Share with Credit | `/passport/[slug]/card`, `/api/card/[slug]` | PNG card (portrait 1080×1350, or `?layout=landscape`) with a QR code; a caption that carries the source link; native share where supported. |
 | QR system | `/api/qr/[slug]?format=svg\|png`, `/passport/[slug]/label`, `/p/NNN` | Downloadable codes, print-ready gallery label + product tag, permanent short links by passport number, slug history so renamed passports keep resolving. |
@@ -23,6 +23,7 @@ It is an education, documentation and attribution project. **It is not a legal o
 | Trails | `/trails`, `/trails/[slug]` | *Crafted by Hand*, *Threads Across Borders*, *Tradition Meets the Runway*, *From Walls to Paper*. Passports show a trail bar when visited from a trail. |
 | About | `/method` | How we work: principles, evidence labels, editorial process, corrections, languages, maps, image credits. |
 | Editorial desk | `/admin` | Sign-in, dashboard with integrity check, passport editor (identity, story markup, claims with sources, timeline, places and people, advanced JSON, publication), new drafts, sources, permitted-image uploads, review queue for public corrections, QR labels, audit history, draft preview. |
+| Research pipeline | `npm run research`, `/admin/research` | Gathers UNESCO-listed traditions for any country from Wikidata, UNESCO IDs and Wikimedia Commons into a private review queue. Editors reject candidates, add the country to the atlas ("Stories being documented"), or create a **draft** passport whose claims are all "Further verification needed". Nothing is published automatically. See [`pipeline/README.md`](pipeline/README.md). |
 
 ### Content in the seed archive
 
@@ -108,6 +109,7 @@ The app never reads a Supabase service-role key, so one can't leak to the browse
    - `supabase/migrations/0001_schema.sql` creates the normalised tables: countries, places, communities, traditions, names, tradition↔place/community/country links, chapter sections, translations, claims and `claim_sources`, events and `event_sources`, case studies and questions, materials, process steps, practitioners, organisations, resources, related traditions, relationships, trails, editors, QR records, content revisions and correction requests. It also adds indexes and timestamps.
    - `supabase/migrations/0002_policies.sql` adds RLS: anyone can read published content; drafts, and everything linked to them, are visible to editors only; only rows in `editors` can write. Anyone can submit a correction, but only editors can read one. It also adds a public, non-personal change-log view, and a transactional `save_tradition(jsonb)` RPC used by the editor.
    - `supabase/migrations/0003_storage.sql` creates the public `media` bucket (images up to 8 MB) with editor-only uploads.
+   - `supabase/migrations/0004_research.sql` adds the private `research_candidates` review queue. Editors can read candidates and record decisions; only the research pipeline (service-role key, kept in `pipeline/.env`) can insert. It also allows `country` entries in the audit history.
 3. **Load the seed content.** Regenerate it with `npm run seed:sql` if you have changed the seed, then run `supabase/seed.sql`.
 4. **Add editors.** Create a user under Authentication → Users, then insert them:
    ```sql
@@ -117,7 +119,7 @@ The app never reads a Supabase service-role key, so one can't leak to the browse
 
 ### Database tests (no Supabase project needed)
 
-`npm run test:db` creates a throwaway local PostgreSQL database and applies the migrations (with minimal stand-ins for Supabase's `auth` schema and roles). It then loads the generated seed, reads every table back, and checks that the archive round-trips **unchanged** through the normalised schema. It also checks RLS (anonymous visitors can't see drafts or their claims, can't modify content, can submit but not read corrections) and that `save_tradition` works for editors and is refused for everyone else. It needs `createdb`, `psql` and `dropdb` on your PATH.
+`npm run test:db` creates a throwaway local PostgreSQL database and applies the migrations (with minimal stand-ins for Supabase's `auth` schema and roles). It then loads the generated seed, reads every table back, and checks that the archive round-trips **unchanged** through the normalised schema. It also checks RLS (anonymous visitors can't see drafts or their claims, can't modify content, can submit but not read corrections) and that `save_tradition` works for editors and is refused for everyone else. It also checks that the research queue is invisible to the public and to non-editors, and that editors can review but not insert candidates. It needs `createdb`, `psql` and `dropdb` on your PATH.
 
 ---
 
@@ -152,6 +154,8 @@ npm run lint         # ESLint
 npm run validate     # archive referential integrity (seed)
 npm run seed:sql     # regenerate supabase/seed.sql from the TypeScript seed
 npm run test:db      # migrations + seed + RLS + RPC round-trip against local PostgreSQL
+npm run research -- --country GH   # gather research candidates for a country (see pipeline/README.md)
+npm run test:research               # offline tests for the research pipeline
 ```
 
 ---

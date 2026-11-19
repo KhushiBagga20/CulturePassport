@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "motion/react";
+import { CountryMark } from "@/components/site/Seal";
 
 export interface ChapterLink {
   id: string;
@@ -16,11 +17,14 @@ export interface ChapterLink {
  */
 export function ChapterBar({
   chapters,
-  passportNo,
+  shape,
+  place,
   back,
 }: {
   chapters: ChapterLink[];
-  passportNo: string;
+  /** the passport's country silhouette (countryShape) and country names */
+  shape: { primary: string[]; shared: string[] } | null;
+  place: string;
   back?: { href: string; label: string };
 }) {
   const reduce = useReducedMotion();
@@ -90,7 +94,9 @@ export function ChapterBar({
       {/* Desktop */}
       {/* Spans the full screen width; every chapter gets an equal share, so none is ever cut off. */}
       <div className="hidden w-full items-stretch lg:flex">
-        <span className="label flex shrink-0 items-center border-r border-bone/20 px-4 text-yellow xl:px-6">No. {passportNo}</span>
+        <span className="flex shrink-0 items-center border-r border-bone/20 px-4 text-yellow xl:px-6" title={place}>
+          {shape ? <CountryMark shape={shape} id="chapterbar" className="h-8 w-8" title={place} /> : <span className="label">{place}</span>}
+        </span>
         <ol ref={rail} className="grid min-w-0 flex-1 grid-cols-6">
           {chapters.map((c) => {
             const on = active === c.id;
@@ -128,7 +134,7 @@ export function ChapterBar({
           <span className="font-display shrink-0 text-2xl leading-none text-yellow">{cur?.n}</span>
           <span className="min-w-0">
             <span className="label-sm block text-bone/60">
-              Chapter {i + 1} of {chapters.length} · No. {passportNo}
+              Chapter {i + 1} of {chapters.length} · {place}
             </span>
             <span className="block truncate font-ui text-[0.8rem] font-bold uppercase tracking-[0.08em]">{cur?.label}</span>
           </span>

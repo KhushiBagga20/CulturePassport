@@ -1,7 +1,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
-import type { CorrectionRequest, MediaAsset, Revision, Source, Tradition } from "../types";
+import type { CorrectionRequest, CountryRecord, MediaAsset, Revision, Source, Tradition } from "../types";
 
 /**
  * Local demo-mode store. Admin edits are written to .data/store.json as overrides on top
@@ -12,6 +12,8 @@ export interface LocalStore {
   traditions: Record<string, Tradition>;
   sources: Record<string, Source>;
   media: Record<string, MediaAsset>;
+  /** countries added to the atlas from the research queue, keyed by ISO alpha-2 */
+  countries: Record<string, CountryRecord>;
   revisions: Revision[];
   corrections: CorrectionRequest[];
 }
@@ -20,7 +22,7 @@ const DIR = path.join(process.cwd(), ".data");
 const FILE = path.join(DIR, "store.json");
 export const UPLOAD_DIR = path.join(DIR, "uploads");
 
-const empty = (): LocalStore => ({ traditions: {}, sources: {}, media: {}, revisions: [], corrections: [] });
+const empty = (): LocalStore => ({ traditions: {}, sources: {}, media: {}, countries: {}, revisions: [], corrections: [] });
 
 export async function readStore(): Promise<LocalStore> {
   try {
@@ -51,5 +53,5 @@ export function updateStore<T>(fn: (s: LocalStore) => T | Promise<T>): Promise<T
 
 export async function storeHasEdits(): Promise<boolean> {
   const s = await readStore();
-  return Object.keys(s.traditions).length + Object.keys(s.sources).length + Object.keys(s.media).length > 0;
+  return Object.keys(s.traditions).length + Object.keys(s.sources).length + Object.keys(s.media).length + Object.keys(s.countries).length > 0;
 }

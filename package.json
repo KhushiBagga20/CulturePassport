@@ -2,7 +2,7 @@
   "name": "culture-passport",
   "version": "0.1.0",
   "private": true,
-  "description": "Culture Passport — a living atlas and attribution layer for cultural heritage. When culture travels, let its story travel with it.",
+  "description": "Culture Passport \u2014 a living atlas and attribution layer for cultural heritage. When culture travels, let its story travel with it.",
   "type": "module",
   "scripts": {
     "dev": "next dev",
@@ -12,7 +12,9 @@
     "typecheck": "tsc --noEmit",
     "seed:sql": "node scripts/generate-seed-sql.mts",
     "validate": "node scripts/validate-archive.mts",
-    "test:db": "node scripts/test-db-roundtrip.mts"
+    "test:db": "node scripts/test-db-roundtrip.mts",
+    "research": "node --env-file-if-exists=pipeline/.env pipeline/run.mts",
+    "test:research": "node pipeline/test.mts"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",

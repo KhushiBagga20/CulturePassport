@@ -39,6 +39,10 @@ export async function renderCard(
   headers?: Record<string, string>,
 ) {
   const accent = ACCENT[t.accent];
+  const places = [t.collection, ...t.countries.filter((c) => c !== t.collection)]
+    .map((iso) => archive.countries.find((c) => c.iso2 === iso)?.name ?? iso)
+    .map((n) => (n === "United Arab Emirates" ? "UAE" : n))
+    .join(" · ");
   const communities = t.communities.map((c) => archive.communities.find((x) => x.id === c.community)?.name).filter(Boolean).join(" · ");
   const [qr, fontData] = await Promise.all([qrDataUrl(url, 420), fonts()]);
   const portrait = layout === "portrait";
@@ -65,7 +69,7 @@ export async function renderCard(
         }}
       >
         <span style={{ color: "#F4BA2E" }}>Culture Passport</span>
-        <span>No. {t.passportNo}</span>
+        <span>{places}</span>
       </div>
       <div
         style={{
