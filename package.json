@@ -14,7 +14,8 @@
     "validate": "node scripts/validate-archive.mts",
     "test:db": "node scripts/test-db-roundtrip.mts",
     "research": "node --env-file-if-exists=pipeline/.env pipeline/run.mts",
-    "test:research": "node pipeline/test.mts"
+    "test:research": "node pipeline/test.mts",
+    "db:setup": "node --env-file-if-exists=pipeline/.env scripts/supabase-setup.mts"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",

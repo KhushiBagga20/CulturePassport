@@ -105,17 +105,18 @@ The app never reads a Supabase service-role key, so one can't leak to the browse
 ## Supabase setup (production backend)
 
 1. **Create a project** at supabase.com.
-2. **Run the migrations** in order. Use the SQL editor, or the Supabase CLI (`supabase link`, then `supabase db push`):
-   - `supabase/migrations/0001_schema.sql` creates the normalised tables: countries, places, communities, traditions, names, tradition↔place/community/country links, chapter sections, translations, claims and `claim_sources`, events and `event_sources`, case studies and questions, materials, process steps, practitioners, organisations, resources, related traditions, relationships, trails, editors, QR records, content revisions and correction requests. It also adds indexes and timestamps.
-   - `supabase/migrations/0002_policies.sql` adds RLS: anyone can read published content; drafts, and everything linked to them, are visible to editors only; only rows in `editors` can write. Anyone can submit a correction, but only editors can read one. It also adds a public, non-personal change-log view, and a transactional `save_tradition(jsonb)` RPC used by the editor.
-   - `supabase/migrations/0003_storage.sql` creates the public `media` bucket (images up to 8 MB) with editor-only uploads.
-   - `supabase/migrations/0004_research.sql` adds the private `research_candidates` review queue. Editors can read candidates and record decisions; only the research pipeline (service-role key, kept in `pipeline/.env`) can insert. It also allows `country` entries in the audit history.
-3. **Load the seed content.** Regenerate it with `npm run seed:sql` if you have changed the seed, then run `supabase/seed.sql`.
-4. **Add editors.** Create a user under Authentication → Users, then insert them:
-   ```sql
-   insert into editors (user_id, role) values ('<auth user uuid>', 'admin');
-   ```
-5. **Set the environment variables** above and redeploy. The app switches to Supabase automatically when both public Supabase variables are present. Editors sign in with email and password.
+2. **Add the keys**, using your own editor so they never pass through chat or logs:
+   - `.env.local` (the web app): `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` (the public anon or publishable key).
+   - `pipeline/.env` (server-only, git-ignored): `SUPABASE_DB_URL` (Dashboard → Connect → connection string, with your database password), plus `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` (or a secret key) for the research pipeline. Copy `pipeline/.env.example`.
+3. **Set up the database:** `npm run db:setup`. It applies any pending migrations in order, records them in a private `cp_admin.migrations` table, loads `supabase/seed.sql` if the archive is empty, then reports what the public can see. It is safe to re-run.
+   - `0001_schema.sql` creates the normalised tables: countries, places, communities, traditions, names, tradition↔place/community/country links, chapter sections, translations, claims and `claim_sources`, events and `event_sources`, case studies and questions, materials, process steps, practitioners, organisations, resources, related traditions, relationships, trails, editors, QR records, content revisions and correction requests. It also adds indexes and timestamps.
+   - `0002_policies.sql` adds RLS: anyone can read published content; drafts, and everything linked to them, are visible to editors only; only rows in `editors` can write. Anyone can submit a correction, but only editors can read one. It also adds a public, non-personal change-log view, and a transactional `save_tradition(jsonb)` RPC used by the editor.
+   - `0003_storage.sql` creates the public `media` bucket (images up to 8 MB) with editor-only uploads.
+   - `0004_research.sql` adds the private `research_candidates` review queue. Editors can read candidates and record decisions; only the research pipeline (service-role key) can insert. It also allows `country` entries in the audit history.
+
+   Without the script, run the four files and `supabase/seed.sql` in the SQL editor, in order.
+4. **Add editors.** Create a user under Authentication → Users (you choose the password), then run `npm run db:setup -- --editor their@email`.
+5. **Restart or redeploy** the app. It switches to Supabase automatically when both public Supabase variables are present, and editors then sign in with email and password. `npm run research -- --country GH` now writes to the Supabase review queue.
 
 ### Database tests (no Supabase project needed)
 
