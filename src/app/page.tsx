@@ -103,7 +103,7 @@ export default async function HomePage() {
                 ))}
               </dl>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Link href={`/passport/${flagship.slug}#travels`} className="btn btn-yellow">
+                <Link href={`/passport/${flagship.slug}`} className="btn btn-yellow">
                   Read the case file →
                 </Link>
               </div>
