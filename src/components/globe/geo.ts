@@ -34,10 +34,13 @@ export interface World {
 
 let worldPromise: Promise<World> | null = null;
 
+/** Bump when public/geo changes: browsers cache these files for a week. v2: India's full boundary. */
+const GEO_VERSION = "2";
+
 /** Natural Earth 1:50m admin-0 countries (via world-atlas), served from /public/geo. */
 export function loadWorld(resolution: "50m" | "110m" = "50m"): Promise<World> {
   if (worldPromise && resolution === "50m") return worldPromise;
-  const p = fetch(`/geo/countries-${resolution}.json`)
+  const p = fetch(`/geo/countries-${resolution}.json?v=${GEO_VERSION}`)
     .then((r) => {
       if (!r.ok) throw new Error(`Could not load country boundaries (${r.status})`);
       return r.json() as Promise<Topology<{ countries: GeometryCollection<{ name: string }> }>>;
