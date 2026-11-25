@@ -226,7 +226,8 @@ export function GlobeExperience({ countries, passports }: { countries: GlobeCoun
           </div>
         )}
 
-        {/* projected labels for collections */}
+        {/* projected labels for collections (desktop and tablet only: on a phone they crowd the globe,
+            so only the country colours are shown and a tap on a country opens it) */}
         {mode === "3d" &&
           countries
             .filter((c) => c.status !== "shared")
@@ -240,7 +241,7 @@ export function GlobeExperience({ countries, passports }: { countries: GlobeCoun
                 type="button"
                 tabIndex={-1}
                 onClick={() => selectById(c.isoNumeric, false)}
-                className="label-sm absolute left-0 top-0 -translate-x-1/2 whitespace-nowrap opacity-0 transition-opacity"
+                className="label-sm absolute left-0 top-0 -translate-x-1/2 whitespace-nowrap opacity-0 transition-opacity max-md:hidden"
                 style={{ willChange: "transform" }}
               >
                 <span className="relative -left-1/2 -top-7 flex items-center gap-1.5 rounded-full border border-ink/30 bg-bone/90 px-2 py-1 shadow-sm backdrop-blur-sm">
