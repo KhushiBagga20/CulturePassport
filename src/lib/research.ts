@@ -57,6 +57,8 @@ export interface ResearchCandidate {
   aliases: string[];
   nativeNames: { text: string; lang: string; script: string }[];
   ich?: { id: string; list: "representative" | "urgent" | "other"; listLabel: string; year?: string; url: string };
+  /** India's Geographical Indications registry, as listed on Wikipedia (which cites the GI Registry). */
+  gi?: GiEntry;
   /** "instance of" labels, e.g. "textile", "musical genre" */
   kinds: string[];
   /** true when the element looks like material culture (craft, textile, painting…) rather than music, dance or food */
@@ -84,6 +86,105 @@ export interface ResearchCandidate {
   reviewedAt?: string;
   note?: string;
   draftId?: string;
+}
+
+// ───────────────────────────── India: Geographical Indications ─────────────────────────────
+
+export const GI_LIST_PAGE = "Geographical_indications_in_India";
+export const GI_LIST_URL = `https://en.wikipedia.org/wiki/${GI_LIST_PAGE}`;
+export const GI_REGISTRY_URL = "https://search.ipindia.gov.in/GIRPublic/";
+
+export interface GiEntry {
+  applicationNo: string;
+  goods: string; // the GI as registered, e.g. "Channapatna toys and dolls"
+  type: "Handicraft" | "Food stuff";
+  state: string;
+  year?: string;
+}
+
+/** A row of the GI table that links to its own Wikipedia article. */
+export interface GiRow extends GiEntry {
+  article: string; // Wikipedia title
+  stateArticle?: string;
+}
+
+const linkParts = (cell: string) => {
+  const m = cell.match(/\[\[([^\]|#]+)(?:#[^\]|]*)?(?:\|([^\]]+))?\]\]/);
+  return m ? { target: m[1].trim(), text: (m[2] ?? m[1]).trim() } : null;
+};
+const plain = (cell: string) =>
+  cell
+    .replace(/<ref[^>]*\/>|<ref[^>]*>.*?<\/ref>/g, "")
+    .replace(/\[\[(?:[^\]|]*\|)?([^\]]+)\]\]/g, "$1")
+    .replace(/'{2,}/g, "")
+    .replace(/\{\{[^}]*\}\}/g, "")
+    .trim();
+
+/**
+ * Parses the table on Wikipedia's "Geographical indications in India" page. Keeps handicrafts
+ * (including textiles) and food stuffs that link to an article; agricultural, manufactured and
+ * natural goods are left out.
+ */
+export function parseGiTable(wikitext: string): GiRow[] {
+  const out: GiRow[] = [];
+  for (const row of wikitext.split(/\n\|-/).slice(1)) {
+    const cells = row
+      .split("\n")
+      .filter((l) => l.startsWith("|") && !l.startsWith("|}") && !l.startsWith("|+"))
+      .map((l) => l.replace(/^\|+\s*/, "").trim());
+    if (cells.length < 5) continue;
+    const [, appNo, goodsCell, typeCell, stateCell, yearCell] = cells;
+    const t = plain(typeCell).toLowerCase();
+    const type = /handi|textile/.test(t) ? "Handicraft" : /food/.test(t) ? "Food stuff" : null;
+    const link = linkParts(goodsCell);
+    if (!type || !link || /^(file|image|category):/i.test(link.target)) continue;
+    out.push({
+      applicationNo: plain(appNo),
+      goods: plain(goodsCell),
+      type,
+      state: plain(stateCell),
+      stateArticle: linkParts(stateCell)?.target,
+      year: plain(yearCell ?? "") || undefined,
+      article: link.target,
+    });
+  }
+  return out;
+}
+
+/** Adds the GI registration to a candidate built from the article's Wikidata item. */
+export function addGi(
+  c: ResearchCandidate,
+  gi: GiEntry,
+  accessed: string,
+  state?: { name: string; wikidataId: string; lon?: number; lat?: number },
+): ResearchCandidate {
+  const sources: CandidateSource[] = [
+    ...c.sources,
+    {
+      key: "gi-list",
+      type: "reference",
+      title: "Geographical indications in India — Wikipedia",
+      publisher: "Wikipedia",
+      url: GI_LIST_URL,
+      accessed,
+      note: "Table of registered GIs compiled from the GI Registry's journals. A lead: confirm the entry on the registry.",
+    },
+    {
+      key: "gi-registry",
+      type: "government",
+      title: "Geographical Indications Registry: public search",
+      publisher: "Geographical Indications Registry, Government of India",
+      url: GI_REGISTRY_URL,
+      accessed,
+      note: `Search for application no. ${gi.applicationNo} to read the registered specification.`,
+    },
+  ];
+  const fact: CandidateFact = {
+    text: `“${gi.goods}” is registered in India as a Geographical Indication (${gi.type.toLowerCase()}) for ${gi.state}, application no. ${gi.applicationNo}${gi.year ? `, ${gi.year}` : ""}.`,
+    sources: ["gi-list", "gi-registry"],
+  };
+  const places = c.places.length || !state ? c.places : [state];
+  return { ...c, gi, places, sources, facts: [fact, ...c.facts] };
 }
 
 // ───────────────────────────── Wikidata vocabulary ─────────────────────────────
@@ -357,7 +458,8 @@ export function slugify(s: string) {
     .replace(/[̀-ͯ]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "")
-    .slice(0, 60);
+    .slice(0, 60)
+    .replace(/-+$/, ""); // cutting a long name can leave a trailing hyphen
 }
 
 /** A public "stories being documented" record for a country that is new to the atlas. */
@@ -421,7 +523,11 @@ export function candidateToDraft(
           documentary: false,
         }
       : undefined;
-  const where = c.places.length ? `${c.places.slice(0, 2).map((p) => p.name).join(", ")} — ${c.country.name}` : c.country.name;
+  const where = c.places.length
+    ? `${c.places.slice(0, 2).map((p) => p.name).join(", ")} — ${c.country.name}`
+    : c.gi
+      ? `${c.gi.state} — ${c.country.name}`
+      : c.country.name;
   const native: NativeName[] = c.nativeNames.map((n) => ({ text: n.text, lang: n.lang, script: n.script, note: "From Wikidata; confirm spelling and language with the community." }));
   const summary = c.description ? c.description[0].toUpperCase() + c.description.slice(1) + "." : "";
   const category = categoryFor(c);
@@ -437,7 +543,11 @@ export function candidateToDraft(
     maturity: "editorial-draft",
     name: c.name[0].toUpperCase() + c.name.slice(1),
     displayTitle: c.name[0].toUpperCase() + c.name.slice(1),
-    tagline: c.ich ? `A UNESCO-listed tradition of ${country}.` : `A tradition of ${country}.`,
+    tagline: c.gi
+      ? `A Geographical Indication of ${c.gi.state}, India.`
+      : c.ich
+        ? `A UNESCO-listed tradition of ${country}.`
+        : `A tradition of ${country}.`,
     nativeNames: native,
     alternateNames: c.aliases,
     category,
@@ -448,7 +558,7 @@ export function candidateToDraft(
     places: [],
     communities: [],
     summary: summary || `A tradition of ${country}.`,
-    intro: `${summary ? `${summary} ` : ""}This passport was compiled from UNESCO listings and Wikidata and has not yet been reviewed by an editor; every claim below is marked "Further verification needed" and links to its source.`,
+    intro: `${summary ? `${summary} ` : ""}This passport was compiled from ${c.gi ? "India's Geographical Indications register" : "UNESCO listings"} and Wikidata and has not yet been reviewed by an editor; every claim below is marked "Further verification needed" and links to its source.`,
     accent,
     motif: "atlas",
     hero: media?.id,
@@ -464,6 +574,7 @@ export function candidateToDraft(
       organizations: [],
       resources: [
         ...(c.ich ? [{ title: `UNESCO: ${c.name}`, url: c.ich.url, note: "The official listing.", source: sid("unesco") }] : []),
+        ...(c.gi ? [{ title: "GI Registry search", url: GI_REGISTRY_URL, note: `Application no. ${c.gi.applicationNo}.`, source: sid("gi-registry") }] : []),
         ...(c.wikipedia ? [{ title: "Wikipedia (further reading)", url: c.wikipedia, note: "Follow its references; do not copy its text." }] : []),
       ],
       collaborationNotes: [],
@@ -473,10 +584,11 @@ export function candidateToDraft(
       lastReviewed: ctx.today,
       reviewedBy: ctx.editor,
       notes: publish
-        ? `Compiled automatically from UNESCO listings and Wikidata (${c.wikidataId}, fetched ${c.fetchedAt.slice(0, 10)}). Not yet reviewed by an editor.`
+        ? `Compiled automatically from ${c.gi ? "India's GI register (via Wikipedia)" : "UNESCO listings"} and Wikidata (${c.wikidataId}, fetched ${c.fetchedAt.slice(0, 10)}). Not yet reviewed by an editor.`
         : `Drafted from research candidate ${c.wikidataId} (fetched ${c.fetchedAt.slice(0, 10)}). All text is placeholder and every claim is unverified.`,
       openQuestions: [
         ...(c.ich ? ["Confirm the element title, list and inscription year on the UNESCO page."] : []),
+        ...(c.gi ? [`Confirm GI application no. ${c.gi.applicationNo} and read its registered specification on the GI Registry.`] : []),
         "Identify the communities and makers involved, and ask for their consent before naming anyone.",
         "Rewrite the summary and origins in our own words from primary sources.",
         "Choose an illustration motif and accent; the defaults do not represent this tradition.",

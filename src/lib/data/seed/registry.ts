@@ -516,7 +516,7 @@ export const countries: CountryRecord[] = [
     plate: "Plate II",
     headline: "India is not one story. It is thousands of stories.",
     intro:
-      "The pilot collection. Five traditions, each with a place, a community, a meaning and people behind it — and several whose roots run across today's borders into Pakistan and Nepal.",
+      "Five traditions documented in depth by our editors, several with roots that cross today's borders into Pakistan and Nepal — and a growing shelf of research passports drawn from India's Geographical Indications register and UNESCO's lists, each marked for review.",
     candidates: [
       { name: "Pattachitra", note: "Odisha" },
       { name: "Gond painting", note: "Madhya Pradesh" },

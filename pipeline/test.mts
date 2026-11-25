@@ -11,6 +11,8 @@ import {
   imageFromInfo,
   isFreeLicence,
   mergeCandidate,
+  parseGiTable,
+  addGi,
   scriptOf,
   type CommonsPage,
   type WdEntity,
@@ -68,6 +70,55 @@ check("non-free licences rejected", !["CC BY-NC 4.0", "CC BY-ND 2.0", "CC BY-NC-
 const kept = mergeCandidate({ ...c, status: "rejected", note: "Not a craft", reviewedBy: "A" }, { ...c, name: "kente (refreshed)" });
 check("refreshing a candidate keeps the editor's decision", kept.status === "rejected" && kept.note === "Not a craft" && kept.name === "kente (refreshed)");
 check("scripts are detected", scriptOf("ケンテ") === "Japanese kana" && scriptOf("कोल्हापुरी") === "Devanagari" && scriptOf("Kente") === "Latin");
+
+
+// ── India: Geographical Indications table ──
+const giWikitext = `{| class="sortable wikitable"
+! Serial no.
+! Application no.
+! [[Geographical indication]]
+! Type
+! State
+! Year
+|-
+| 18
+| 23
+| [[Channapatna toys|Channapatna toys and dolls]]
+| Handicraft
+| [[Karnataka]]
+| 2004–05
+|-
+|1
+|1 & 2
+|[[Darjeeling Tea]]
+|Agricultural
+|[[West Bengal]]
+|2004–05
+|-
+|200
+|410
+|Mysore Pak<ref>x</ref>
+|Food stuff
+|[[Karnataka]]
+|2013–14
+|-
+|300
+|500
+|[[Bikaneri Bhujia]]
+|Food stuff
+|[[Rajasthan]]
+|2010–11
+|}`;
+const gi = parseGiTable(giWikitext);
+check("GI table: keeps linked handicrafts and foods only", gi.length === 2 && gi[0].article === "Channapatna toys" && gi[1].article === "Bikaneri Bhujia", JSON.stringify(gi));
+check("GI table: reads application no., registered name, state and year", gi[0].applicationNo === "23" && gi[0].goods === "Channapatna toys and dolls" && gi[0].state === "Karnataka" && gi[0].year === "2004–05" && gi[0].type === "Handicraft");
+const giCand = addGi({ ...c, country: { ...c.country, iso2: "IN", isoNumeric: "356", name: "India" }, places: [] }, gi[0], "2026-11-25", { name: "Karnataka", wikidataId: "Q1185", lon: 76, lat: 15 });
+const giKeys = new Set(giCand.sources.map((s) => s.key));
+check("GI candidate cites the registry and the list", giKeys.has("gi-registry") && giKeys.has("gi-list") && giCand.facts[0].sources.join() === "gi-list,gi-registry");
+check("GI candidate falls back to the state as its place", giCand.places[0]?.name === "Karnataka");
+const giDraft = candidateToDraft(giCand, { id: "trad-gi", slug: "channapatna-toys", passportNo: "998", editor: "Test", today: "2026-11-25" });
+check("GI passport says where it is registered", giDraft.tradition.tagline === "A Geographical Indication of Karnataka, India.", giDraft.tradition.tagline);
+check("GI passport asks an editor to confirm the application", giDraft.tradition.editorial.openQuestions.some((q) => q.includes("application no. 23")));
 
 console.log(failed ? `\n${failed} check(s) failed` : "\nAll research pipeline checks passed");
 process.exit(failed ? 1 : 0);
