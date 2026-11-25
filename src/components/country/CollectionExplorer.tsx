@@ -27,6 +27,9 @@ export interface ExplorerCard {
   hasCase: boolean;
 }
 
+/** Cards shown at first (and added by each "Show more"): large collections stay light on phones. */
+const PAGE = 18;
+
 const SHAPES = ["aspect-[4/5]", "aspect-[5/4]", "aspect-[3/4]", "aspect-square", "aspect-[4/5]", "aspect-[16/11]"];
 
 export function CollectionExplorer({ cards, map }: { cards: ExplorerCard[]; map: RegionMapData | null }) {
@@ -34,6 +37,7 @@ export function CollectionExplorer({ cards, map }: { cards: ExplorerCard[]; map:
   const [category, setCategory] = useState<string>("all");
   const [region, setRegion] = useState<"all" | "border">("all");
   const [active, setActive] = useState<string | null>(null);
+  const [limit, setLimit] = useState(PAGE);
 
   const categories = useMemo(() => {
     const m = new Map<string, { label: string; count: number }>();
@@ -43,6 +47,7 @@ export function CollectionExplorer({ cards, map }: { cards: ExplorerCard[]; map:
 
   const visible = cards.filter((c) => (category === "all" || c.categoryKey === category) && (region === "all" || c.crossBorder));
   const visibleSet = new Set(visible.map((c) => c.slug));
+  const shown = visible.slice(0, limit);
 
   return (
     <div className="grid grid-cols-[minmax(0,1fr)] gap-12 lg:grid-cols-12">
@@ -123,16 +128,16 @@ export function CollectionExplorer({ cards, map }: { cards: ExplorerCard[]; map:
       <div className={map ? "lg:col-span-7" : "lg:col-span-12"}>
         <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Filter traditions">
           <span className="label-sm mr-2 text-ink-mute">Filter</span>
-          <Chip on={category === "all" && region === "all"} onClick={() => (setCategory("all"), setRegion("all"))}>
+          <Chip on={category === "all" && region === "all"} onClick={() => (setCategory("all"), setRegion("all"), setLimit(PAGE))}>
             All · {cards.length}
           </Chip>
           {categories.map(([key, v]) => (
-            <Chip key={key} on={category === key} onClick={() => setCategory(category === key ? "all" : key)}>
+            <Chip key={key} on={category === key} onClick={() => (setCategory(category === key ? "all" : key), setLimit(PAGE))}>
               {v.label} · {v.count}
             </Chip>
           ))}
           {cards.some((c) => c.crossBorder) && (
-            <Chip on={region === "border"} onClick={() => setRegion(region === "border" ? "all" : "border")}>
+            <Chip on={region === "border"} onClick={() => (setRegion(region === "border" ? "all" : "border"), setLimit(PAGE))}>
               Crosses a border · {cards.filter((c) => c.crossBorder).length}
             </Chip>
           )}
@@ -140,7 +145,7 @@ export function CollectionExplorer({ cards, map }: { cards: ExplorerCard[]; map:
 
         <ul className="mt-8 columns-1 gap-6 sm:columns-2 [&>li]:mb-6">
           <AnimatePresence initial={false}>
-            {visible.map((c) => (
+            {shown.map((c) => (
               <motion.li
                 key={c.slug}
                 layout={!reduce}
@@ -205,6 +210,11 @@ export function CollectionExplorer({ cards, map }: { cards: ExplorerCard[]; map:
             ))}
           </AnimatePresence>
         </ul>
+        {visible.length > shown.length && (
+          <button type="button" onClick={() => setLimit((n) => n + PAGE)} className="btn btn-yellow w-full justify-center">
+            Show more passports · {visible.length - shown.length} left
+          </button>
+        )}
         {visible.length === 0 && <p className="text-ink-soft">No passports match these filters.</p>}
       </div>
     </div>

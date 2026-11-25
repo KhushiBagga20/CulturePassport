@@ -26,7 +26,7 @@ export default async function RoutesPage() {
     ],
     { type: "Sphere" },
   );
-  const path = geoPath(proj);
+  const path = geoPath(proj).digits(1);
   const countries = await loadCountries("110m");
   const land = countries.features.map((f, i) => ({ key: `${f.id ?? i}`, d: path(f) ?? "" }));
 

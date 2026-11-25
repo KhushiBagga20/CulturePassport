@@ -72,7 +72,16 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
     new Set(mapTraditions.flatMap((t) => t.countries).filter((c) => c !== country.iso2).map((iso2) => archive.countries.find((c) => c.iso2 === iso2)?.isoNumeric ?? "")),
   ).filter(Boolean);
   const map = mapTraditions.length
-    ? buildRegionMap(countriesGeo, country.isoNumeric, sharedIsos, mapTraditions, archive, country.iso2 === "AE" ? { width: 640, height: 520 } : undefined)
+    ? buildRegionMap(
+        countriesGeo,
+        country.isoNumeric,
+        sharedIsos,
+        mapTraditions,
+        archive,
+        country.iso2 === "AE" ? { width: 640, height: 520 } : undefined,
+        "country",
+        await loadCountries("110m"),
+      )
     : null;
 
 
@@ -229,7 +238,7 @@ async function outlinePath(isoNumeric: string): Promise<string | null> {
     ],
     f,
   );
-  return geoPath(proj)(f);
+  return geoPath(proj).digits(1)(f);
 }
 
 function DocumentingCountry({ country, archive, shared, outline }: { country: CountryRecord; archive: Archive; shared: Tradition[]; outline: string | null }) {

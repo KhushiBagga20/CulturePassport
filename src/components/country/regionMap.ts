@@ -47,6 +47,8 @@ export function buildRegionMap(
   archive: Archive,
   size: { width: number; height: number } = { width: 640, height: 720 },
   fit: "country" | "places" = "country",
+  /** Lighter outlines (1:110m) for the surrounding countries; the focus and shared countries keep full detail. */
+  background?: FeatureCollection<Geometry, { name: string }>,
 ): RegionMapData {
   const { width, height } = size;
   const places = new Map(archive.places.map((p) => [p.id, p]));
@@ -91,14 +93,23 @@ export function buildRegionMap(
     ],
     fitTarget,
   );
-  const path = geoPath(proj);
+  // One decimal place is sub-pixel at this size and keeps the map markup small.
+  const path = geoPath(proj).digits(1);
   const topLeft = proj.invert?.([0, 0]) ?? [-180, 90];
   const bottomRight = proj.invert?.([width, height]) ?? [180, -90];
   const [w, n] = topLeft;
   const [e, s] = bottomRight;
 
   const lands: MapLand[] = [];
-  for (const f of countries.features) {
+  const detailed = (iso: string) => iso === focusIso || sharedIsos.includes(iso);
+  const features = background
+    ? [
+        // Background first, so the detailed borders are drawn on top of the coarser ones.
+        ...background.features.filter((f) => !detailed(String(f.id).padStart(3, "0"))),
+        ...countries.features.filter((f) => detailed(String(f.id).padStart(3, "0"))),
+      ]
+    : countries.features;
+  for (const f of features) {
     const [[fw, fs], [fe, fn]] = geoBounds(f);
     if (fe < w - 2 || fw > e + 2 || fn < s - 2 || fs > n + 2) continue;
     const iso = String(f.id).padStart(3, "0");
