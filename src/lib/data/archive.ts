@@ -32,10 +32,24 @@ async function loadLocal(): Promise<Archive> {
   };
 }
 
+const load = (): Promise<Archive> => (dbConfigured() ? loadPostgresArchive() : loadLocal());
+
+// During `next build` every prerendered page needs the archive. Load it once per build worker
+// instead of once per page (hundreds of passports). At runtime it is loaded per request, so an
+// editor's change is never served from a stale copy.
+const building = process.env.NEXT_PHASE === "phase-production-build";
+let buildArchive: Promise<Archive> | null = null;
+
 /** The whole archive (it is small), memoised per request. Includes drafts; public pages filter with isPublic(). */
 export const getArchive = cache(async (): Promise<Archive> => {
-  if (dbConfigured()) return loadPostgresArchive();
-  return loadLocal();
+  if (building) {
+    buildArchive ??= load().catch((e) => {
+      buildArchive = null;
+      throw e;
+    });
+    return buildArchive;
+  }
+  return load();
 });
 
 export const isPublic = (t: Tradition) => t.status === "published";

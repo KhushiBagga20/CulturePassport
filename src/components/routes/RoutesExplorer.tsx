@@ -38,7 +38,6 @@ export function RoutesExplorer({
   arcs,
   nodes,
   traditions,
-  initial,
 }: {
   width: number;
   height: number;
@@ -48,10 +47,15 @@ export function RoutesExplorer({
   arcs: RouteArc[];
   nodes: RouteNode[];
   traditions: { slug: string; name: string; color: string; no: string }[];
-  initial?: string;
 }) {
   const reduce = useReducedMotion();
-  const [tradition, setTradition] = useState<string>(initial && traditions.some((t) => t.slug === initial) ? initial : "all");
+  const [tradition, setTradition] = useState<string>("all");
+  // ?tradition=… is read in the browser so the page itself can be prebuilt.
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search).get("tradition");
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time sync from the URL after hydration
+    if (q && traditions.some((t) => t.slug === q)) setTradition(q);
+  }, [traditions]);
   const [hideSimilarity, setHideSimilarity] = useState(false);
   const [focus, setFocus] = useState<string | null>(null);
   const color = useMemo(() => new Map(traditions.map((t) => [t.slug, t.color])), [traditions]);

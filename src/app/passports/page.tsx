@@ -5,6 +5,7 @@ import { ACCENT, CATEGORY, MATURITY } from "@/lib/labels";
 import { Motif } from "@/components/motifs/Motif";
 import { Reveal } from "@/components/site/Motion";
 import { StoriesNav } from "@/components/site/StoriesNav";
+import { MissingPassportNotice } from "@/components/site/MissingPassportNotice";
 
 export const revalidate = 300;
 export const metadata: Metadata = {
@@ -12,8 +13,7 @@ export const metadata: Metadata = {
   description: "Every published Culture Passport, by number: its tradition, region, community and research status.",
 };
 
-export default async function PassportsPage({ searchParams }: PageProps<"/passports">) {
-  const { missing } = await searchParams;
+export default async function PassportsPage() {
   const archive = await getArchive();
   const L = lookups(archive);
   const published = archive.traditions.filter(isPublic);
@@ -32,11 +32,7 @@ export default async function PassportsPage({ searchParams }: PageProps<"/passpo
             <code className="font-ui bg-ink px-1.5 py-0.5 text-sm text-bone">/p/001</code> will always find its passport.
           </p>
         </div>
-        {missing && (
-          <p className="mt-6 max-w-xl border-l-4 border-brick bg-bone p-3 text-sm" role="alert">
-            No published passport has the number “{String(missing)}”. It may not exist yet, or it may still be in editorial review.
-          </p>
-        )}
+        <MissingPassportNotice />
 
         <ol className="mt-12 grid gap-3">
           {published.map((t, i) => (

@@ -12,8 +12,7 @@ export const metadata: Metadata = {
   description: "An evidence-labelled map of how traditions are shared, exhibited, adapted and connected across places.",
 };
 
-export default async function RoutesPage({ searchParams }: PageProps<"/routes">) {
-  const { tradition } = await searchParams;
+export default async function RoutesPage() {
   const archive = await getArchive();
   const L = lookups(archive);
   const pub = archive.traditions.filter(isPublic);
@@ -92,7 +91,6 @@ export default async function RoutesPage({ searchParams }: PageProps<"/routes">)
           arcs={arcs}
           nodes={nodes}
           traditions={pub.filter((t) => rels.some((r) => r.tradition === t.slug)).map((t) => ({ slug: t.slug, name: t.name, color: ACCENT[t.accent].hex, no: t.passportNo }))}
-          initial={typeof tradition === "string" ? tradition : undefined}
         />
       </div>
       <p className="mt-8 text-xs text-ink-mute">Boundaries: Natural Earth 1:110m; no position is implied on disputed territories. Places are plotted at approximate centres.</p>

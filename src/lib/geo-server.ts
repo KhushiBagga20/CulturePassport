@@ -7,11 +7,22 @@ import { cache } from "react";
 
 type Countries = FeatureCollection<Geometry, { name: string }>;
 
+// The map files never change while the server runs, so each is read and parsed once per process.
+const parsed = new Map<string, Promise<Countries>>();
+
 /** Natural Earth countries read on the server, for static SVG maps. */
-export const loadCountries = cache(async (resolution: "50m" | "110m"): Promise<Countries> => {
-  const file = path.join(process.cwd(), "public", "geo", `countries-${resolution}.json`);
-  const topo = JSON.parse(await readFile(file, "utf8")) as Topology<{ countries: GeometryCollection<{ name: string }> }>;
-  return feature(topo, topo.objects.countries) as Countries;
+export const loadCountries = cache((resolution: "50m" | "110m"): Promise<Countries> => {
+  let p = parsed.get(resolution);
+  if (!p) {
+    const file = path.join(process.cwd(), "public", "geo", `countries-${resolution}.json`);
+    p = readFile(file, "utf8").then((text) => {
+      const topo = JSON.parse(text) as Topology<{ countries: GeometryCollection<{ name: string }> }>;
+      return feature(topo, topo.objects.countries) as Countries;
+    });
+    p.catch(() => parsed.delete(resolution));
+    parsed.set(resolution, p);
+  }
+  return p;
 });
 
 export function byIso(fc: Countries, isoNumeric: string): Feature<Geometry, { name: string }> | undefined {

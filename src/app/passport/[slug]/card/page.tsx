@@ -8,11 +8,11 @@ import { ShareWithCredit } from "@/components/passport/SharePanel";
 
 export const revalidate = 300;
 
-// Editor-reviewed passports are built ahead of time. The (many) unreviewed research passports are
-// rendered on their first visit and then cached like the rest (revalidate above).
+// Every published passport is built ahead of time, so no visitor waits for a first render. Passports
+// published after a deploy render on their first visit and are then cached (revalidate above).
 export async function generateStaticParams() {
   const a = await getArchive();
-  return a.traditions.filter((t) => isPublic(t) && t.maturity !== "editorial-draft").map((t) => ({ slug: t.slug }));
+  return a.traditions.filter(isPublic).map((t) => ({ slug: t.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/passport/[slug]/card">): Promise<Metadata> {
