@@ -34,8 +34,8 @@ export interface World {
 
 let worldPromise: Promise<World> | null = null;
 
-/** Bump when public/geo changes: browsers cache these files for a week. v2: India's full boundary. */
-const GEO_VERSION = "2";
+/** Bump when public/geo changes: browsers cache these files for a week. v3: India's full boundary, other countries untouched. */
+const GEO_VERSION = "3";
 
 /** Natural Earth 1:50m admin-0 countries (via world-atlas), served from /public/geo. */
 export function loadWorld(resolution: "50m" | "110m" = "50m"): Promise<World> {
