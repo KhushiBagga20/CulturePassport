@@ -56,7 +56,7 @@ export interface ResearchCandidate {
   description?: string;
   aliases: string[];
   nativeNames: { text: string; lang: string; script: string }[];
-  ich?: { id: string; list: "representative" | "urgent" | "other"; listLabel: string; year?: string; url: string };
+  ich?: { id: string; list: "representative" | "urgent" | "other"; listLabel: string; year?: string; url: string; /** UNESCO's official element title (scripts/unesco-titles.mts) */ title?: string };
   /** India's Geographical Indications registry, as listed on Wikipedia (which cites the GI Registry). */
   gi?: GiEntry;
   /** "instance of" labels, e.g. "textile", "musical genre" */
@@ -386,7 +386,6 @@ export function entityToCandidate(
       text: `${name} appears on UNESCO's ${ich.listLabel}${ich.year ? `, recorded on Wikidata as inscribed in ${ich.year}` : ""}.`,
       sources: ["unesco", "wikidata"],
     });
-  if (description) facts.push({ text: `Wikidata describes it as "${description}".`, sources: ["wikidata"] });
   if (places.length) facts.push({ text: `Wikidata associates it with ${places.map((p) => p.name).join(", ")}.`, sources: ["wikidata"] });
   if (kinds.length) facts.push({ text: `Wikidata classifies it as: ${kinds.join(", ")}.`, sources: ["wikidata"] });
 
@@ -498,7 +497,13 @@ export function candidateToDraft(
     accessed: s.accessed,
     notes: s.note,
   }));
-  const claims: Claim[] = c.facts.map((f, i) => ({
+  // The description is the passport's introduction, so it is not repeated as a claim.
+  // The description is the introduction, and Wikidata's places and classes are already shown as
+  // "Where" and "Category", so those facts are not repeated as claims.
+  const facts = c.facts
+    .filter((f) => !/^Wikidata (describes it as|associates it with|classifies it as)/.test(f.text))
+    .map((f) => ({ ...f, text: f.text[0].toUpperCase() + f.text.slice(1) }));
+  const claims: Claim[] = facts.map((f, i) => ({
     id: `${c.wikidataId.toLowerCase()}-c${i + 1}`,
     text: f.text,
     level: "unverified",
@@ -549,7 +554,7 @@ export function candidateToDraft(
         ? `A UNESCO-listed tradition of ${country}.`
         : `A tradition of ${country}.`,
     nativeNames: native,
-    alternateNames: c.aliases,
+    alternateNames: Array.from(new Map(c.aliases.filter((x) => x.toLowerCase() !== c.name.toLowerCase()).map((x) => [x.toLowerCase(), x])).values()),
     category,
     techniques: [],
     regionLabel: where,
@@ -558,7 +563,8 @@ export function candidateToDraft(
     places: [],
     communities: [],
     summary: summary || `A tradition of ${country}.`,
-    intro: `${summary ? `${summary} ` : ""}This passport was compiled from ${c.gi ? "India's Geographical Indications register" : "UNESCO listings"} and Wikidata and has not yet been reviewed by an editor; every claim below is marked "Further verification needed" and links to its source.`,
+    // How the passport was compiled is stated once, in the notice above the chapters (editorial.notes).
+    intro: summary,
     accent,
     motif: "atlas",
     hero: media?.id,
@@ -573,7 +579,7 @@ export function candidateToDraft(
     keepAlive: {
       organizations: [],
       resources: [
-        ...(c.ich ? [{ title: `UNESCO: ${c.name}`, url: c.ich.url, note: "The official listing.", source: sid("unesco") }] : []),
+        ...(c.ich ? [{ title: `UNESCO: ${c.ich.title ?? c.name}`, url: c.ich.url, note: "The official listing.", source: sid("unesco") }] : []),
         ...(c.gi ? [{ title: "GI Registry search", url: GI_REGISTRY_URL, note: `Application no. ${c.gi.applicationNo}.`, source: sid("gi-registry") }] : []),
         ...(c.wikipedia ? [{ title: "Wikipedia (further reading)", url: c.wikipedia, note: "Follow its references; do not copy its text." }] : []),
       ],
@@ -590,9 +596,6 @@ export function candidateToDraft(
         ...(c.ich ? ["Confirm the element title, list and inscription year on the UNESCO page."] : []),
         ...(c.gi ? [`Confirm GI application no. ${c.gi.applicationNo} and read its registered specification on the GI Registry.`] : []),
         "Identify the communities and makers involved, and ask for their consent before naming anyone.",
-        "Rewrite the summary and origins in our own words from primary sources.",
-        "Choose an illustration motif and accent; the defaults do not represent this tradition.",
-        ...(media ? ["Describe the photograph accurately (alt text and caption) and confirm what it shows."] : []),
         ...(c.places.length ? [] : ["Record where the tradition is practised."]),
       ],
     },

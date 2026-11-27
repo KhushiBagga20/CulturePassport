@@ -46,7 +46,7 @@ export const ajrakh: Tradition = {
     {
       type: "p",
       text:
-        "It is associated with Khatri dyer-printer families. Many Kutch families trace their roots to Sindh, though accounts disagree on when they moved — the 16th century is cited most often.",
+        "It is associated with Khatri dyer-printer families. Popular histories say they came to Kutch from Sindh; accounts of when differ, from the 16th century to about 400 years ago.",
       claims: ["ajk-khatri", "ajk-migration"],
     },
     {
@@ -63,14 +63,7 @@ export const ajrakh: Tradition = {
       claims: ["ajk-name"],
     },
   ],
-  significance: [
-    {
-      type: "p",
-      text:
-        "In Sindh, ajrak is described as a marker of identity, worn and given as a gift. This draft has not yet sourced that from Sindhi cultural institutions, so it is marked for verification.",
-      claims: ["ajk-sindh"],
-    },
-  ],
+  significance: [],
   makers: {
     intro: [
       {
@@ -114,7 +107,7 @@ export const ajrakh: Tradition = {
     },
     {
       id: "ajk-t-migration",
-      date: { year: 1550, approx: true, label: "16th century (most often cited)" },
+      date: { year: 1550, approx: true, label: "16th–17th century (accounts differ)" },
       title: "From Sindh to Kutch",
       body: "Khatri families are said to have moved from Sindh to Kutch, settling in places such as Dhamadka. Accounts of when and why differ.",
       level: "disputed",
@@ -185,9 +178,9 @@ export const ajrakh: Tradition = {
     },
     {
       id: "ajk-migration",
-      text: "Khatri families moved from Sindh to Kutch, most often dated to the 16th century.",
+      text: "Accounts of when Khatri printers settled in Kutch differ: a popular history says they came from Sindh about 400 years ago, while a family oral history places the first settler in Dhamadka in the 16th century.",
       level: "disputed",
-      sources: ["lhi-ajrakh"],
+      sources: ["lhi-ajrakh", "warwick-khatri"],
       note: "Accounts differ on the date and on the reasons for the move.",
     },
     {
@@ -199,9 +192,9 @@ export const ajrakh: Tradition = {
     },
     {
       id: "ajk-indus",
-      text: "Ajrakh descends from the textile depicted on Mohenjo-daro's 'priest-king' sculpture.",
+      text: "Some historians link ajrakh to the trefoil-patterned robe of Mohenjo-daro's 'priest-king' sculpture; no cloth survives to show a direct line.",
       level: "disputed",
-      sources: ["gs-ajrakh-5000"],
+      sources: ["lhi-ajrakh", "gs-ajrakh-5000"],
       note: "A popular claim based on visual similarity. Culture Passport does not treat resemblance as evidence of historical continuity.",
     },
     {
@@ -216,13 +209,6 @@ export const ajrakh: Tradition = {
       text: "'Kutch Ajrakh Print of Gujarat' was registered as a GI on an application by Ajarakhpur Hastkala Vikas Sangathan filed on 31 January 2023, with the certificate issued in April 2024.",
       level: "documented",
       sources: ["gi-1050", "ot-ajrakh-gi"],
-    },
-    {
-      id: "ajk-sindh",
-      text: "In Sindh, ajrak is worn and gifted as a marker of Sindhi identity.",
-      level: "unverified",
-      sources: ["lhi-ajrakh"],
-      note: "To be sourced from Sindhi cultural institutions.",
     },
     {
       id: "ajk-demand",

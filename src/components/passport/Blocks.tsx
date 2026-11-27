@@ -4,6 +4,8 @@ import { ArchiveImage } from "@/components/site/ArchiveImage";
 import { More } from "./More";
 
 export interface BlockContext {
+  /** Compact passports: each paragraph is its claim's anchor (#claim-…), and per-paragraph badges are left out. */
+  anchors?: boolean;
   claims: Map<string, Claim>;
   numbering: Map<string, number>;
   media: Map<string, MediaAsset>;
@@ -77,12 +79,12 @@ function Block({ b, ctx, large = false, lead = false, tone }: { b: TextBlock; ct
   if (b.type === "p") {
     const m = claimMeta(b.claims, ctx);
     return (
-      <div className="group relative">
+      <div className="group relative outline-none target:bg-yellow/30" id={ctx.anchors && b.claims?.length ? `claim-${b.claims[0]}` : undefined}>
         <p className={`max-w-[62ch] text-pretty ${lead ? "lead" : ""} ${large && !lead ? "text-[1.12rem] leading-[1.7]" : ""}`}>
           {b.text}
           <SourceMarks ids={m.sources} numbering={ctx.numbering} />
         </p>
-        {m.levels.length > 0 && (
+        {m.levels.length > 0 && !ctx.anchors && (
           <div className="mt-2 flex flex-wrap gap-1.5">
             {m.levels.map((l) => (
               <a key={l} href={`#claim-${m.claims.find((c) => c.level === l)?.id}`} data-jump className="no-underline">

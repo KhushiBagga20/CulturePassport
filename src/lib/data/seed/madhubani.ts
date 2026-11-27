@@ -106,7 +106,7 @@ export const madhubani: Tradition = {
       { name: "Ganga Devi", note: "Padma Shri, 1984.", sources: ["astaguru-women-artists"] },
       { name: "Mahasundari Devi", note: "Padma Shri, 2011 (one source gives 2010).", sources: ["astaguru-women-artists"] },
       { name: "Baua Devi", note: "Padma Shri, 2017.", sources: ["astaguru-women-artists"] },
-      { name: "Dulari Devi", note: "Padma Shri, 2021 (one source gives 2020).", sources: ["astaguru-women-artists"] },
+      { name: "Dulari Devi", note: "Padma Shri, 2021.", sources: ["astaguru-women-artists", "padma-2021"] },
     ],
     voicesNote:
       "The names above are public honours. We have not recorded interviews, and we do not attribute quotations to painters from secondary sources.",
@@ -166,7 +166,7 @@ export const madhubani: Tradition = {
       date: { year: 1982, label: "1982" },
       title: "A museum in snowy Niigata",
       body:
-        "Tokio Hasegawa opens the Mithila Museum in a former school in Tokamachi, Japan. It grows into one of the largest collections of Mithila painting anywhere.",
+        "Tokio Hasegawa opens the Mithila Museum in Tokamachi, Japan, in a converted elementary school. It grows into one of the largest collections of Mithila painting anywhere.",
       level: "documented",
       sources: ["fap-hasegawa", "indica-hasegawa"],
       place: "tokamachi",
@@ -246,7 +246,7 @@ export const madhubani: Tradition = {
     },
     {
       id: "mad-paper",
-      text: "During the mid-1960s drought the All India Handicrafts Board, under Pupul Jayakar and with Bhaskar Kulkarni, encouraged women to paint on paper for sale.",
+      text: "During the drought of the mid-1960s the All India Handicrafts Board (called the Handloom Board in some accounts), under Pupul Jayakar and with Bhaskar Kulkarni, encouraged women to paint on paper for sale.",
       level: "documented",
       sources: ["fap-context", "tbi-archer"],
       note: "Sources differ on whether the intervention began in 1964 or 1966–68.",
@@ -259,10 +259,10 @@ export const madhubani: Tradition = {
     },
     {
       id: "mad-padma",
-      text: "Mithila painters who have received the Padma Shri include Jagdamba Devi (1975), Sita Devi (1981), Ganga Devi (1984), Mahasundari Devi (2011), Baua Devi (2017) and Dulari Devi (2021).",
+      text: "Mithila painters who have received the Padma Shri include Jagdamba Devi (1975), Sita Devi (1981), Ganga Devi (1984), Mahasundari Devi (2011), Baua Devi (2017), Godawari Dutta (2019) and Dulari Devi (2021).",
       level: "documented",
-      sources: ["astaguru-women-artists", "wiki-madhubani"],
-      note: "One outlet gives 2010 for Mahasundari Devi and 2020 for Dulari Devi.",
+      sources: ["astaguru-women-artists", "wiki-madhubani", "padma-2021"],
+      note: "One outlet gives 2010 for Mahasundari Devi, and Wikipedia gives 2020 for Dulari Devi; the 2021 Padma list (announced 25 January 2021) names her.",
     },
     {
       id: "mad-gi",
@@ -273,7 +273,7 @@ export const madhubani: Tradition = {
     },
     {
       id: "mad-museum",
-      text: "The Mithila Museum in Tokamachi, Niigata, Japan, was founded by Tokio Hasegawa in 1982 in a former school building.",
+      text: "The Mithila Museum in Tokamachi, Niigata, Japan, was founded by Tokio Hasegawa and inaugurated in 1982; Hasegawa had converted an elementary school there into a centre for the collection.",
       level: "documented",
       sources: ["fap-hasegawa", "indica-hasegawa"],
       note: "Reported collection sizes vary from about 850 to over 3,000 works.",

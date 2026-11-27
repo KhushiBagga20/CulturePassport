@@ -93,7 +93,7 @@ export function Timeline({ items, motif }: { items: TimelineItem[]; motif: Motif
           </p>
           <p className="label-sm text-ink-mute">Filled: documented · Hollow: disputed, oral or awaiting verification</p>
         </div>
-        <ol className="no-scrollbar mt-4 flex items-start overflow-x-auto pb-1" aria-label="Jump to a milestone">
+        <ol className="no-scrollbar mt-4 flex flex-wrap items-start gap-y-3 pb-1 sm:flex-nowrap sm:overflow-x-auto" aria-label="Jump to a milestone">
           {items.map((it, i) => {
             const prev = items[i - 1];
             const gap = prev ? it.year - prev.year : 0;
@@ -101,7 +101,7 @@ export function Timeline({ items, motif }: { items: TimelineItem[]; motif: Motif
             return (
               <li key={it.id} className="flex shrink-0 items-start">
                 {i > 0 && (
-                  <span aria-hidden className="relative mt-[11px] flex w-10 flex-col items-center sm:w-14">
+                  <span aria-hidden className="relative mt-[11px] flex w-6 flex-col items-center sm:w-14">
                     <span className={`block h-0.5 w-full ${gap > 60 ? "bg-[repeating-linear-gradient(90deg,#1B1616_0_4px,transparent_4px_8px)]" : "bg-ink"}`} />
                     {gap > 60 && <span className="label-sm mt-1.5 whitespace-nowrap text-[0.56rem] text-ink-mute">{gapLabel(gap)}</span>}
                   </span>

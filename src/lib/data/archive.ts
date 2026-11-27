@@ -1,6 +1,6 @@
 import { cache } from "react";
 import type { Archive, MediaAsset, Source, Tradition } from "../types";
-import { seedArchive } from "./seed";
+import snapshotJson from "./snapshot.json";
 import { readStore } from "./local-store";
 import { dbConfigured } from "../db";
 import { loadPostgresArchive } from "./pg";
@@ -18,39 +18,38 @@ function mergeById<T extends { id: string }>(base: T[], overrides: Record<string
   return merged;
 }
 
+/**
+ * The published archive, baked into the repository (npm run snapshot:build / snapshot:export).
+ * Public pages read only this, so they never wait on, or fail with, the database.
+ */
+const snapshot = snapshotJson as unknown as Omit<Archive, "backend">;
+
 async function loadLocal(): Promise<Archive> {
   const store = await readStore();
   const edited = Object.keys(store.traditions).length + Object.keys(store.sources).length + Object.keys(store.media).length + Object.keys(store.countries).length > 0;
-  const countries = [...seedArchive.countries.filter((c) => !store.countries[c.iso2]), ...Object.values(store.countries)];
+  const countries = [...snapshot.countries.filter((c) => !store.countries[c.iso2]), ...Object.values(store.countries)];
   return {
-    ...seedArchive,
+    ...snapshot,
     countries,
-    traditions: mergeById<Tradition>(seedArchive.traditions, store.traditions).sort((a, b) => a.passportNo.localeCompare(b.passportNo)),
-    sources: mergeById<Source>(seedArchive.sources, store.sources),
-    media: mergeById<MediaAsset>(seedArchive.media, store.media),
+    traditions: mergeById<Tradition>(snapshot.traditions, store.traditions).sort((a, b) => a.passportNo.localeCompare(b.passportNo)),
+    sources: mergeById<Source>(snapshot.sources, store.sources),
+    media: mergeById<MediaAsset>(snapshot.media, store.media),
     backend: edited ? "local-store" : "local-seed",
   };
 }
 
-const load = (): Promise<Archive> => (dbConfigured() ? loadPostgresArchive() : loadLocal());
+/**
+ * The archive the public site shows: the snapshot. Without a database, an editor's local edits
+ * (.data) are merged in so they can be previewed. Includes drafts; public pages filter with isPublic().
+ */
+export const getArchive = cache(async (): Promise<Archive> => (dbConfigured() ? { ...snapshot, backend: "snapshot" } : loadLocal()));
 
-// During `next build` every prerendered page needs the archive. Load it once per build worker
-// instead of once per page (hundreds of passports). At runtime it is loaded per request, so an
-// editor's change is never served from a stale copy.
-const building = process.env.NEXT_PHASE === "phase-production-build";
-let buildArchive: Promise<Archive> | null = null;
-
-/** The whole archive (it is small), memoised per request. Includes drafts; public pages filter with isPublic(). */
-export const getArchive = cache(async (): Promise<Archive> => {
-  if (building) {
-    buildArchive ??= load().catch((e) => {
-      buildArchive = null;
-      throw e;
-    });
-    return buildArchive;
-  }
-  return load();
-});
+/**
+ * The archive the editorial desk works on: PostgreSQL when DATABASE_URL is set (drafts, edits),
+ * otherwise the snapshot plus local edits. Changes reach the public site with the next
+ * `npm run snapshot:export` and deploy.
+ */
+export const getEditorArchive = cache(async (): Promise<Archive> => (dbConfigured() ? loadPostgresArchive() : loadLocal()));
 
 export const isPublic = (t: Tradition) => t.status === "published";
 

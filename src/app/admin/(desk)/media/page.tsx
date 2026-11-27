@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getArchive } from "@/lib/data/archive";
+import { getEditorArchive } from "@/lib/data/archive";
 import { mediaUrl } from "@/lib/media";
 import { uploadMediaAction } from "../../actions";
 import { ActionForm, Field, inputClass } from "@/components/admin/ActionForm";
@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "Media", robots: { index: false } };
 
 export default async function MediaPage() {
   await requireEditorPage();
-  const archive = await getArchive();
+  const archive = await getEditorArchive();
   return (
     <div>
       <p className="label text-terracotta">Media</p>

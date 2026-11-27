@@ -41,7 +41,7 @@ export const warli: Tradition = {
     {
       type: "p",
       text:
-        "Accounts describe white paint made from rice paste on walls prepared with earth and cow dung, and a vocabulary of circles, triangles and lines. This draft has not yet been reviewed with Warli painters, so these descriptions are marked for verification.",
+        "Accounts describe white paint of rice flour and water on mud walls, often over red ochre or cow dung, and a vocabulary of circles, triangles, squares and lines. This draft has not yet been reviewed with Warli painters, so these descriptions are marked for verification.",
       claims: ["wrl-materials"],
     },
     { type: "figure", media: "warli-mashe" },
@@ -143,15 +143,15 @@ export const warli: Tradition = {
   claims: [
     {
       id: "wrl-community",
-      text: "Warli painting is the wall painting of the Warli Adivasi community of the Maharashtra–Gujarat border region.",
+      text: "Warli painting is the wall painting of the Warli Adivasi community, centred on Dahanu, Talasari, Jawhar, Palghar and Mokhada in northern Maharashtra; the GI also covers Gujarat, Dadra & Nagar Haveli and Daman & Diu.",
       level: "documented",
       sources: ["gi-239", "wiki-warli"],
     },
     {
       id: "wrl-materials",
-      text: "Warli painting is traditionally made in white rice paste on walls prepared with earth and cow dung, using circles, triangles and lines.",
+      text: "Warli painting is traditionally made in white paint of rice flour and water on mud walls, often over red ochre (geru) or cow dung, using circles, triangles, squares and lines.",
       level: "unverified",
-      sources: ["wiki-warli"],
+      sources: ["wiki-warli", "tbi-warli-ayush"],
       note: "To be reviewed with Warli painters before it is marked documented.",
     },
     {
@@ -169,7 +169,7 @@ export const warli: Tradition = {
     },
     {
       id: "wrl-gi-motive",
-      text: "AYUSH is reported to have pursued the GI after its use of Warli images online was challenged, with members paying for the process themselves.",
+      text: "AYUSH is reported to have pursued the GI after its online use of Warli images was challenged (by Orkut, per The Better India; by European galleries, per SabrangIndia); The Better India reports members spent over ₹5 lakh of their own money.",
       level: "community",
       sources: ["tbi-warli-ayush", "sabrang-warli"],
     },

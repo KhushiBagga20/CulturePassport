@@ -6,7 +6,7 @@ import path from "node:path";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { checkPasscode, createLocalSession, endSession, localAdminConfigured, requireEditor } from "@/lib/auth";
-import { getArchive } from "@/lib/data/archive";
+import { getEditorArchive } from "@/lib/data/archive";
 import { recordQr, resolveCorrection, saveCountry, saveMedia, saveSource, saveTradition } from "@/lib/data/mutations";
 import { getCandidate, recordDecision } from "@/lib/data/research-store";
 import { candidateToDraft, countryRecordFor, slugify } from "@/lib/research";
@@ -68,7 +68,7 @@ export async function saveTraditionAction(json: string, summary: string): Promis
     return { ok: false, message: "The passport data could not be read." };
   }
   if (!summary.trim()) return { ok: false, message: "Describe the change in a few words — it goes into the audit log." };
-  const archive = await getArchive();
+  const archive = await getEditorArchive();
   const before = archive.traditions.find((x) => x.id === t.id);
   // Renames keep the old slug so printed QR codes continue to resolve.
   if (before && before.slug !== t.slug && before.status === "published") {
@@ -91,7 +91,7 @@ export async function saveTraditionAction(json: string, summary: string): Promis
 
 export async function createTraditionAction(_prev: ActionResult | null, form: FormData): Promise<ActionResult> {
   const editor = await requireEditor();
-  const archive = await getArchive();
+  const archive = await getEditorArchive();
   const name = String(form.get("name") ?? "").trim();
   const slug =
     String(form.get("slug") ?? "").trim() ||
@@ -282,7 +282,7 @@ export async function addCountryFromCandidateAction(_prev: ActionResult | null, 
   const editor = await requireEditor();
   const c = await getCandidate(String(form.get("id") ?? ""));
   if (!c) return { ok: false, message: "Candidate not found." };
-  const archive = await getArchive();
+  const archive = await getEditorArchive();
   if (archive.countries.some((x) => x.iso2 === c.country.iso2)) return { ok: true, message: `${c.country.name} is already on the atlas.` };
   if (!c.country.centroid) return { ok: false, message: "Wikidata gave no coordinates for this country; it cannot be placed on the globe yet." };
   try {
@@ -299,7 +299,7 @@ export async function draftFromCandidateAction(_prev: ActionResult | null, form:
   const c = await getCandidate(String(form.get("id") ?? ""));
   if (!c) return { ok: false, message: "Candidate not found." };
   if (c.status === "drafted" && c.draftId) redirect(`/admin/passports/${c.draftId}`);
-  const archive = await getArchive();
+  const archive = await getEditorArchive();
   if (!archive.countries.some((x) => x.iso2 === c.country.iso2)) return { ok: false, message: `Add ${c.country.name} to the atlas first.` };
 
   let slug = slugify(c.name) || c.wikidataId.toLowerCase();

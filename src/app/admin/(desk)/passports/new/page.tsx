@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getArchive } from "@/lib/data/archive";
+import { getEditorArchive } from "@/lib/data/archive";
 import { CATEGORY } from "@/lib/labels";
 import { createTraditionAction } from "../../../actions";
 import { ActionForm, Field, inputClass } from "@/components/admin/ActionForm";
@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "New passport", robots: { index: fals
 
 export default async function NewPassportPage() {
   await requireEditorPage();
-  const archive = await getArchive();
+  const archive = await getEditorArchive();
   const nextNo = String(Math.max(0, ...archive.traditions.map((t) => Number(t.passportNo))) + 1).padStart(3, "0");
   return (
     <div className="max-w-3xl">

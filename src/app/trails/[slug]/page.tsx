@@ -53,16 +53,16 @@ export default async function TrailPage({ params }: PageProps<"/trails/[slug]">)
           const t = s.t!;
           const hero = t.hero ? L.media.get(t.hero) : undefined;
           return (
-            <Reveal as="li" key={s.tradition} delay={i * 0.06} className="relative grid grid-cols-[3.4rem_1fr] gap-4 pb-14 sm:grid-cols-[4.4rem_1fr] sm:gap-8">
+            <Reveal as="li" key={s.tradition} delay={i * 0.06} className="relative grid grid-cols-[3.4rem_minmax(0,1fr)] gap-4 pb-14 sm:grid-cols-[4.4rem_minmax(0,1fr)] sm:gap-8">
               <span className="font-display relative z-10 flex h-14 w-14 items-center justify-center border-2 border-ink bg-[var(--accent)] text-2xl text-[var(--accent-ink)] sm:h-[4.4rem] sm:w-[4.4rem] sm:text-2xl">
                 {i + 1}
               </span>
-              <Link href={`/passport/${t.slug}?trail=${tr.slug}`} className="group grid gap-6 border-2 border-ink bg-bone p-5 transition-transform hover:-translate-y-0.5 md:grid-cols-[1fr_16rem]">
+              <Link href={`/passport/${t.slug}?trail=${tr.slug}`} className="group grid min-w-0 gap-6 border-2 border-ink bg-bone p-5 transition-transform hover:-translate-y-0.5 md:grid-cols-[minmax(0,1fr)_16rem]">
                 <div>
                   <p className="label-sm text-ink-mute">
                     No. {t.passportNo} · {CATEGORY[t.category]} · {t.regionLabel}
                   </p>
-                  <p className="font-display mt-2 text-4xl group-hover:text-brick">{t.name}</p>
+                  <p className="font-display mt-2 text-4xl hyphens-auto [overflow-wrap:anywhere] group-hover:text-brick">{t.name}</p>
                   <p className="font-title mt-2 text-2xl italic text-[var(--accent-text)]">{s.note}</p>
                   <p className="mt-3 text-ink-soft">{t.summary}</p>
                 </div>

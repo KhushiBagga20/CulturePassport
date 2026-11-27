@@ -40,7 +40,7 @@ export const phulkari: Tradition = {
     {
       type: "p",
       text:
-        "Phulkari belongs to Punjab — a region that spans north-western India and eastern Pakistan. It was made on both sides of today's border, which is why this passport is filed under India but listed under Pakistan too.",
+        "Phulkari belongs to Punjab — a region now divided between India and Pakistan. It was made on both sides of today's border, which is why this passport is filed under India but listed under Pakistan too.",
       claims: ["phk-region"],
     },
     {
@@ -174,7 +174,7 @@ export const phulkari: Tradition = {
   claims: [
     {
       id: "phk-region",
-      text: "Phulkari is an embroidery tradition of Punjab, a region spanning north-western India and eastern Pakistan.",
+      text: "Phulkari is an embroidery tradition of Punjab, a region now divided between India and Pakistan.",
       level: "documented",
       sources: ["pma-phulkari-2017", "dch-phulkari"],
     },
@@ -189,7 +189,7 @@ export const phulkari: Tradition = {
       id: "phk-technique",
       text: "Phulkari is worked in untwisted silk floss (pat) on hand-woven cotton (khaddar), mainly in darning stitch from the reverse of the cloth.",
       level: "documented",
-      sources: ["dch-phulkari", "pma-phulkari-collection"],
+      sources: ["dch-phulkari", "pma-phulkari-2017", "scroll-phulkari-partition"],
     },
     {
       id: "phk-ceremony",
@@ -214,12 +214,6 @@ export const phulkari: Tradition = {
   keepAlive: {
     organizations: ["psiec", "pma", "vam"],
     resources: [
-      {
-        title: "Philadelphia Museum of Art — phulkari collection",
-        url: "https://philamuseum.org/collection/curated/phulkari",
-        note: "Browse historic phulkari and bagh with museum documentation.",
-        source: "pma-phulkari-collection",
-      },
       {
         title: "Development Commissioner (Handicrafts) — Phulkari",
         url: "https://handicrafts.gov.in/crafts/All_Crafts/Craft_Categories/Textile/Embroidery/Phulkari/Phulkariwebpage.html",

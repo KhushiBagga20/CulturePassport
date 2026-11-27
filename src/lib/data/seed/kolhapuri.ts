@@ -434,7 +434,7 @@ export const kolhapuri: Tradition = {
       text:
         "The Kolhapuri Chappal geographical indication covers Kolhapur, Sangli, Satara and Solapur districts in Maharashtra and Belagavi, Dharwad, Bagalkot and Vijayapura (Bijapur) districts in Karnataka.",
       level: "documented",
-      sources: ["gi-169", "gi-journal-109", "open-prada-kolhapuri"],
+      sources: ["gi-169", "gi-journal-109", "open-prada-kolhapuri", "wiki-kolhapuri"],
     },
     {
       id: "kol-gi-dates",
@@ -449,7 +449,7 @@ export const kolhapuri: Tradition = {
       text:
         "Court reporting identifies LIDCOM (Maharashtra) and LIDKAR (Karnataka) as the registered proprietors of the GI; the registry's public record names the Central Leather Research Institute as applicant.",
       level: "documented",
-      sources: ["barbench-pil", "gi-169", "gi-journal-109"],
+      sources: ["barbench-pil", "gi-169", "gi-journal-109", "dh-gi-holders"],
       note: "The two records are not necessarily in conflict (an institution may file for proprietors), but we have not seen the certificate itself.",
     },
     {
@@ -468,7 +468,7 @@ export const kolhapuri: Tradition = {
     },
     {
       id: "kol-shahu",
-      text: "The rulers of Kolhapur — most often named as Chhatrapati Shahu Maharaj — encouraged the trade, with tanning centres opened during their rule.",
+      text: "Accounts credit the rulers of Kolhapur with encouraging the trade: Wikipedia names Shahu I and his successor Rajaram II and counts 29 tanning centres opened in Shahu's reign; Open Magazine places Shahu Maharaj's patronage in the early 20th century.",
       level: "interpretation",
       sources: ["open-prada-kolhapuri", "wiki-kolhapuri"],
       note: "Wikipedia links this to 'Shahu I' and successors and cites 29 tanning centres from 2019 newspaper features; Open places patronage in the early 20th century. Which ruler, and when, needs archival confirmation.",
@@ -484,18 +484,18 @@ export const kolhapuri: Tradition = {
       id: "kol-materials",
       text: "Kolhapuri chappals are traditionally made from buffalo hide and thread, hand-stitched without nails.",
       level: "documented",
-      sources: ["wiki-kolhapuri", "open-prada-kolhapuri"],
+      sources: ["wiki-kolhapuri"],
     },
     {
       id: "kol-tanning",
-      text: "Leather was traditionally vegetable-tanned locally; by 2025 many Kolhapur tanneries had closed and makers relied on tanneries elsewhere that use chemical processes.",
+      text: "Kolhapuri leather was known for local vegetable tanning; by 2025 most tanneries in the city had shut after a crackdown on effluents, and makers relied mainly on tanneries in Tamil Nadu that use chemical processes.",
       level: "documented",
-      sources: ["open-prada-kolhapuri"],
+      sources: ["open-prada-kolhapuri", "wiki-kolhapuri"],
       note: "Wikipedia still describes local vegetable tanning; Open's 2025 reporting is more recent.",
     },
     {
       id: "kol-price-gap",
-      text: "Press coverage contrasted everyday chappal prices of a few hundred rupees with luxury prices of tens of thousands of rupees.",
+      text: "Press coverage set a pair bargained for about ₹400 at a Delhi market against Prada's sandal at about ₹1 lakh; Prada's 2026 made-in-India edition was reported at about €750 (roughly ₹83,000).",
       level: "documented",
       sources: ["open-prada-kolhapuri", "brut-prada-2026"],
     },

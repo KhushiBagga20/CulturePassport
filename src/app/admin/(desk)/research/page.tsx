@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getArchive } from "@/lib/data/archive";
+import { getEditorArchive } from "@/lib/data/archive";
 import { listCandidates } from "@/lib/data/research-store";
 import { mediaUrl } from "@/lib/media";
 import type { MediaAsset } from "@/lib/types";
@@ -19,7 +19,7 @@ export default async function ResearchPage({ searchParams }: PageProps<"/admin/r
   const status = (typeof sp.status === "string" ? sp.status : "new") as keyof typeof STATUS | "all";
   const craftsOnly = sp.all !== "1";
 
-  const [archive, all] = await Promise.all([getArchive(), listCandidates()]);
+  const [archive, all] = await Promise.all([getEditorArchive(), listCandidates()]);
   const onAtlas = new Set(archive.countries.map((c) => c.iso2));
   const countries = Array.from(new Map(all.map((c) => [c.country.iso2, c.country.name])).entries()).sort((a, b) => a[1].localeCompare(b[1]));
   const shown = all

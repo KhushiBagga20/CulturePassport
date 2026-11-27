@@ -299,7 +299,11 @@ async function writeLocal(cands: ResearchCandidate[]) {
   } catch (e) {
     if ((e as NodeJS.ErrnoException).code !== "ENOENT") throw e;
   }
-  for (const c of cands) data.candidates[c.id] = mergeCandidate(data.candidates[c.id], c);
+  for (const c of cands) {
+    const prev = data.candidates[c.id];
+    // As in Postgres: a shared element stays with the first country that found it.
+    data.candidates[c.id] = mergeCandidate(prev, prev ? { ...c, country: prev.country } : c);
+  }
   await fs.mkdir(path.dirname(file), { recursive: true });
   const tmp = `${file}.${process.pid}.tmp`;
   await fs.writeFile(tmp, JSON.stringify(data, null, 2), "utf8");

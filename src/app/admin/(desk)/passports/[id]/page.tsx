@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getArchive } from "@/lib/data/archive";
+import { getEditorArchive } from "@/lib/data/archive";
 import { listRevisions } from "@/lib/data/mutations";
 import { TraditionEditor } from "@/components/admin/TraditionEditor";
 import { requireEditorPage } from "@/lib/auth";
@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: "Edit passport", robots: { index: fal
 export default async function EditPassportPage({ params }: PageProps<"/admin/passports/[id]">) {
   await requireEditorPage();
   const { id } = await params;
-  const archive = await getArchive();
+  const archive = await getEditorArchive();
   const t = archive.traditions.find((x) => x.id === id);
   if (!t) notFound();
   const revisions = await listRevisions(t.id);

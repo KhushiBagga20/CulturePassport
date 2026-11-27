@@ -167,10 +167,10 @@ export const organizations: Organization[] = [
     name: "Philadelphia Museum of Art",
     kind: "museum",
     role: "Holds a phulkari collection; staged the 2017 exhibition of phulkari from the Jill and Sheldon Bonovitz Collection.",
-    url: "https://philamuseum.org/collection/curated/phulkari",
+    url: "https://www.philamuseum.org/exhibitions/phulkari-the-embroidered-textiles-of-punjab-from-the-jill-and-sheldon-bonovitz-collection",
     placeId: "philadelphia",
     verified: true,
-    sources: ["pma-phulkari-2017", "pma-phulkari-collection"],
+    sources: ["pma-phulkari-2017"],
   },
   {
     id: "vam",
@@ -218,16 +218,6 @@ export const organizations: Organization[] = [
     placeId: "kutch",
     verified: true,
     sources: ["khamir-ajrakh"],
-  },
-  {
-    id: "dct-abu-dhabi",
-    name: "Department of Culture and Tourism – Abu Dhabi",
-    kind: "government-body",
-    role: "Publishes public heritage resources on Al Sadu.",
-    url: "https://abudhabiculture.ae/en/discover/handicraft/al-sadu",
-    placeId: "abu-dhabi",
-    verified: true,
-    sources: ["dctab-sadu"],
   },
 ];
 

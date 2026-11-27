@@ -180,7 +180,7 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
                   {t.name}
                 </Link>
                 {src ? (
-                  <a href={src.url} target="_blank" rel="noreferrer" className="label-sm min-w-0 text-right text-ink-mute underline hover:text-brick">
+                  <a href={src.url} target="_blank" rel="noreferrer" className="label-sm min-w-0 shrink-0 basis-24 text-right text-ink-mute underline [overflow-wrap:anywhere] hover:text-brick">
                     {lead.note
                       .split(" · ")
                       .filter((part) => /^UNESCO |^\d{4}$/.test(part))

@@ -104,6 +104,19 @@ Only the server ever talks to the database, so its connection string never reach
 
 ---
 
+## Where the content lives
+
+**The public site reads a snapshot baked into the repository**: `src/lib/data/snapshot.json`, the full published archive (about 400 passports). Public pages never query a database, so they can't fail or slow down because of one, and builds don't use database quota.
+
+- `npm run snapshot:build` rebuilds it from the hand-written seed (`src/lib/data/seed/`) plus the research queue in `.data/research.json` (from `npm run research -- … --target local`).
+- `npm run snapshot:export` exports the published archive from PostgreSQL instead, after edits made in `/admin`.
+- `data/passport-ids.json` records every passport's address and number. Both commands reuse them, so printed QR codes and shared links keep working; new passports get the next free number.
+- Commit the updated snapshot and push; the deploy publishes it.
+
+**PostgreSQL (optional) is the editorial workspace**: drafts, edits, uploads, corrections and the research queue. With `DATABASE_URL` set, `/admin` works on the database; changes reach the public site at the next `snapshot:export` and deploy.
+
+If the snapshot was rebuilt outside the database (`snapshot:build`), run `npm run db:load-snapshot -- --yes` before editing in `/admin`, so the database starts from what the public site shows; otherwise a later `snapshot:export` would bring back the older text. It keeps drafts, uploads, corrections and the research queue.
+
 ## Database setup (PostgreSQL on Neon)
 
 1. **Create a free project** at neon.tech.
@@ -147,15 +160,15 @@ It needs a local PostgreSQL server plus `createdb` and `dropdb` on your PATH.
 
 1. **Import** the GitHub repository at vercel.com → Add New → Project. The framework is detected as Next.js; keep the default build command (`next build`).
 2. **Environment variables** (Settings → Environment Variables, for Production and Preview):
-   - `DATABASE_URL`: your Neon connection string. Use the pooled one (its host contains `-pooler`). It is needed at **build** time too, because pages are generated from the database.
+   - `DATABASE_URL` (optional): your Neon connection string, for the editorial desk only. Use the pooled one (its host contains `-pooler`). Builds and public pages don't use it; they read the snapshot.
    - `EDITOR_PASSCODE`: a long passcode for `/admin`.
    - `EDITOR_SESSION_SECRET`: any long random string.
    - `NEXT_PUBLIC_SITE_URL` (optional): your public address, for example `https://culturepassport.example`. Without it, QR codes, share links and metadata use the address the visitor is on, or Vercel's production domain.
-3. **Deploy.** The database must already be set up (`npm run db:setup` from your machine, with the same `DATABASE_URL` in `.env.local`).
+3. **Deploy.** For editing on the live site, the database must already be set up (`npm run db:setup` from your machine, with the same `DATABASE_URL` in `.env.local`).
 
 Notes:
 - **Storage:** with `DATABASE_URL`, edits, uploads, corrections and the research queue all live in Postgres. Without it, they are files in `.data/`, which needs a writable, persistent disk (`next start` on a server), not Vercel.
-- **Caching:** passports, country pages and trails are statically generated and revalidate every 5 minutes. Editor saves revalidate the affected pages immediately. Content added outside the site (for example `npm run research:publish`) appears within 5 minutes, or straight away after a redeploy.
+- **Caching:** every passport, country page and trail is generated at build time from the snapshot. Edits in `/admin` reach the public site with the next `npm run snapshot:export`, commit and deploy.
 - **Uploads** are limited to 4 MB per image (Vercel caps request bodies at 4.5 MB).
 - **Before printing labels**, set `NEXT_PUBLIC_SITE_URL` so codes point to the public address. The label page warns if they would point to `localhost`.
 
@@ -174,7 +187,11 @@ npm run db:setup     # apply migrations and load the seed into DATABASE_URL (saf
 npm run test:db      # setup + round-trip + write paths against a throwaway local PostgreSQL
 npm run research -- --country GH   # gather research candidates for a country (see pipeline/README.md)
 npm run test:research               # offline tests for the research pipeline
-npm run research:publish            # publish the research queue as labelled passports + country leads (add --dry-run to preview)
+npm run research:publish            # publish the research queue into PostgreSQL (add --dry-run to preview)
+npm run snapshot:build              # rebuild src/lib/data/snapshot.json from the seed + .data/research.json
+npm run snapshot:export             # rebuild the snapshot from PostgreSQL (after editing in /admin)
+npm run check:research              # check research passports against live sources → data/research-checks.md
+npm run db:load-snapshot -- --yes   # load the snapshot into PostgreSQL (keeps drafts, uploads, corrections)
 ```
 
 ---

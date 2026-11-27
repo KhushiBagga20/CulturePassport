@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getArchive } from "@/lib/data/archive";
+import { getEditorArchive } from "@/lib/data/archive";
 import { listCorrections } from "@/lib/data/mutations";
 import { resolveCorrectionAction } from "../../actions";
 import { ActionForm, inputClass } from "@/components/admin/ActionForm";
@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Review queue", robots: { index: fals
 
 export default async function ReviewPage() {
   await requireEditorPage();
-  const archive = await getArchive();
+  const archive = await getEditorArchive();
   const corrections = await listCorrections();
   const byId = new Map(archive.traditions.map((t) => [t.id, t]));
   const pending = archive.traditions.filter((t) => t.status === "review");

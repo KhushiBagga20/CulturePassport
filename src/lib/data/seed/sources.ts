@@ -20,6 +20,16 @@ export const sources: Source[] = [
       "Registry record: filed 04-05-2009; Class 25; geographical area Karnataka & Maharashtra; GI Journal No. 109 (09-08-2018); certificate No. 329 dated 11-12-2018; valid to 03-05-2029. The record names the Central Leather Research Institute (CSIR) as applicant, while the GI Journal extract and court reporting identify LIDCOM and LIDKAR as the registered proprietors. Press widely reported the registration in mid-2019.",
   },
   {
+    id: "dh-gi-holders",
+    title: "Prada-Kolhapuri chappal row: two govt agencies officially hold GI tag for sandals",
+    publisher: "Deccan Herald",
+    date: "2025-07",
+    url: "https://www.deccanherald.com/india/maharashtra/prada-kolhapuri-chappal-row-two-govt-agencies-officially-hold-gi-tag-for-sandals-3661799",
+    type: "news",
+    accessed: "2026-11-27",
+    notes: "Reports LIDCOM (Maharashtra) and LIDKAR (Karnataka) as the GI's registered holders, after the Bombay High Court dismissed a PIL brought by others.",
+  },
+  {
     id: "gi-journal-109",
     title: "GI Journal No. 109 — Kolhapuri Chappal (Application No. 169)",
     publisher: "Geographical Indications Registry (copy hosted by oriGIn)",
@@ -307,6 +317,16 @@ export const sources: Source[] = [
       "Filed 14-03-2005 by Punjab Small Industries & Export Corporation; certificate No. 145 dated 22-10-2010; renewed, valid to 13-03-2035; area: Punjab, Haryana & Rajasthan. Several secondary sources give 2011 — the registry certificate date is 2010.",
   },
   {
+    id: "padma-2021",
+    title: "Padma Awards 2021: full list of 119 awardees",
+    publisher: "The News Minute",
+    date: "2021-01-25",
+    url: "https://www.thenewsminute.com/news/spb-ks-chithra-among-119-padma-awardees-year-full-list-142164",
+    type: "news",
+    accessed: "2026-11-27",
+    notes: "Lists Dulari Devi (Art, Bihar) among the 2021 Padma Shri awardees announced on 25 January 2021; the awards were presented in November 2021.",
+  },
+  {
     id: "pma-phulkari-2017",
     title: "Phulkari: The Embroidered Textiles of Punjab from the Jill and Sheldon Bonovitz Collection",
     publisher: "Philadelphia Museum of Art",
@@ -315,14 +335,6 @@ export const sources: Source[] = [
     type: "museum",
     accessed: A,
     notes: "Exhibition ran 12 March – 9 July 2017.",
-  },
-  {
-    id: "pma-phulkari-collection",
-    title: "Phulkari (curated collection)",
-    publisher: "Philadelphia Museum of Art",
-    url: "https://philamuseum.org/collection/curated/phulkari",
-    type: "museum",
-    accessed: A,
   },
   {
     id: "scroll-phulkari-partition",
@@ -486,7 +498,7 @@ export const sources: Source[] = [
     url: "https://livehistoryindia.com/story/living-culture/the-story-of-the-age-old-ajrakh",
     type: "magazine",
     accessed: A,
-    notes: "Popular history; accounts of when Khatri families moved from Sindh to Kutch vary (16th century is most often cited).",
+    notes: "Popular history (2017); says Khatri printers moved from Sindh to Dhamadka about 400 years ago. Other accounts differ.",
   },
 
   // ───────────────────────── UAE / Al Sadu ─────────────────────────
@@ -518,15 +530,6 @@ export const sources: Source[] = [
     url: "https://ich.unesco.org/en/RL/01712",
     type: "unesco",
     accessed: A,
-  },
-  {
-    id: "dctab-sadu",
-    title: "Al Sadu",
-    publisher: "Department of Culture and Tourism – Abu Dhabi",
-    url: "https://abudhabiculture.ae/en/discover/handicraft/al-sadu",
-    type: "government",
-    accessed: A,
-    notes: "Some Abu Dhabi Culture pages still describe the element as on the Urgent Safeguarding List; UNESCO's 2025 decision supersedes this.",
   },
   {
     id: "national-ahalla-2025",

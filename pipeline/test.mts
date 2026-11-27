@@ -62,7 +62,9 @@ check("draft is never published", draft.tradition.status === "draft" && draft.tr
 check("every imported claim is 'needs verification'", draft.tradition.claims.length > 0 && draft.tradition.claims.every((cl) => cl.level === "unverified"));
 check("draft is filed under the candidate's country", draft.tradition.collection === "GH" && draft.tradition.countries.join() === "GH");
 check("freely licensed image becomes the hero, flagged as not yet documentary", draft.media?.id === draft.tradition.hero && draft.media?.documentary === false);
-check("editor checklist is attached", draft.tradition.editorial.openQuestions.length >= 3);
+check("open research questions are attached", draft.tradition.editorial.openQuestions.length >= 2);
+check("editor-only to-dos are not shown publicly", !draft.tradition.editorial.openQuestions.some((q) => /motif|alt text|own words/i.test(q)));
+check("the intro is the description alone (no repeated notice)", !/compiled from/i.test(draft.tradition.intro) && !draft.tradition.claims.some((cl) => cl.text.startsWith("Wikidata describes")));
 
 // licences, merging, scripts
 check("free licences accepted", ["CC0", "CC BY 4.0", "CC BY-SA 3.0", "Public domain"].every(isFreeLicence));

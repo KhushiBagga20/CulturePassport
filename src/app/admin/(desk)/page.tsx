@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getArchive, citedSources } from "@/lib/data/archive";
+import { getEditorArchive, citedSources } from "@/lib/data/archive";
 import { listCorrections, listRevisions } from "@/lib/data/mutations";
 import { validateArchive } from "@/lib/data/seed";
 import { MATURITY, STATUS } from "@/lib/labels";
@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Editorial desk", robots: { index: fa
 
 export default async function AdminDashboard() {
   await requireEditorPage();
-  const archive = await getArchive();
+  const archive = await getEditorArchive();
   const [corrections, revisions] = await Promise.all([listCorrections(), listRevisions()]);
   const problems = validateArchive(archive);
   const open = corrections.filter((c) => c.status === "open");
@@ -45,7 +45,7 @@ export default async function AdminDashboard() {
           </ul>
         )}
         <p className="mt-1 text-ink-soft">
-          Backend: <strong>{archive.backend === "postgres" ? "PostgreSQL" : archive.backend === "local-store" ? "Local files (seed + your edits)" : "Local files (seed only)"}</strong>
+          Backend: <strong>{archive.backend === "postgres" ? "PostgreSQL (the public site shows the snapshot; publish with npm run snapshot:export)" : archive.backend === "local-store" ? "Local files (seed + your edits)" : "Local files (seed only)"}</strong>
         </p>
       </div>
 

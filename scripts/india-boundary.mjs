@@ -83,7 +83,10 @@ for (const [res, interval] of [["50m", 3000], ["110m", 15000]]) {
       for (let i = -1; i <= 1; i++)
         for (let j = -1; j <= 1; j++) {
           const q = grid.get(`${Math.round(p[0] * 1000) + i}:${Math.round(p[1] * 1000) + j}`);
-          if (q && (q[0] - p[0]) ** 2 + (q[1] - p[1]) ** 2 < d) (best = q), (d = (q[0] - p[0]) ** 2 + (q[1] - p[1]) ** 2);
+          if (q && (q[0] - p[0]) ** 2 + (q[1] - p[1]) ** 2 < d) {
+            best = q;
+            d = (q[0] - p[0]) ** 2 + (q[1] - p[1]) ** 2;
+          }
         }
       return best ? [best[0], best[1]] : p;
     };

@@ -148,7 +148,7 @@ export const relationships: Relationship[] = [
     to: "dhamadka",
     kind: "migration",
     title: "Khatri families from Sindh",
-    description: "Kutch printing families trace their roots to Sindh; the timing of the move is disputed (16th century most often cited).",
+    description: "Kutch printing families trace their roots to Sindh; accounts of when they moved differ (16th century to about 400 years ago).",
     level: "community",
     sources: ["lhi-ajrakh", "warwick-khatri"],
   },

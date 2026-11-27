@@ -24,7 +24,7 @@ export function QrPanel({ slug, passportNo, name }: { slug: string; passportNo: 
         <p className="label text-ink-mute">Scan to open the story</p>
         <p className="font-title mt-1 text-2xl leading-tight">A stable link for a museum label, a market stall or a product tag.</p>
         <div className="mt-3 flex items-center gap-2">
-          <code className="font-ui min-w-0 flex-1 truncate border-2 border-ink/30 bg-cream px-2 py-1.5 text-xs">{url}</code>
+          <code className="font-ui min-w-0 flex-1 break-all border-2 border-ink/30 bg-cream px-2 py-1.5 text-xs">{url}</code>
           <button
             type="button"
             className="chip shrink-0"

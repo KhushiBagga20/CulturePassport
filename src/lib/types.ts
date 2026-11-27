@@ -390,7 +390,7 @@ export interface Archive {
   relationships: Relationship[];
   trails: Trail[];
   /** which backend produced this archive */
-  backend: "local-seed" | "local-store" | "postgres";
+  backend: "snapshot" | "local-seed" | "local-store" | "postgres";
 }
 
 export interface Revision {

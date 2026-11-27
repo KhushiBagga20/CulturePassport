@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type { CorrectionRequest, CountryRecord, MediaAsset, Revision, Source, Tradition } from "../types";
 import { readStore, updateStore } from "./local-store";
-import { getArchive } from "./archive";
+import { getEditorArchive } from "./archive";
 import type postgres from "postgres";
 import { db, dbConfigured, upsertRow } from "../db";
 import { countryToRow, mediaToRow, sourceToRow, traditionToRows } from "./rows";
@@ -99,7 +99,7 @@ async function recordRevision(rev: Omit<Revision, "id" | "at">, snapshot?: unkno
 }
 
 export async function saveTradition(t: Tradition, editor: string, summary: string): Promise<string[]> {
-  const archive = await getArchive();
+  const archive = await getEditorArchive();
   const before = archive.traditions.find((x) => x.id === t.id);
   const fields = changedFields(before, t);
   if (before && !fields.length) return [];
@@ -117,7 +117,7 @@ export async function saveTradition(t: Tradition, editor: string, summary: strin
 }
 
 export async function saveSource(src: Source, editor: string): Promise<void> {
-  const archive = await getArchive();
+  const archive = await getEditorArchive();
   const before = archive.sources.find((x) => x.id === src.id);
   if (dbConfigured()) {
     await upsertRow("sources", sourceToRow(src), ["id"]);

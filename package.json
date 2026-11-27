@@ -16,7 +16,11 @@
     "research": "node --env-file-if-exists=.env.local --env-file-if-exists=pipeline/.env pipeline/run.mts",
     "test:research": "node pipeline/test.mts",
     "db:setup": "node --env-file-if-exists=.env.local --env-file-if-exists=pipeline/.env scripts/db-setup.mts",
-    "research:publish": "node --env-file-if-exists=.env.local --env-file-if-exists=pipeline/.env scripts/publish-research.mts"
+    "research:publish": "node --env-file-if-exists=.env.local --env-file-if-exists=pipeline/.env scripts/publish-research.mts",
+    "snapshot:build": "node --env-file-if-exists=.env.local scripts/build-snapshot.mts",
+    "snapshot:export": "node --env-file-if-exists=.env.local scripts/build-snapshot.mts --from-db",
+    "check:research": "node scripts/check-research.mts",
+    "db:load-snapshot": "node --env-file-if-exists=.env.local scripts/db-load-snapshot.mts"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",

@@ -25,7 +25,7 @@ export default async function TrailsPage() {
             Journeys across several passports, each linked by an editorial reason — a technique, a border, a market — never by resemblance alone.
           </p>
         </div>
-        <div className="mt-12 grid gap-4 lg:grid-cols-2">
+        <div className="mt-12 grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-2">
           {archive.trails.map((tr, i) => (
             <Reveal key={tr.slug} delay={i * 0.05}>
               <Link href={`/trails/${tr.slug}`} className="group flex h-full flex-col border-2 border-ink bg-bone transition-transform hover:-translate-y-1">

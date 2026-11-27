@@ -24,7 +24,11 @@ const groupOf = (t: SourceType) => GROUPS.find((g) => g.types.includes(t)) ?? GR
 const CLAIMS_SHOWN = 4;
 const SOURCES_SHOWN = 6;
 
-export function SourcesReferences({ claims, sources }: { claims: Claim[]; sources: NumberedSource[] }) {
+/**
+ * `compact`: for passports whose claims are already shown in full above (research passports), only
+ * the source library is shown.
+ */
+export function SourcesReferences({ claims, sources, compact = false }: { claims: Claim[]; sources: NumberedSource[]; compact?: boolean }) {
   const [level, setLevel] = useState<EvidenceLevel | "all">("all");
   const [group, setGroup] = useState<string>("all");
   useEffect(() => {
@@ -99,6 +103,13 @@ export function SourcesReferences({ claims, sources }: { claims: Claim[]; source
       </div>
     </li>
   );
+
+  if (compact)
+    return (
+      <div className="max-w-3xl">
+        <ol className="border-t-2 border-ink">{sources.map(sourceItem)}</ol>
+      </div>
+    );
 
   return (
     <div>

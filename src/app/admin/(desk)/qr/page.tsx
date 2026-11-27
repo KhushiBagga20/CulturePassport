@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getArchive, isPublic } from "@/lib/data/archive";
+import { getEditorArchive, isPublic } from "@/lib/data/archive";
 import { passportPath, requestOrigin } from "@/lib/site";
 import { qrSvg } from "@/lib/qr";
 import { recordQr } from "@/lib/data/mutations";
@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "QR labels", robots: { index: false }
 
 export default async function QrAdminPage() {
   await requireEditorPage();
-  const archive = await getArchive();
+  const archive = await getEditorArchive();
   const origin = await requestOrigin();
   const published = archive.traditions.filter(isPublic);
   const items = await Promise.all(

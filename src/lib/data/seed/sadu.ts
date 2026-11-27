@@ -43,13 +43,6 @@ export const sadu: Tradition = {
         "Its colours are black, white, brown, beige and red, in narrow bands of geometric design. Woven pieces furnish homes and tents and dress camels and horses.",
       claims: ["sadu-colours", "sadu-uses"],
     },
-    {
-      type: "note",
-      title: "A note on scope",
-      text:
-        "Weaving called sadu is also practised elsewhere in the Arabian Peninsula. This passport covers the UAE element as UNESCO defines it; we have not yet verified the other countries' records.",
-      claims: ["sadu-scope"],
-    },
   ],
   significance: [
     {
@@ -114,7 +107,7 @@ export const sadu: Tradition = {
       id: "sadu-t-2025",
       date: { year: 2025, month: 12, label: "December 2025" },
       title: "New Delhi",
-      body: "Meeting in New Delhi, UNESCO's committee transfers Al Sadu to the Representative List and selects the UAE's safeguarding programme as a good practice.",
+      body: "Meeting in New Delhi, UNESCO's committee transfers Al Sadu to the Representative List and selects the UAE's safeguarding programme for the Register of Good Safeguarding Practices.",
       level: "documented",
       sources: ["unesco-20com-sadu", "national-ahalla-2025"],
       place: "new-delhi",
@@ -165,33 +158,20 @@ export const sadu: Tradition = {
     },
     {
       id: "sadu-2025",
-      text: "In December 2025, in New Delhi, UNESCO transferred Al Sadu to the Representative List and selected the UAE's safeguarding programme as a good practice.",
+      text: "In December 2025, in New Delhi, UNESCO transferred Al Sadu to the Representative List and selected the UAE's safeguarding programme for the Register of Good Safeguarding Practices.",
       level: "documented",
       sources: ["unesco-20com-sadu", "national-ahalla-2025"],
       note: "Some Abu Dhabi heritage pages still describe the earlier listing.",
     },
-    {
-      id: "sadu-scope",
-      text: "Sadu weaving is also practised elsewhere in the Arabian Peninsula.",
-      level: "unverified",
-      sources: ["dctab-sadu"],
-      note: "Other countries' records have not yet been checked.",
-    },
   ],
   keepAlive: {
-    organizations: ["dct-abu-dhabi"],
+    organizations: [],
     resources: [
       {
         title: "UNESCO decision 20.COM 7.C.1",
         url: "https://ich.unesco.org/en/decisions/20.COM/7.C.1",
         note: "The full text of the 2025 decision, with the element's description.",
         source: "unesco-20com-sadu",
-      },
-      {
-        title: "Abu Dhabi Culture — Al Sadu",
-        url: "https://abudhabiculture.ae/en/discover/handicraft/al-sadu",
-        note: "Public heritage resources from the Department of Culture and Tourism.",
-        source: "dctab-sadu",
       },
     ],
     collaborationNotes: [

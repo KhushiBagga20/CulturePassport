@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { SealMark } from "./Seal";
 
 /** Four destinations, each with a one-line promise so visitors know where they will land. */
 export const NAV = [
@@ -61,7 +60,6 @@ export function Header() {
     >
       <div className="mx-auto grid h-14 max-w-[1500px] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-4 sm:px-6 lg:grid-cols-[1fr_auto_1fr] lg:px-10">
         <Link href="/" className="group flex min-w-0 items-center gap-2 justify-self-start" aria-label="Culture Passport — back to the globe">
-          <SealMark className="h-8 w-8 shrink-0 text-brick transition-transform duration-700 group-hover:rotate-[30deg]" />
           <span className="flex flex-col leading-none">
             <span className="font-display whitespace-nowrap text-[1rem] sm:text-[1.15rem]">Culture Passport</span>
             <span className="label-sm mt-0.5 hidden whitespace-nowrap text-ink-mute min-[400px]:block">{admin ? "Editorial desk" : "When culture travels"}</span>

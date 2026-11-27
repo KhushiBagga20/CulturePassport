@@ -2,10 +2,9 @@ import Link from "next/link";
 import { Suspense } from "react";
 import type { Archive, Tradition } from "@/lib/types";
 import { citedSources, isPublic, lookups } from "@/lib/data/archive";
-import { publicChangeLog } from "@/lib/data/mutations";
 import { ACCENT, CATEGORY, MATURITY, RELATIONSHIP, SOURCE_TYPE, accentVars, formatSourceDate } from "@/lib/labels";
 import { ArchiveImage } from "@/components/site/ArchiveImage";
-import { CountryMark, RotatingSeal } from "@/components/site/Seal";
+import { CountryMark } from "@/components/site/Seal";
 import { countryShape } from "@/lib/geo-server";
 import { EvidenceBadge, SourceMarks } from "@/components/site/Evidence";
 import { Motif } from "@/components/motifs/Motif";
@@ -45,7 +44,10 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
   ];
   for (const id of extra) if (!order.includes(id)) order.push(id);
   const numbering = new Map(order.map((id, i) => [id, i + 1]));
-  const ctx: BlockContext = { claims: new Map(t.claims.map((c) => [c.id, c])), numbering, media: L.media, motif: t.motif };
+  // Research passports state each claim once, as a paragraph: no separate claims list or badges.
+  const originClaims = new Set(t.origins.flatMap((b) => (b.type === "p" ? (b.claims ?? []) : [])));
+  const compact = t.maturity === "editorial-draft" && t.claims.length > 0 && t.claims.every((c) => originClaims.has(c.id) && c.level === "unverified");
+  const ctx: BlockContext = { claims: new Map(t.claims.map((c) => [c.id, c])), numbering, media: L.media, motif: t.motif, anchors: compact };
   const hero = t.hero ? L.media.get(t.hero) : undefined;
   const communities = t.communities.map((c) => L.community.get(c.community)).filter((c): c is NonNullable<typeof c> => !!c);
   const country = L.country.get(t.collection);
@@ -53,7 +55,6 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
   const isoOrder = [t.collection, ...t.countries.filter((c) => c !== t.collection)];
   const shape = await countryShape(isoOrder.map((iso) => L.country.get(iso)?.isoNumeric).filter((x): x is string => !!x));
   const countryNames = isoOrder.map((iso) => L.country.get(iso)?.name ?? iso).map((n) => (n === "United Arab Emirates" ? "UAE" : n)).join(" · ");
-  const changeLog = preview ? [] : await publicChangeLog(t.id);
 
   // Which claims/events/answers each source supports, for the source library.
   const supports = new Map<string, string[]>();
@@ -74,7 +75,7 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
   const numbered: NumberedSource[] = order
     .map((id) => L.source.get(id))
     .filter((s): s is NonNullable<typeof s> => !!s)
-    .map((s) => ({ ...s, n: numbering.get(s.id)!, supports: Array.from(new Set(supports.get(s.id) ?? [])) }));
+    .map((s) => ({ ...s, n: numbering.get(s.id)!, supports: compact ? [] : Array.from(new Set(supports.get(s.id) ?? [])) }));
   const drawer: DrawerSource[] = numbered.map((s) => ({
     id: s.id,
     n: s.n,
@@ -155,6 +156,13 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
       title: tr.title,
       steps: tr.steps.map((s) => ({ slug: s.tradition, name: L.tradition.get(s.tradition)?.name ?? s.tradition })),
     }));
+  // Chapters with nothing recorded yet are left out (research passports start short), and the
+  // remaining ones are numbered in order.
+  const hasMakers = t.makers.intro.length > 0 || t.makers.practitioners.length > 0 || t.makers.materials.length > 0 || t.makers.process.length > 0;
+  const hasTravels = t.travels.intro.length > 0 || t.travels.influences.length > 0 || t.travels.cases.length > 0 || web.length > 0;
+  const present: Record<string, boolean> = { origins: true, makers: hasMakers, "through-time": timeline.length > 0, travels: hasTravels, evidence: true, "keep-alive": true };
+  const chapters = CHAPTERS.filter((c) => present[c.id]).map((c, i) => ({ ...c, n: String(i + 1).padStart(2, "0") }));
+  const ch = (id: string) => chapters.find((c) => c.id === id)!;
   const back = country ? { href: `/country/${country.slug}`, label: `${country.name === "United Arab Emirates" ? "UAE" : country.name} collection` } : undefined;
 
   return (
@@ -188,11 +196,6 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
               {t.name}
             </span>
           </nav>
-          {back && (
-            <Link href={back.href} className="label inline-flex items-center gap-2 border-b-2 border-ink pb-0.5 hover:text-brick">
-              <span aria-hidden>←</span> Back to the {back.label}
-            </Link>
-          )}
         </div>
 
         <div className={`${WRAP} relative grid gap-x-12 gap-y-10 pb-16 pt-8 lg:grid-cols-12 lg:pb-20`}>
@@ -204,10 +207,7 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
                 className="pointer-events-none absolute -top-4 right-0 h-48 w-48 text-[var(--accent)] opacity-[0.16] sm:h-64 sm:w-64 lg:-right-6"
               />
             )}
-            <p className="label relative inline-flex items-center gap-2 bg-ink px-2.5 py-1.5 text-bone">
-              Culture Passport <span className="text-yellow">·</span> {countryNames}
-            </p>
-            <h1 className="font-display reveal-rise relative mt-6 text-[clamp(2.65rem,8.19vw,7.3rem)] hyphens-auto [overflow-wrap:anywhere]">{t.displayTitle}</h1>
+            <h1 className="font-display reveal-rise relative mt-2 text-[clamp(2.65rem,8.19vw,7.3rem)] hyphens-auto [overflow-wrap:anywhere]">{t.displayTitle}</h1>
             <p className="font-title relative mt-3 text-[clamp(1.7rem,3.4vw,2.8rem)] italic text-[var(--accent-text)]">{t.tagline}</p>
           </div>
 
@@ -227,19 +227,12 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
               ) : (
                 <Motif motif={t.motif} className="relative aspect-[4/3] w-full border-2 border-ink sm:aspect-[4/5]" />
               )}
-              <RotatingSeal
-                id={`hero-${t.passportNo}`}
-                text={`CULTURE PASSPORT · ${t.name.toUpperCase()} · WHEN CULTURE TRAVELS · `}
-                center={countryNames}
-                shape={shape ?? undefined}
-                className="absolute -bottom-8 -left-6 h-32 w-32 rounded-full border-2 border-ink bg-yellow text-ink sm:h-36 sm:w-36"
-              />
             </div>
-            {hero && <p className="mt-12 max-w-md text-sm text-ink-mute sm:mt-6 sm:pl-36">{hero.caption}</p>}
+            {hero && <p className="mt-3 max-w-md text-sm text-ink-mute">{hero.caption}</p>}
           </div>
 
           <div className="lg:col-span-7 lg:row-start-2">
-            <p className="lead max-w-2xl text-ink-soft">{t.intro}</p>
+            {t.intro && <p className="lead max-w-2xl text-ink-soft">{t.intro}</p>}
             {t.nativeNames.length > 0 && (
               <div className="mt-7 flex flex-wrap gap-x-8 gap-y-3 border-t-2 border-ink pt-4">
                 {t.nativeNames.map((n) => (
@@ -264,15 +257,15 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
 
       {/* ─────────── At a glance ─────────── */}
       <section aria-label="At a glance" className="border-b-2 border-ink bg-cream">
-        <dl className={`${WRAP} grid gap-3 py-8 sm:grid-cols-3`}>
+        <dl className={`${WRAP} grid gap-3 py-8 ${t.alternateNames.length ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
           {[
             ["Category", CATEGORY[t.category], t.techniques.slice(0, 3).join(" · "), "bg-orange text-ink"],
-            ["Where", t.regionLabel, country ? `Collection: ${country.name}` : "", "bg-cobalt text-bone"],
-            ["Also known as", t.alternateNames.join(" · ") || "—", MATURITY[t.maturity].label, "border-2 border-ink bg-bone text-ink"],
+            ["Where", t.regionLabel, "", "bg-cobalt text-bone"],
+            ...(t.alternateNames.length ? [["Also known as", t.alternateNames.join(" · "), "", "border-2 border-ink bg-bone text-ink"]] : []),
           ].map(([k, v, sub, cls]) => (
-            <div key={k} className={`relative flex min-h-36 flex-col p-5 ${cls}`}>
+            <div key={k} className={`relative flex min-w-0 flex-col p-5 sm:min-h-36 ${cls}`}>
               <dt className="label opacity-80">{k}</dt>
-              <dd className="font-title mt-2 text-[1.6rem] leading-[1.05]">{v}</dd>
+              <dd className="font-title mt-2 text-[1.6rem] leading-[1.05] [overflow-wrap:anywhere]">{v}</dd>
               {sub && <dd className="label-sm mt-auto pt-3 opacity-80">{sub}</dd>}
             </div>
           ))}
@@ -282,21 +275,30 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
       {t.maturity !== "researched" && (
         <div className="border-b-2 border-ink bg-yellow">
           <p className={`${WRAP} py-3 text-sm`}>
-            <strong className="label mr-2">{MATURITY[t.maturity].label}.</strong>
-            {MATURITY[t.maturity].description} {t.editorial.notes}
+            {compact ? (
+              <>
+                <strong className="label mr-2">Research passport.</strong>
+                {t.editorial.notes}
+              </>
+            ) : (
+              <>
+                <strong className="label mr-2">{MATURITY[t.maturity].label}.</strong>
+                {MATURITY[t.maturity].description} {t.editorial.notes}
+              </>
+            )}
           </p>
         </div>
       )}
 
-      <ChapterBar chapters={CHAPTERS} shape={shape} place={countryNames} back={back} />
+      <ChapterBar chapters={chapters} shape={shape} place={countryNames} back={back} />
 
       {/* ─────────── 01 Where It Began ─────────── */}
       <section aria-labelledby="h-origins" id="origins" className="bg-cream py-20 outline-none lg:py-28">
         <div className={WRAP}>
-          <ChapterHeading n="01" id="h-origins" title={CHAPTERS[0].label} kicker="Places, communities, first records" />
+          <ChapterHeading n={ch("origins").n} id="h-origins" title={ch("origins").label} kicker="Places, communities, first records" />
           <div className="grid gap-12 lg:grid-cols-12">
             <div className="order-2 lg:order-1 lg:col-span-6">
-              <Blocks blocks={t.origins} ctx={ctx} large progressive />
+              <Blocks blocks={t.origins} ctx={ctx} large progressive={!compact} />
             </div>
             <div className="order-1 lg:order-2 lg:col-span-6">
               <div className="lg:sticky lg:top-32">
@@ -335,10 +337,11 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
         </section>
       )}
 
-      {/* ─────────── 02 The People Behind It ─────────── */}
+      {/* ─────────── The People Behind It ─────────── */}
+      {hasMakers && (
       <section aria-labelledby="h-makers" id="makers" className="bg-cream pt-20 outline-none lg:pt-28">
         <div className={WRAP}>
-          <ChapterHeading n="02" id="h-makers" title={CHAPTERS[1].label} kicker="Made by people, not by an aesthetic" />
+          <ChapterHeading n={ch("makers").n} id="h-makers" title={ch("makers").label} kicker="Made by people, not by an aesthetic" />
           <div className="grid gap-12 lg:grid-cols-12">
             <div className="lg:col-span-6">
               <Blocks blocks={t.makers.intro} ctx={ctx} large progressive />
@@ -394,39 +397,40 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
         </div>
         )}
       </section>
+      )}
 
-      {/* ─────────── 03 A Journey Through Time ─────────── */}
+      {/* ─────────── A Journey Through Time ─────────── */}
+      {timeline.length > 0 && (
       <section aria-labelledby="h-time" id="through-time" className="border-b-2 border-ink bg-orange py-20 text-ink outline-none lg:py-28">
         <div className={WRAP}>
           <ChapterHeading
-            n="03"
+            n={ch("through-time").n}
             id="h-time"
-            title={CHAPTERS[2].label}
+            title={ch("through-time").label}
             kicker="Milestones, with their certainty"
             intro="Dates appear exactly as the evidence allows: precise where a record exists, approximate where it doesn't, and dashed where a claim is disputed or unverified."
             tone="accent"
           />
-          {timeline.length ? (
-            <Timeline items={timeline} motif={t.motif} />
-          ) : (
-            <p className="max-w-2xl border-2 border-dashed border-ink/50 bg-bone/60 p-6">
-              No dated milestones have been recorded for {t.name} yet. Dates are added only when a source gives them.
-            </p>
-          )}
+          <Timeline items={timeline} motif={t.motif} />
         </div>
       </section>
+      )}
 
-      {/* ─────────── 04 Across Borders ─────────── */}
+      {/* ─────────── Across Borders ─────────── */}
+      {hasTravels && (
       <section aria-labelledby="h-travels" id="travels" className="bg-cream py-20 outline-none lg:py-28">
         <div className={WRAP}>
-          <ChapterHeading n="04" id="h-travels" title={CHAPTERS[3].label} kicker="Influence, adaptation, attribution" />
+          <ChapterHeading n={ch("travels").n} id="h-travels" title={ch("travels").label} kicker="Influence, adaptation, attribution" />
+          {(t.travels.intro.length > 0 || t.travels.influences.length > 0) && (
           <div className="grid gap-12 lg:grid-cols-12">
+            {t.travels.intro.length > 0 && (
             <div className="lg:col-span-6">
               <Blocks blocks={t.travels.intro} ctx={ctx} large progressive />
             </div>
+            )}
+            {t.travels.influences.length > 0 && (
             <div className="lg:col-span-6">
               <p className="label text-ink-mute">Documented journeys</p>
-              {t.travels.influences.length === 0 && <p className="mt-3 text-ink-soft">No journeys beyond its home have been documented yet.</p>}
               <ol className="mt-3 grid gap-3">
                 {t.travels.influences.map((inf, i) => (
                   <li key={inf.title} className="grid grid-cols-[auto_1fr] gap-4 border-2 border-ink bg-bone p-4">
@@ -445,7 +449,9 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
                 ))}
               </ol>
             </div>
+            )}
           </div>
+          )}
 
           {web.length > 0 && (
             <div className="mt-16">
@@ -465,40 +471,37 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
           {t.travels.cases.map((c) => (
             <CaseFile key={c.id} c={c} numbering={numbering} media={L.media} motif={t.motif} traditionName={t.name} />
           ))}
-          {t.travels.cases.length === 0 && (
-            <p className="mt-14 max-w-3xl border-2 border-dashed border-ink/40 p-6 text-ink-soft">
-              No attribution case is documented for {t.name} yet. We record a case only when there is a sourced sequence of events — never on resemblance
-              or rumour.
-            </p>
-          )}
         </div>
       </section>
+      )}
 
       {/* ─────────── 05 Sources & References ─────────── */}
       <section aria-labelledby="h-evidence" id="evidence" className="border-t-2 border-ink bg-bone py-20 outline-none lg:py-28">
         <div className={WRAP}>
           <ChapterHeading
-            n="05"
+            n={ch("evidence").n}
             id="h-evidence"
-            title={CHAPTERS[4].label}
+            title={ch("evidence").label}
             kicker="Every claim, traceable"
-            intro="Each statement in this passport carries an evidence label and points to the sources behind it — including where those sources disagree."
+            intro={
+              compact
+                ? "Every statement above links to the record it comes from. None has been checked by an editor yet."
+                : "Each statement in this passport carries an evidence label and points to the sources behind it — including where those sources disagree."
+            }
           />
-          <SourcesReferences claims={t.claims} sources={numbered} />
+          <SourcesReferences claims={t.claims} sources={numbered} compact={compact} />
         </div>
       </section>
 
       {/* ─────────── 06 Meet the Makers ─────────── */}
       <section aria-labelledby="h-keep" id="keep-alive" className="outline-none">
         <div className="border-y-2 border-ink bg-green pt-20 text-bone lg:pt-28">
-          <div className={WRAP}>
-            <ChapterHeading n="06" id="h-keep" title={CHAPTERS[5].label} kicker="Connect, credit, collaborate" tone="dark" />
+          <div className={`${WRAP} ${t.keepAlive.organizations.length ? "" : "pb-6"}`}>
+            <ChapterHeading n={ch("keep-alive").n} id="h-keep" title={ch("keep-alive").label} kicker="Connect, credit, collaborate" tone="dark" />
           </div>
+          {t.keepAlive.organizations.length > 0 && (
           <div className={`${WRAP} pb-16`}>
             <p className="label text-yellow">Organisations &amp; collections</p>
-            {t.keepAlive.organizations.length === 0 && (
-              <p className="mt-3 max-w-2xl text-bone/85">No organisations or collections are recorded for {t.name} yet. We add them only from published sources.</p>
-            )}
             <ul className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
               {t.keepAlive.organizations.map((id) => {
                 const o = L.organization.get(id);
@@ -525,20 +528,13 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
               })}
             </ul>
           </div>
+          )}
         </div>
 
         <div className="bg-cream py-16 lg:py-20">
           <div className={`${WRAP} grid gap-10 lg:grid-cols-12`}>
             <div className="lg:col-span-7">
-              <div className="border-2 border-dashed border-ink/50 p-5">
-                <p className="label text-ink-mute">Artisan profiles</p>
-                <p className="mt-2 text-sm text-ink-soft">
-                  None published yet. Profiles will appear only with a maker&rsquo;s consent and after verification — we will not list private individuals
-                  from press coverage or invent workshops.
-                </p>
-              </div>
-
-              {t.keepAlive.collaborationNotes.length > 0 && <p className="label mt-10 text-ink-mute">Working with this tradition?</p>}
+              {t.keepAlive.collaborationNotes.length > 0 && <p className="label text-ink-mute">Working with this tradition?</p>}
               <ul className="mt-3 grid gap-2 sm:grid-cols-2">
                 {t.keepAlive.collaborationNotes.map((n) => (
                   <li key={n} className="flex gap-3 border-2 border-ink bg-bone p-3 text-sm">
@@ -550,7 +546,7 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
                 ))}
               </ul>
 
-              {t.keepAlive.resources.length > 0 && <p className="label mt-10 text-ink-mute">Learn more</p>}
+              {t.keepAlive.resources.length > 0 && <p className={`label text-ink-mute ${t.keepAlive.collaborationNotes.length ? "mt-10" : ""}`}>Learn more</p>}
               <ul className="mt-3 grid gap-3 sm:grid-cols-2">
                 {t.keepAlive.resources.map((r) => (
                   <li key={r.url}>
@@ -578,14 +574,14 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
 
           <div className={`${WRAP} mt-12 grid items-start gap-4 lg:grid-cols-2`}>
             <CorrectionForm traditionId={t.id} claims={t.claims.map((c) => ({ id: c.id, text: c.text }))} />
-            <More label="Editorial record" detail={`Reviewed ${formatSourceDate(t.editorial.lastReviewed)} · change log`}>
-              <div className="grid gap-6 border-2 border-ink bg-bone p-5 sm:grid-cols-3">
+            <More label="Editorial record" detail={`Reviewed ${formatSourceDate(t.editorial.lastReviewed)}`}>
+              <div className="grid gap-6 border-2 border-ink bg-bone p-5 sm:grid-cols-2">
                 <div>
                   <p className="label text-ink-mute">Last review</p>
                   <p className="mt-2 text-sm">
                     {formatSourceDate(t.editorial.lastReviewed)} by {t.editorial.reviewedBy}.
                   </p>
-                  <p className="mt-2 text-sm text-ink-soft">{t.editorial.notes}</p>
+                  {t.maturity === "researched" && <p className="mt-2 text-sm text-ink-soft">{t.editorial.notes}</p>}
                 </div>
                 <div>
                   <p className="label text-ink-mute">Open research questions</p>
@@ -594,20 +590,6 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
                       <li key={q}>? {q}</li>
                     ))}
                   </ul>
-                </div>
-                <div>
-                  <p className="label text-ink-mute">Change log</p>
-                  {changeLog.length ? (
-                    <ul className="mt-2 space-y-1 text-sm text-ink-soft">
-                      {changeLog.map((c, i) => (
-                        <li key={i}>
-                          <span className="font-ui text-xs">{c.at.slice(0, 10)}</span> — {c.summary}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="mt-2 text-sm text-ink-soft">No edits since the seed research of {formatSourceDate(t.editorial.lastReviewed)}.</p>
-                  )}
                 </div>
               </div>
             </More>
