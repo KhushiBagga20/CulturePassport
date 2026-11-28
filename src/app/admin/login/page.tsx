@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getEditor, localAdminConfigured } from "@/lib/auth";
-import { dbConfigured } from "@/lib/db";
+import { storeMode } from "@/lib/data/store-mode";
 import { LoginForm } from "@/components/admin/LoginForm";
 
 export const dynamic = "force-dynamic";
@@ -22,7 +22,7 @@ export default async function LoginPage() {
         <dl className="mt-8 space-y-3 text-sm">
           <div>
             <dt className="label-sm text-ink-mute">Backend</dt>
-            <dd>{dbConfigured() ? "PostgreSQL (DATABASE_URL)" : "Local mode — seed archive + .data/store.json"}</dd>
+            <dd>{storeMode() === "github" ? "GitHub — each save is a commit; the site redeploys in about a minute" : storeMode() === "postgres" ? "PostgreSQL (DATABASE_URL)" : "Local mode — snapshot + .data/store.json"}</dd>
           </div>
         </dl>
       </div>

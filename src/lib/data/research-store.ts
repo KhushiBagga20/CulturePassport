@@ -2,7 +2,8 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import type { ResearchCandidate, ResearchFile } from "../research";
-import { db, dbConfigured } from "../db";
+import { db } from "../db";
+import { storeMode, useDatabase as dbConfigured } from "./store-mode";
 
 /**
  * The research review queue, as editors see it: the research_candidates table when DATABASE_URL is
@@ -82,6 +83,7 @@ export async function recordDecision(
     if (!done.count) throw new Error("Candidate not found");
     return;
   }
+  if (storeMode() === "github") throw new Error("The research queue lives on your computer: review candidates with npm run dev, then publish with npm run snapshot:build.");
   await updateLocal((f) => {
     const c = f.candidates[id];
     if (!c) throw new Error("Candidate not found");

@@ -45,7 +45,13 @@ export default async function AdminDashboard() {
           </ul>
         )}
         <p className="mt-1 text-ink-soft">
-          Backend: <strong>{archive.backend === "postgres" ? "PostgreSQL (the public site shows the snapshot; publish with npm run snapshot:export)" : archive.backend === "local-store" ? "Local files (seed + your edits)" : "Local files (seed only)"}</strong>
+          Backend: <strong>{archive.backend === "github"
+              ? "GitHub — each save is committed to the repository; the public site updates about a minute later"
+              : archive.backend === "postgres"
+                ? "PostgreSQL (the public site shows the snapshot; publish with npm run snapshot:export)"
+                : archive.backend === "local-store"
+                  ? "Local files (snapshot + your edits)"
+                  : "Local files (snapshot only)"}</strong>
         </p>
       </div>
 

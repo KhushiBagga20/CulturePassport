@@ -97,6 +97,9 @@ QR codes encode the address you are browsing on, unless `NEXT_PUBLIC_SITE_URL` i
 | `NEXT_PUBLIC_SITE_URL` | Production | Public origin for QR codes, share captions, the sitemap and Open Graph tags. Leave empty in development. |
 | `EDITOR_PASSCODE` | To edit | Passcode for the editorial desk (`DEMO_ADMIN_PASSWORD` is still accepted). If unset, the desk stays locked. Never hard-coded. |
 | `EDITOR_SESSION_SECRET` | Optional | Extra secret mixed into the signed editor session cookie (`DEMO_SESSION_SECRET` is still accepted). |
+| `GITHUB_CONTENT_TOKEN` | Editing on Vercel | A fine-grained GitHub token with **Contents: read and write** on this repository only. With it (and `GITHUB_CONTENT_REPO`), `/admin` saves to the repository, no database needed. **Server-only.** |
+| `GITHUB_CONTENT_REPO` | Editing on Vercel | `owner/name` of this repository, e.g. `KhushiBagga20/CulturePassport`. |
+| `GITHUB_CONTENT_BRANCH` | Optional | Branch the desk commits to (default `main`, the branch Vercel deploys). |
 | `DATABASE_URL` | Database mode | A PostgreSQL connection string, for example from Neon. When set, the site, the research pipeline and `npm run db:setup` all use it. **Server-only**: never give it a `NEXT_PUBLIC_` name. |
 | `DATABASE_POOL_MAX` | Optional | Connections per server process (default 5). |
 
@@ -114,7 +117,15 @@ Only the server ever talks to the database, so its connection string never reach
 - `backend/data/passport-ids.json` records every passport's address and number. Both commands reuse them, so printed QR codes and shared links keep working; new passports get the next free number.
 - Commit the updated snapshot and push; the deploy publishes it.
 
-**PostgreSQL (optional) is the editorial workspace**: drafts, edits, uploads, corrections and the research queue. With `DATABASE_URL` set, `/admin` works on the database; changes reach the public site at the next `snapshot:export` and deploy.
+**Edits made in `/admin` are saved to the repository** when `GITHUB_CONTENT_TOKEN` and `GITHUB_CONTENT_REPO` are set (this takes priority over `DATABASE_URL`). Each save is one commit to `backend/data/editor/`:
+
+- `store.json`: edited and new passports, sources, images, countries and the edit history, applied on top of the snapshot. Every deploy includes it, so published edits appear on the public site about a minute after saving (Vercel redeploys on the commit); the desk shows them immediately.
+- `corrections.enc`: readers' correction requests, **encrypted** (AES-256-GCM, key from `EDITOR_SESSION_SECRET`) because the repository is public and they may include contact details. Commits that only touch this file don't trigger a redeploy (`vercel.json` → `ignoreCommand`). Changing `EDITOR_SESSION_SECRET` makes older requests unreadable.
+- `uploads/`: images uploaded in the desk, served by `/api/media/…`.
+
+The research queue stays on your computer (`.data/research.json`): review it with `npm run dev`, publish with `npm run snapshot:build`. After editing on the live site, `git pull` before you push local changes. `npm run test:github-store` checks the GitHub storage against a simulated GitHub.
+
+**PostgreSQL (optional) is the other editorial workspace**: drafts, edits, uploads, corrections and the research queue. With `DATABASE_URL` set, `/admin` works on the database; changes reach the public site at the next `snapshot:export` and deploy.
 
 If the snapshot was rebuilt outside the database (`snapshot:build`), run `npm run db:load-snapshot -- --yes` before editing in `/admin`, so the database starts from what the public site shows; otherwise a later `snapshot:export` would bring back the older text. It keeps drafts, uploads, corrections and the research queue.
 
@@ -161,14 +172,15 @@ It needs a local PostgreSQL server plus `createdb` and `dropdb` on your PATH.
 
 1. **Import** the GitHub repository at vercel.com → Add New → Project. The framework is detected as Next.js; keep the default build command (`next build`).
 2. **Environment variables** (Settings → Environment Variables, for Production and Preview):
-   - `DATABASE_URL` (optional): your Neon connection string, for the editorial desk only. Use the pooled one (its host contains `-pooler`). Builds and public pages don't use it; they read the snapshot.
+   - `GITHUB_CONTENT_TOKEN` and `GITHUB_CONTENT_REPO`: let `/admin` save to this repository (see "Where the content lives"). Create the token at github.com → Settings → Developer settings → Fine-grained tokens, for this repository only, with "Contents: Read and write".
+   - `DATABASE_URL` (optional, not needed with the GitHub token): your Neon connection string, for the editorial desk only. Use the pooled one (its host contains `-pooler`). Builds and public pages don't use it; they read the snapshot.
    - `EDITOR_PASSCODE`: a long passcode for `/admin`.
    - `EDITOR_SESSION_SECRET`: any long random string.
    - `NEXT_PUBLIC_SITE_URL` (optional): your public address, for example `https://culturepassport.example`. Without it, QR codes, share links and metadata use the address the visitor is on, or Vercel's production domain.
 3. **Deploy.** For editing on the live site, the database must already be set up (`npm run db:setup` from your machine, with the same `DATABASE_URL` in `.env.local`).
 
 Notes:
-- **Storage:** with `DATABASE_URL`, edits, uploads, corrections and the research queue all live in Postgres. Without it, they are files in `.data/`, which needs a writable, persistent disk (`next start` on a server), not Vercel.
+- **Storage:** with the GitHub token, edits, uploads and corrections are committed to `backend/data/editor/`. With only `DATABASE_URL`, they live in Postgres. With neither, they are files in `.data/`, which needs a writable, persistent disk (`next start` on a server), not Vercel.
 - **Caching:** every passport, country page and trail is generated at build time from the snapshot. Edits in `/admin` reach the public site with the next `npm run snapshot:export`, commit and deploy.
 - **Uploads** are limited to 4 MB per image (Vercel caps request bodies at 4.5 MB).
 - **Before printing labels**, set `NEXT_PUBLIC_SITE_URL` so codes point to the public address. The label page warns if they would point to `localhost`.
@@ -188,6 +200,7 @@ npm run db:setup     # apply migrations and load the seed into DATABASE_URL (saf
 npm run test:db      # setup + round-trip + write paths against a throwaway local PostgreSQL
 npm run research -- --country GH   # gather research candidates for a country (see backend/pipeline/README.md)
 npm run test:research               # offline tests for the research pipeline
+npm run test:github-store           # offline tests for saving edits to GitHub
 npm run research:publish            # publish the research queue into PostgreSQL (add --dry-run to preview)
 npm run snapshot:build              # rebuild src/lib/data/snapshot.json from the seed + .data/research.json
 npm run snapshot:export             # rebuild the snapshot from PostgreSQL (after editing in /admin)

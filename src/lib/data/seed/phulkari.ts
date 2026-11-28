@@ -33,8 +33,8 @@ export const phulkari: Tradition = {
     "Phulkari means flower work. It was made by women in Punjab, a region that since 1947 has been divided between India and Pakistan. Untwisted silk floss is darned into hand-woven cotton from the back of the cloth, so the pattern appears on the front: sometimes scattered flowers, sometimes — in a bagh, a 'garden' — the whole cloth covered.",
   accent: "mustard",
   motif: "phulkari",
-  hero: "phulkari-osterley",
-  gallery: ["phulkari-osterley", "phulkari-patiala-1900", "phulkari-shawl"],
+  hero: "phulkari-rajpura",
+  gallery: ["phulkari-rajpura", "phulkari-cleveland", "phulkari-patiala-1900", "phulkari-shawl"],
   periods: ["Undated origins", "c. 1900", "1947 Partition", "2010 GI", "2017 Philadelphia"],
   origins: [
     {

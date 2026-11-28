@@ -3,7 +3,9 @@ import type { CorrectionRequest, CountryRecord, MediaAsset, Revision, Source, Tr
 import { readStore, updateStore } from "./local-store";
 import { getEditorArchive } from "./archive";
 import type postgres from "postgres";
-import { db, dbConfigured, upsertRow } from "../db";
+import { db, upsertRow } from "../db";
+import { useDatabase as dbConfigured } from "./store-mode";
+import type { LocalStore } from "./local-store";
 import { countryToRow, mediaToRow, sourceToRow, traditionToRows } from "./rows";
 
 /** Field-level diff summary for the audit trail. */
@@ -28,7 +30,7 @@ export async function submitCorrection(input: Omit<CorrectionRequest, "id" | "st
   }
   await updateStore((s) => {
     s.corrections.unshift({ ...input, id: randomUUID(), status: "open", createdAt: new Date().toISOString() });
-  });
+  }, "Correction request received");
 }
 
 // ───────────────────────────── editorial reads ─────────────────────────────
@@ -86,6 +88,14 @@ export async function publicChangeLog(traditionId: string): Promise<{ at: string
 
 // ───────────────────────────── editorial writes ─────────────────────────────
 
+/** Applies a change and its revision record in one write (one commit on GitHub). */
+function writeWithRevision(apply: (s: LocalStore) => void, rev: Omit<Revision, "id" | "at">) {
+  return updateStore((s) => {
+    apply(s);
+    s.revisions.unshift({ ...rev, id: randomUUID(), at: new Date().toISOString() });
+  }, `Editorial desk: ${rev.summary} (${rev.editor})`.slice(0, 200));
+}
+
 async function recordRevision(rev: Omit<Revision, "id" | "at">, snapshot?: unknown) {
   if (dbConfigured()) {
     const sql = db();
@@ -107,49 +117,55 @@ export async function saveTradition(t: Tradition, editor: string, summary: strin
     const bySlug = new Map(archive.traditions.map((x) => [x.slug, x.id]));
     const rows = traditionToRows(t, (s) => bySlug.get(s) ?? s);
     await db().unsafe("select save_tradition($1::jsonb)", [rows as never]);
-  } else {
-    await updateStore((s) => {
-      s.traditions[t.id] = t;
-    });
+    await recordRevision({ entity: "tradition", entityId: t.id, editor, summary: summary || (before ? "Edited" : "Created"), fields: before ? fields : ["created"] }, t);
+    return fields;
   }
-  await recordRevision({ entity: "tradition", entityId: t.id, editor, summary: summary || (before ? "Edited" : "Created"), fields: before ? fields : ["created"] }, t);
+  await writeWithRevision(
+    (s) => {
+      s.traditions[t.id] = t;
+    },
+    { entity: "tradition", entityId: t.id, editor, summary: summary || (before ? `Edited ${t.name}` : `Created ${t.name}`), fields: before ? fields : ["created"] },
+  );
   return fields;
 }
 
 export async function saveSource(src: Source, editor: string): Promise<void> {
   const archive = await getEditorArchive();
   const before = archive.sources.find((x) => x.id === src.id);
+  const rev = { entity: "source" as const, entityId: src.id, editor, summary: before ? `Edited source: ${src.title}` : `Added source: ${src.title}`, fields: changedFields(before, src) };
   if (dbConfigured()) {
     await upsertRow("sources", sourceToRow(src), ["id"]);
-  } else {
-    await updateStore((s) => {
-      s.sources[src.id] = src;
-    });
+    await recordRevision(rev);
+    return;
   }
-  await recordRevision({ entity: "source", entityId: src.id, editor, summary: before ? `Edited source: ${src.title}` : `Added source: ${src.title}`, fields: changedFields(before, src) });
+  await writeWithRevision((s) => {
+    s.sources[src.id] = src;
+  }, rev);
 }
 
 export async function saveMedia(m: MediaAsset, editor: string): Promise<void> {
+  const rev = { entity: "media" as const, entityId: m.id, editor, summary: `Media: ${m.caption}`, fields: ["media"] };
   if (dbConfigured()) {
     await upsertRow("media_assets", mediaToRow(m), ["id"]);
-  } else {
-    await updateStore((s) => {
-      s.media[m.id] = m;
-    });
+    await recordRevision(rev);
+    return;
   }
-  await recordRevision({ entity: "media", entityId: m.id, editor, summary: `Media: ${m.caption}`, fields: ["media"] });
+  await writeWithRevision((s) => {
+    s.media[m.id] = m;
+  }, rev);
 }
 
 /** Adds (or updates) a country on the atlas. New countries start as "Stories being documented". */
 export async function saveCountry(c: CountryRecord, editor: string): Promise<void> {
+  const rev = { entity: "country" as const, entityId: c.iso2, editor, summary: `Added ${c.name} to the atlas (${c.status})`, fields: ["country"] };
   if (dbConfigured()) {
     await upsertRow("countries", countryToRow(c), ["iso2"]);
-  } else {
-    await updateStore((s) => {
-      s.countries[c.iso2] = c;
-    });
+    await recordRevision(rev);
+    return;
   }
-  await recordRevision({ entity: "country", entityId: c.iso2, editor, summary: `Added ${c.name} to the atlas (${c.status})`, fields: ["country"] });
+  await writeWithRevision((s) => {
+    s.countries[c.iso2] = c;
+  }, rev);
 }
 
 export async function resolveCorrection(id: string, status: CorrectionRequest["status"], resolution: string, editor = "Editor"): Promise<void> {
@@ -163,7 +179,7 @@ export async function resolveCorrection(id: string, status: CorrectionRequest["s
       c.status = status;
       c.resolution = resolution;
     }
-  });
+  }, "Correction request resolved");
 }
 
 /** Records a generated QR label in database mode (audit of printed codes); a no-op locally. */

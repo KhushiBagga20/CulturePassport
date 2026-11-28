@@ -20,7 +20,8 @@
     "snapshot:build": "node --env-file-if-exists=.env.local backend/scripts/build-snapshot.mts",
     "snapshot:export": "node --env-file-if-exists=.env.local backend/scripts/build-snapshot.mts --from-db",
     "check:research": "node backend/scripts/check-research.mts",
-    "db:load-snapshot": "node --env-file-if-exists=.env.local backend/scripts/db-load-snapshot.mts"
+    "db:load-snapshot": "node --env-file-if-exists=.env.local backend/scripts/db-load-snapshot.mts",
+    "test:github-store": "node backend/scripts/test-github-store.mts"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",

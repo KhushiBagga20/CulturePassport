@@ -12,7 +12,9 @@ import { getCandidate, recordDecision } from "@/lib/data/research-store";
 import { candidateToDraft, countryRecordFor, slugify } from "@/lib/research";
 import { UPLOAD_DIR } from "@/lib/data/local-store";
 import { validateArchive } from "@/lib/data/seed";
-import { db, dbConfigured } from "@/lib/db";
+import { db } from "@/lib/db";
+import { useDatabase as dbConfigured, storeMode } from "@/lib/data/store-mode";
+import { putFile, UPLOADS_PATH } from "@/lib/data/github-store";
 import type { MediaAsset, Source, Tradition } from "@/lib/types";
 
 export interface ActionResult {
@@ -204,6 +206,10 @@ export async function uploadMediaAction(_prev: ActionResult | null, form: FormDa
     if (dbConfigured()) {
       // Stored in the database and served by /api/media/[file]; no separate file storage needed.
       await db()`insert into media_files (id, content_type, bytes) values (${`${id}.${ext}`}, ${file.type}, ${bytes})`;
+      url = `/api/media/${id}.${ext}`;
+    } else if (storeMode() === "github") {
+      // Committed to the repository and served by /api/media/[file].
+      await putFile(`${UPLOADS_PATH}/${id}.${ext}`, bytes, `Editorial desk: uploaded ${id}.${ext} (${editor.name})`);
       url = `/api/media/${id}.${ext}`;
     } else {
       await fs.mkdir(UPLOAD_DIR, { recursive: true });

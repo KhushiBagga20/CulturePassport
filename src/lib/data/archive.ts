@@ -1,12 +1,13 @@
 import { cache } from "react";
 import type { Archive, MediaAsset, Source, Tradition } from "../types";
 import snapshotJson from "./snapshot.json";
-import { readStore } from "./local-store";
-import { dbConfigured } from "../db";
+import editorStoreJson from "../../../backend/data/editor/store.json";
+import { readStore, type LocalStore } from "./local-store";
 import { loadPostgresArchive } from "./pg";
+import { storeMode } from "./store-mode";
 
-export type Backend = "local" | "postgres";
-export const backend = (): Backend => (dbConfigured() ? "postgres" : "local");
+export type Backend = "local" | "postgres" | "github";
+export const backend = (): Backend => (storeMode() === "postgres" ? "postgres" : storeMode());
 
 function mergeById<T extends { id: string }>(base: T[], overrides: Record<string, T>): T[] {
   const seen = new Set<string>();
@@ -18,38 +19,52 @@ function mergeById<T extends { id: string }>(base: T[], overrides: Record<string
   return merged;
 }
 
-/**
- * The published archive, baked into the repository (npm run snapshot:build / snapshot:export).
- * Public pages read only this, so they never wait on, or fail with, the database.
- */
-const snapshot = snapshotJson as unknown as Omit<Archive, "backend">;
+type Content = Omit<Archive, "backend">;
 
-async function loadLocal(): Promise<Archive> {
-  const store = await readStore();
-  const edited = Object.keys(store.traditions).length + Object.keys(store.sources).length + Object.keys(store.media).length + Object.keys(store.countries).length > 0;
-  const countries = [...snapshot.countries.filter((c) => !store.countries[c.iso2]), ...Object.values(store.countries)];
+/** Applies editorial overrides (passports, sources, media, countries) on top of an archive. */
+function applyStore(base: Content, store: Partial<LocalStore>): Content {
+  const countries = store.countries ?? {};
   return {
-    ...snapshot,
-    countries,
-    traditions: mergeById<Tradition>(snapshot.traditions, store.traditions).sort((a, b) => a.passportNo.localeCompare(b.passportNo)),
-    sources: mergeById<Source>(snapshot.sources, store.sources),
-    media: mergeById<MediaAsset>(snapshot.media, store.media),
-    backend: edited ? "local-store" : "local-seed",
+    ...base,
+    countries: [...base.countries.filter((c) => !countries[c.iso2]), ...Object.values(countries)],
+    traditions: mergeById<Tradition>(base.traditions, store.traditions ?? {}).sort((a, b) => a.passportNo.localeCompare(b.passportNo)),
+    sources: mergeById<Source>(base.sources, store.sources ?? {}),
+    media: mergeById<MediaAsset>(base.media, store.media ?? {}),
   };
 }
 
-/**
- * The archive the public site shows: the snapshot. Without a database, an editor's local edits
- * (.data) are merged in so they can be previewed. Includes drafts; public pages filter with isPublic().
- */
-export const getArchive = cache(async (): Promise<Archive> => (dbConfigured() ? { ...snapshot, backend: "snapshot" } : loadLocal()));
+const hasEdits = (s: Partial<LocalStore>) =>
+  Object.keys(s.traditions ?? {}).length + Object.keys(s.sources ?? {}).length + Object.keys(s.media ?? {}).length + Object.keys(s.countries ?? {}).length > 0;
 
 /**
- * The archive the editorial desk works on: PostgreSQL when DATABASE_URL is set (drafts, edits),
- * otherwise the snapshot plus local edits. Changes reach the public site with the next
- * `npm run snapshot:export` and deploy.
+ * The published archive, baked into the repository (npm run snapshot:build / snapshot:export),
+ * plus edits saved through the editorial desk on GitHub (backend/data/editor/store.json, part of
+ * each deploy). Public pages read only this, so they never wait on, or fail with, a database.
  */
-export const getEditorArchive = cache(async (): Promise<Archive> => (dbConfigured() ? loadPostgresArchive() : loadLocal()));
+const snapshot = snapshotJson as unknown as Content;
+const published = applyStore(snapshot, editorStoreJson as unknown as Partial<LocalStore>);
+
+async function loadLocal(): Promise<Archive> {
+  const store = await readStore();
+  return { ...applyStore(published, store), backend: hasEdits(store) ? "local-store" : "local-seed" };
+}
+
+/**
+ * The archive the public site shows. Locally (no GitHub or database), an editor's edits in .data
+ * are merged in so they can be previewed. Includes drafts; public pages filter with isPublic().
+ */
+export const getArchive = cache(async (): Promise<Archive> => (storeMode() === "local" ? loadLocal() : { ...published, backend: "snapshot" }));
+
+/**
+ * The archive the editorial desk works on: the latest editorial store on GitHub (so editors see
+ * their changes before the redeploy finishes), PostgreSQL, or the local files.
+ */
+export const getEditorArchive = cache(async (): Promise<Archive> => {
+  const mode = storeMode();
+  if (mode === "postgres") return loadPostgresArchive();
+  if (mode === "github") return { ...applyStore(snapshot, await readStore()), backend: "github" };
+  return loadLocal();
+});
 
 export const isPublic = (t: Tradition) => t.status === "published";
 
