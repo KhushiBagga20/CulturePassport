@@ -6,6 +6,7 @@ import type { Archive, Tradition } from "./types";
 import { ACCENT, CATEGORY } from "./labels";
 import { qrDataUrl } from "./qr";
 import { Motif } from "@/components/motifs/Motif";
+import { mediaUrl } from "./media";
 
 async function font(pkg: string, file: string) {
   return readFile(path.join(process.cwd(), "node_modules", "@fontsource", pkg, "files", file));
@@ -30,6 +31,44 @@ const STRIP = `data:image/svg+xml;base64,${Buffer.from(
     .join("")}</svg>`,
 ).toString("base64")}`;
 
+/**
+ * The passport's cover photograph as a data URL (the card renderer cannot load remote images
+ * reliably). Wikimedia asks automated clients to identify themselves; a slow or failed fetch
+ * falls back to the archive illustration rather than failing the card.
+ */
+const photoCache = new Map<string, Promise<string | null>>();
+function coverPhoto(t: Tradition, archive: Archive): Promise<string | null> {
+  const m = t.hero ? archive.media.find((x) => x.id === t.hero) : undefined;
+  const src = m ? mediaUrl(m, 500) : "";
+  if (!src) return Promise.resolve(null);
+  let p = photoCache.get(src);
+  if (!p) {
+    p = (async () => {
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          const r = await fetch(src, {
+            headers: { "User-Agent": "CulturePassport/1.0 (identity cards; open-source educational archive)" },
+            signal: AbortSignal.timeout(8000),
+          });
+          if (r.status === 429 || r.status >= 500) {
+            await new Promise((res) => setTimeout(res, 1500 * (attempt + 1)));
+            continue;
+          }
+          const type = r.headers.get("content-type") ?? "";
+          if (!r.ok || !/^image\/(jpeg|png)/.test(type)) return null;
+          return `data:${type.split(";")[0]};base64,${Buffer.from(await r.arrayBuffer()).toString("base64")}`;
+        } catch {
+          /* retry */
+        }
+      }
+      return null;
+    })();
+    photoCache.set(src, p);
+    p.then((v) => v ?? photoCache.delete(src));
+  }
+  return p;
+}
+
 /** The shareable Culture Passport identity card, rendered to PNG. */
 export async function renderCard(
   t: Tradition,
@@ -44,7 +83,9 @@ export async function renderCard(
     .map((n) => (n === "United Arab Emirates" ? "UAE" : n))
     .join(" · ");
   const communities = t.communities.map((c) => archive.communities.find((x) => x.id === c.community)?.name).filter(Boolean).join(" · ");
-  const [qr, fontData] = await Promise.all([qrDataUrl(url, 420), fonts()]);
+  const [qr, fontData, photo] = await Promise.all([qrDataUrl(url, 420), fonts(), coverPhoto(t, archive)]);
+  const cover = photo && t.hero ? archive.media.find((x) => x.id === t.hero) : undefined;
+  const credit = (cover?.credit ?? "").replace(/^photo:\s*/i, "");
   const portrait = layout === "portrait";
   const W = portrait ? 1080 : 1200;
   const H = portrait ? 1350 : 630;
@@ -117,9 +158,20 @@ export async function renderCard(
           <div style={{ display: "flex", fontSize: portrait ? 17 : 13, color: "#6B5F55", letterSpacing: 1 }}>An archive reference — not a certificate of ownership.</div>
         </div>
         <div style={{ display: "flex", flexDirection: portrait ? "row" : "column", alignItems: portrait ? "flex-end" : "center", justifyContent: "space-between", gap: 24 }}>
-          <div style={{ display: "flex", border: "3px solid #1B1616", background: accent.hex, padding: 10 }}>
-            <Motif motif={t.motif} size={portrait ? 290 : 196} />
-          </div>
+          {photo && cover ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: 6, width: portrait ? 462 : 222 }}>
+              <div style={{ display: "flex", border: "3px solid #1B1616", background: accent.hex, padding: 8 }}>
+                <img src={photo} width={portrait ? 440 : 200} height={portrait ? 440 : 200} alt="" style={{ objectFit: "cover" }} />
+              </div>
+              <span style={{ display: "flex", fontSize: portrait ? 13 : 10, color: "#6B5F55", lineHeight: 1.25 }}>
+                {`Photo: ${credit.length > 48 ? `${credit.slice(0, 46)}…` : credit} · ${cover.license}`}
+              </span>
+            </div>
+          ) : (
+            <div style={{ display: "flex", border: "3px solid #1B1616", background: accent.hex, padding: 10 }}>
+              <Motif motif={t.motif} size={portrait ? 290 : 196} />
+            </div>
+          )}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
             <img src={qr} width={portrait ? 230 : 150} height={portrait ? 230 : 150} alt="" />
             <span style={{ fontSize: portrait ? 16 : 12, letterSpacing: 1 }}>{shortUrl}</span>

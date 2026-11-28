@@ -294,7 +294,7 @@ export function isMaterialCulture(kinds: string[], name: string, description = "
 
 export function categoryFor(c: Pick<ResearchCandidate, "kinds" | "name" | "description" | "gi">): Category {
   const t = [...c.kinds, c.name, c.description ?? ""].join(" ").toLowerCase();
-  const food = /cuisine|food|dish|culinary|cook|drink|bread|sweet|confection|laddu|bhujia|haleem|halwa|moa|rasgulla|pickle|chutney|tea\b|coffee|rice|mango|spice|chilli|chili|cheese|honey|jaggery|petha|peda|biryani|wine|dumpling|kimchi|couscous|ceviche|beverage/;
+  const food = /cuisine|food|dish|culinary|cook|drink|bread|sweet|confection|laddu|bhujia|haleem|halwa|\bmoa\b|rasgulla|pickle|chutney|\btea\b|coffee|\brice\b|mango|spice|chilli|chili|cheese|\bhoney\b|jaggery|petha|peda|biryani|\bwine\b|dumpling|kimchi|couscous|ceviche|beverage/;
   if (c.gi?.type === "Food stuff" || food.test(t)) return "food";
   if (/embroider|chikan|phulkari|kantha|zardozi/.test(t)) return "embroidery";
   if (/weav|loom|carpet|rug|durrie|dhurrie/.test(t)) return "weaving";
