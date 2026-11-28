@@ -94,7 +94,7 @@ export default async function ResearchPage({ searchParams }: PageProps<"/admin/r
                       <div className="flex aspect-square items-center justify-center border-2 border-dashed border-ink/40 text-xs text-ink-mute">No image</div>
                     )}
                     {c.image && (
-                      <p className={`mt-1 text-xs ${c.image.free ? "text-green" : "text-brick"}`}>
+                      <p className={`mt-1 text-xs ${c.image.free ? "text-umber" : "text-brick"}`}>
                         {c.image.license} · {c.image.free ? "usable" : "not usable"}
                       </p>
                     )}

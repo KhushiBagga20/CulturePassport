@@ -17,7 +17,7 @@ export function CorrectionForm({ traditionId, claims }: { traditionId: string; c
         </span>
       </summary>
       {state?.ok ? (
-        <p className="border-t-2 border-ink p-5 text-green" role="status">
+        <p className="border-t-2 border-ink p-5 text-umber" role="status">
           {state.message}
         </p>
       ) : (

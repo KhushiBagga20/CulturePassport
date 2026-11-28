@@ -63,7 +63,7 @@ export function CollectionExplorer({ cards, map }: { cards: ExplorerCard[]; map:
                     <line x1="0" y1="0" x2="0" y2="6" stroke="#B0351E" strokeOpacity="0.55" strokeWidth="1.6" />
                   </pattern>
                 </defs>
-                <rect width={map.width} height={map.height} fill="#1F4E9F" />
+                <rect width={map.width} height={map.height} fill="#4e2b4c" />
                 {map.lands.map((l) => (
                   <path
                     key={l.iso + l.name}

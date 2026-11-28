@@ -77,7 +77,11 @@ export interface ResearchCandidate {
     /** CC0, public domain, CC BY or CC BY-SA only */
     free: boolean;
   };
+  /** more pictures of the tradition (scripts/research-images.mts), shown as the passport gallery */
+  gallery?: NonNullable<ResearchCandidate["image"]>[];
   wikipedia?: string;
+  /** a short overview written by an editor from the Wikipedia article (data/research-overviews.json) */
+  overview?: string;
   facts: CandidateFact[];
   sources: CandidateSource[];
   fetchedAt: string;
@@ -288,20 +292,22 @@ export function isMaterialCulture(kinds: string[], name: string, description = "
   return MATERIAL.test(text) && !PERFORMANCE.test(text);
 }
 
-export function categoryFor(c: Pick<ResearchCandidate, "kinds" | "name" | "description">): Category {
+export function categoryFor(c: Pick<ResearchCandidate, "kinds" | "name" | "description" | "gi">): Category {
   const t = [...c.kinds, c.name, c.description ?? ""].join(" ").toLowerCase();
-  if (/embroider/.test(t)) return "embroidery";
-  if (/weav|loom|carpet|rug/.test(t)) return "weaving";
-  if (/textile|cloth|fabric|dye|print/.test(t)) return "textile";
-  if (/pottery|ceramic|potter|clay/.test(t)) return "ceramics";
+  const food = /cuisine|food|dish|culinary|cook|drink|bread|sweet|confection|laddu|bhujia|haleem|halwa|moa|rasgulla|pickle|chutney|tea\b|coffee|rice|mango|spice|chilli|chili|cheese|honey|jaggery|petha|peda|biryani|wine|dumpling|kimchi|couscous|ceviche|beverage/;
+  if (c.gi?.type === "Food stuff" || food.test(t)) return "food";
+  if (/embroider|chikan|phulkari|kantha|zardozi/.test(t)) return "embroidery";
+  if (/weav|loom|carpet|rug|durrie|dhurrie/.test(t)) return "weaving";
+  if (/textile|cloth|fabric|dye|print|sari|saree|shawl|silk|cotton|dupatta|khadi|ikat|patola|garment|costume|dress|gandoura|kente/.test(t)) return "textile";
+  if (/pottery|ceramic|potter|clay|terracotta/.test(t)) return "ceramics";
   if (/paint/.test(t)) return "painting";
-  if (/jewel|silver|gold/.test(t)) return "jewelry";
+  if (/jewel|silver|gold|filigree|bangle/.test(t)) return "jewelry";
   if (/architect|building|house|bridge/.test(t)) return "architecture";
-  if (/footwear|shoe|sandal/.test(t)) return "footwear";
-  if (/craft|carv|lacquer|basket|woodwork|metalwork|leather|paper|making|technique/.test(t)) return "handicraft";
-  if (/music|song|danc|theatre|theater|drama|puppet|perform|genre|recit|poetry|chant/.test(t)) return "performing-arts";
-  if (/cuisine|food|dish|culinary|cook|drink|bread/.test(t)) return "food";
-  if (/festival|ritual|ceremony|carnival|pilgrimage|procession|feast|celebration|parade/.test(t)) return "festival";
+  if (/footwear|shoe|sandal|chappal/.test(t)) return "footwear";
+  if (/craft|carv|lacquer|basket|woodwork|metalwork|leather|paper|making|technique|toy|doll|mirror|kannadi|brass|bronze|bell|dhokra|coir|inlay|mat\b|sculpt|engrav/.test(t)) return "handicraft";
+  if (/music|song|singing|danc|theatre|theater|drama|puppet|perform|genre|recit|poetry|chant|\bnoh\b|kagura|dengaku|bayashi|drum|gnawa|imzad|bolon|epic|orator|kabary|geet|sosso bala|heydinn/.test(t)) return "performing-arts";
+  if (/festival|ritual|ceremony|carnival|pilgrimage|procession|feast|celebration|parade|holiday|matsuri|puja|rodeo|charreada|masquerade|\brites?\b|moussem|amahage|amamehagi|suneka|mendon|boze|mizukaburi|passion/.test(t)) return "festival";
+  if (c.gi) return "handicraft";
   return "knowledge";
 }
 
@@ -484,7 +490,7 @@ export function countryRecordFor(c: CandidateCountry): CountryRecord {
 export function candidateToDraft(
   c: ResearchCandidate,
   ctx: { id: string; slug: string; passportNo: string; editor: string; today: string; publish?: boolean },
-): { tradition: Tradition; sources: Source[]; media?: MediaAsset } {
+): { tradition: Tradition; sources: Source[]; media?: MediaAsset; gallery: MediaAsset[] } {
   const publish = !!ctx.publish;
   const sid = (key: string) => `research-${c.wikidataId.toLowerCase()}-${key}`;
   const sources: Source[] = c.sources.map((s) => ({
@@ -500,7 +506,7 @@ export function candidateToDraft(
   // The description is the passport's introduction, so it is not repeated as a claim.
   // The description is the introduction, and Wikidata's places and classes are already shown as
   // "Where" and "Category", so those facts are not repeated as claims.
-  const facts = c.facts
+  const facts = [...(c.overview && c.sources.some((s) => s.key === "wikipedia") ? [{ text: c.overview, sources: ["wikipedia"] }] : []), ...c.facts]
     .filter((f) => !/^Wikidata (describes it as|associates it with|classifies it as)/.test(f.text))
     .map((f) => ({ ...f, text: f.text[0].toUpperCase() + f.text.slice(1) }));
   const claims: Claim[] = facts.map((f, i) => ({
@@ -510,24 +516,25 @@ export function candidateToDraft(
     sources: f.sources.map(sid),
     note: "Imported by the research pipeline. Check the cited source and rewrite in our own words before changing this label.",
   }));
-  const media: MediaAsset | undefined =
-    c.image?.free
-      ? {
-          id: `research-${c.wikidataId.toLowerCase()}-image`,
-          commonsFile: c.image.file,
-          commonsHash: c.image.hash,
-          width: c.image.width,
-          height: c.image.height,
-          alt: c.image.description ? c.image.description.slice(0, 200) : `Photograph from Wikimedia Commons associated with ${c.name}.`,
-          caption: c.image.description || `${c.image.file.replace(/_/g, " ").replace(/\.[a-z]+$/i, "")} (Wikimedia Commons).`,
-          credit: c.image.credit,
-          license: c.image.license,
-          licenseUrl: c.image.licenseUrl,
-          sourcePage: c.image.sourcePage,
-          kind: "photograph",
-          documentary: false,
-        }
-      : undefined;
+  const toMedia = (img: NonNullable<ResearchCandidate["image"]>, id: string): MediaAsset => ({
+    id,
+    commonsFile: img.file,
+    commonsHash: img.hash,
+    width: img.width,
+    height: img.height,
+    alt: img.description ? img.description.slice(0, 200) : `Photograph from Wikimedia Commons associated with ${c.name}.`,
+    caption: img.description || `${img.file.replace(/_/g, " ").replace(/\.[a-z]+$/i, "")} (Wikimedia Commons).`,
+    credit: img.credit,
+    license: img.license,
+    licenseUrl: img.licenseUrl,
+    sourcePage: img.sourcePage,
+    kind: "photograph",
+    documentary: false,
+  });
+  const media: MediaAsset | undefined = c.image?.free ? toMedia(c.image, `research-${c.wikidataId.toLowerCase()}-image`) : undefined;
+  const gallery: MediaAsset[] = media
+    ? (c.gallery ?? []).filter((g) => g.free && g.file !== c.image?.file).map((g, i) => toMedia(g, `research-${c.wikidataId.toLowerCase()}-image-${i + 2}`))
+    : [];
   const where = c.places.length
     ? `${c.places.slice(0, 2).map((p) => p.name).join(", ")} — ${c.country.name}`
     : c.gi
@@ -568,7 +575,7 @@ export function candidateToDraft(
     accent,
     motif: "atlas",
     hero: media?.id,
-    gallery: [],
+    gallery: gallery.map((g) => g.id),
     periods: [],
     origins: claims.map((cl) => ({ type: "p" as const, text: cl.text, claims: [cl.id] })),
     significance: [],
@@ -600,5 +607,5 @@ export function candidateToDraft(
       ],
     },
   };
-  return { tradition, sources, media };
+  return { tradition, sources, media, gallery };
 }

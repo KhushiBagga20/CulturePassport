@@ -116,7 +116,7 @@ export function CaseFile({
               <ul className="mt-4 space-y-2">
                 {c.travelled.map((x) => (
                   <li key={x} className="flex items-baseline gap-3">
-                    <span aria-hidden className="font-display text-xl text-green">✓</span>
+                    <span aria-hidden className="font-display text-xl text-umber">✓</span>
                     <span className="font-title text-2xl leading-tight">{x}</span>
                   </li>
                 ))}

@@ -9,7 +9,7 @@ const TABS = [
 /** Section tabs for everything under "Stories", so visitors always see where they are and what else is here. */
 export function StoriesNav({ current }: { current: (typeof TABS)[number]["key"] }) {
   return (
-    <nav aria-label="Stories" className="border-b-2 border-ink bg-green text-bone">
+    <nav aria-label="Stories" className="border-b-2 border-ink bg-umber text-bone">
       {/* Three equal tabs on phones (nothing cut off); with descriptions from tablet width up. */}
       <div className="mx-auto grid max-w-[1500px] grid-cols-3 items-stretch sm:flex sm:px-6 lg:px-10">
         <span className="label hidden shrink-0 items-center border-r border-bone/30 pr-4 text-yellow sm:flex">Stories</span>

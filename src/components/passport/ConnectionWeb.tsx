@@ -135,7 +135,7 @@ export function ConnectionWeb({ center, nodes }: { center: { name: string; color
                     setSel(n.id);
                   }
                 }}
-                className="cursor-pointer outline-none [&:focus-visible>rect]:stroke-[#1F4E9F]"
+                className="cursor-pointer outline-none [&:focus-visible>rect]:stroke-[#4e2b4c]"
               >
                 {n.type === "passport" ? (
                   <rect x={x - 62} y={y - 30} width="124" height="60" fill={on ? n.color : "#F6F0E3"} stroke="#1B1616" strokeWidth={on ? 4 : 2.5} />

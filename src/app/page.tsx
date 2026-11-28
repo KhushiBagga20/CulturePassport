@@ -40,7 +40,7 @@ export default async function HomePage() {
           </Reveal>
           <Reveal delay={0.1} className="lg:col-span-7">
             <div className="grid items-stretch gap-3 sm:grid-cols-[1fr_auto_1fr] sm:gap-6">
-              <div className="print-shadow bg-cobalt p-5 text-bone sm:p-7">
+              <div className="print-shadow bg-plum p-5 text-bone sm:p-7">
                 <p className="label text-yellow">What travelled fast</p>
                 <ul className="font-display mt-5 space-y-1 text-[clamp(1.25rem,2.65vw,2.2rem)]">
                   <li>Artwork</li>
@@ -92,9 +92,9 @@ export default async function HomePage() {
               <p className="lead mt-6 max-w-xl text-bone/85">{flagshipCase.summary}</p>
               <dl className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
                 {[
-                  ["Made in", "8 districts, 2 states", "bg-cobalt"],
+                  ["Made in", "8 districts, 2 states", "bg-plum"],
                   ["On the runway", "Milan, June 2025", "bg-brick"],
-                  ["Status", "Inspiration acknowledged", "bg-green"],
+                  ["Status", "Inspiration acknowledged", "bg-umber"],
                 ].map(([k, v, c]) => (
                   <div key={k} className={`${c} p-4`}>
                     <dt className="label-sm opacity-80">{k}</dt>
@@ -113,7 +113,7 @@ export default async function HomePage() {
       )}
 
       {/* ─────────── How it works ─────────── */}
-      <section className="border-b-2 border-ink bg-green text-bone">
+      <section className="border-b-2 border-ink bg-umber text-bone">
         <div className={`${WRAP} grid gap-12 py-20 lg:grid-cols-12 lg:py-28`}>
           <Reveal className="lg:col-span-4">
             <p className="label text-yellow">How it works</p>
@@ -145,7 +145,7 @@ export default async function HomePage() {
                 delay={i * 0.06}
                 className={`flex min-w-0 flex-col bg-bone p-5 text-ink ${i === 4 ? "sm:col-span-2 lg:col-span-1" : ""}`}
               >
-                <span className="font-display text-4xl leading-none text-green">{i + 1}</span>
+                <span className="font-display text-4xl leading-none text-umber">{i + 1}</span>
                 <p className="font-display mt-3 text-[1.52rem]">{title}</p>
                 <p className="mt-1 text-sm text-ink-soft">{text}</p>
               </Reveal>
@@ -164,9 +164,9 @@ export default async function HomePage() {
           <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
             {[
               ["Stop", "Don't share blindly.", "bg-brick text-bone"],
-              ["Check", "Is the information reliable?", "bg-cobalt text-bone"],
+              ["Check", "Is the information reliable?", "bg-plum text-bone"],
               ["Understand", "Know the origin and meaning.", "bg-orange text-ink"],
-              ["Credit", "Recognise the people behind it.", "bg-green text-bone"],
+              ["Credit", "Recognise the people behind it.", "bg-umber text-bone"],
               ["Share", "Now help the story travel too.", "bg-ink text-bone"],
             ].map(([w, t, c], i) => (
               <Reveal key={w} delay={i * 0.05} className={`${c} flex min-h-48 flex-col p-5`}>
@@ -181,7 +181,7 @@ export default async function HomePage() {
       </section>
 
       {/* ─────────── India → UAE → World ─────────── */}
-      <section className="relative overflow-hidden border-b-2 border-ink bg-cobalt text-bone">
+      <section className="relative overflow-hidden border-b-2 border-ink bg-plum text-bone">
         <div className={`${WRAP} grid gap-12 py-20 lg:grid-cols-12 lg:py-28`}>
           <Reveal className="lg:col-span-6">
             <p className="label text-yellow">India → UAE → World</p>

@@ -64,6 +64,18 @@ check("draft is filed under the candidate's country", draft.tradition.collection
 check("freely licensed image becomes the hero, flagged as not yet documentary", draft.media?.id === draft.tradition.hero && draft.media?.documentary === false);
 check("open research questions are attached", draft.tradition.editorial.openQuestions.length >= 2);
 check("editor-only to-dos are not shown publicly", !draft.tradition.editorial.openQuestions.some((q) => /motif|alt text|own words/i.test(q)));
+{
+  const img = c.image!;
+  const withMore = candidateToDraft(
+    { ...c, overview: "Kente is a woven cloth of strips sewn together.", gallery: [{ ...img, file: "Kente_2.jpg" }, { ...img, file: "Kente_nc.jpg", free: false }], sources: [...c.sources, { key: "wikipedia", type: "reference", title: "Kente cloth — Wikipedia", publisher: "Wikipedia", url: "https://en.wikipedia.org/wiki/Kente_cloth", accessed: "2026-11-28" }] },
+    { id: "trad-test2", slug: "kente-cloth", passportNo: "998", editor: "Test", today: "2026-11-28" },
+  );
+  check("the overview comes first, cited to Wikipedia", withMore.tradition.claims[0]?.text.startsWith("Kente is a woven") && withMore.tradition.claims[0].sources.some((s) => s.endsWith("-wikipedia")));
+  check("free gallery pictures become the passport gallery", withMore.gallery.length === 1 && withMore.tradition.gallery.join() === withMore.gallery[0].id);
+  const arch2 = { ...seedArchive, traditions: [...seedArchive.traditions, withMore.tradition], sources: [...seedArchive.sources, ...withMore.sources], media: [...seedArchive.media, withMore.media!, ...withMore.gallery] };
+  const p2 = validateArchive(arch2).filter((e) => e.includes("kente-cloth") || e.includes("research-"));
+  check("a passport with overview and gallery passes validation", p2.length === 0, p2.join("; "));
+}
 check("the intro is the description alone (no repeated notice)", !/compiled from/i.test(draft.tradition.intro) && !draft.tradition.claims.some((cl) => cl.text.startsWith("Wikidata describes")));
 
 // licences, merging, scripts

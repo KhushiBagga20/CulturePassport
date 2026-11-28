@@ -127,7 +127,7 @@ const DRAW: Record<MotifKey, React.ReactNode> = {
   ),
   ajrakh: (
     <g>
-      <rect width="200" height="200" fill="#25346E" />
+      <rect width="200" height="200" fill="#4e2b4c" />
       {Array.from({ length: 3 }).map((_, r) =>
         Array.from({ length: 3 }).map((__, c) => {
           const cx = 34 + c * 66;

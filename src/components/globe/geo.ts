@@ -94,7 +94,7 @@ export function vecToLonLat(x: number, y: number, z: number): [number, number] {
 
 const STATUS_FILL: Record<CountryStatus, string> = {
   active: "#B84B30",
-  introductory: "#146D68",
+  introductory: "#4e2b4c",
   documenting: "#E2A62E",
   shared: "#8C4257",
 };

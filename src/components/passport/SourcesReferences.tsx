@@ -13,8 +13,8 @@ export interface NumberedSource extends Source {
 
 /** Source types grouped for the "where the sources come from" chart (counts only, no weighting). */
 const GROUPS: { key: string; label: string; color: string; types: SourceType[] }[] = [
-  { key: "official", label: "Registries, courts & UNESCO", color: "#1F4E9F", types: ["official-record", "government", "unesco", "court-report"] },
-  { key: "museum", label: "Museums & scholarship", color: "#27703F", types: ["museum", "academic"] },
+  { key: "official", label: "Registries, courts & UNESCO", color: "#4e2b4c", types: ["official-record", "government", "unesco", "court-report"] },
+  { key: "museum", label: "Museums & scholarship", color: "#6e4520", types: ["museum", "academic"] },
   { key: "press", label: "News & magazines", color: "#EEA53A", types: ["news", "magazine"] },
   { key: "brand", label: "Brand statements", color: "#E04A2C", types: ["brand-statement"] },
   { key: "other", label: "Reference, organisations & records", color: "#B8935C", types: ["organization", "reference", "oral-history", "media-record"] },

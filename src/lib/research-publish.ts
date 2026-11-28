@@ -124,7 +124,7 @@ export function planPublish(
     });
     plan.newTraditions.push(draft.tradition);
     for (const s of draft.sources) if (!archive.sources.some((x) => x.id === s.id)) plan.newSources.set(s.id, s);
-    if (draft.media) plan.newMedia.push(draft.media);
+    if (draft.media) plan.newMedia.push(draft.media, ...draft.gallery);
     plan.decisions.push({ id: c.id, draftId: draft.tradition.id });
 
     // Country-page lead with its UNESCO reference.

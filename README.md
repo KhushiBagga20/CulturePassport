@@ -109,6 +109,7 @@ Only the server ever talks to the database, so its connection string never reach
 **The public site reads a snapshot baked into the repository**: `src/lib/data/snapshot.json`, the full published archive (about 400 passports). Public pages never query a database, so they can't fail or slow down because of one, and builds don't use database quota.
 
 - `npm run snapshot:build` rebuilds it from the hand-written seed (`src/lib/data/seed/`) plus the research queue in `.data/research.json` (from `npm run research -- … --target local`).
+  Research passports are published only when they meet the bar set in the November 2026 review: a real tradition (not a people, place or monument), at least two accurate, freely licensed photographs that name it, and a substantial Wikipedia article. Their short overviews are written by editors in our own words and kept in `data/research-overviews.json`; candidates below the bar are marked rejected in the queue with the reason.
 - `npm run snapshot:export` exports the published archive from PostgreSQL instead, after edits made in `/admin`.
 - `data/passport-ids.json` records every passport's address and number. Both commands reuse them, so printed QR codes and shared links keep working; new passports get the next free number.
 - Commit the updated snapshot and push; the deploy publishes it.
@@ -191,6 +192,7 @@ npm run research:publish            # publish the research queue into PostgreSQL
 npm run snapshot:build              # rebuild src/lib/data/snapshot.json from the seed + .data/research.json
 npm run snapshot:export             # rebuild the snapshot from PostgreSQL (after editing in /admin)
 npm run check:research              # check research passports against live sources → data/research-checks.md
+node scripts/research-images.mts     # find more freely licensed photos for research candidates (slow: Wikimedia rate limits)
 npm run db:load-snapshot -- --yes   # load the snapshot into PostgreSQL (keeps drafts, uploads, corrections)
 ```
 

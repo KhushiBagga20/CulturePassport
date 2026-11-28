@@ -276,7 +276,7 @@ function OrbitRings({ reduceMotion }: { reduceMotion: boolean }) {
         <Line points={ring} color="#581D30" lineWidth={0.8} dashed dashSize={0.012} gapSize={0.05} transparent opacity={0.45} />
       </group>
       <group rotation={[-0.28, 0.6, -0.3]} scale={1.06}>
-        <Line points={ring} color="#25346E" lineWidth={0.7} dashed dashSize={0.006} gapSize={0.04} transparent opacity={0.35} />
+        <Line points={ring} color="#4e2b4c" lineWidth={0.7} dashed dashSize={0.006} gapSize={0.04} transparent opacity={0.35} />
       </group>
     </group>
   );

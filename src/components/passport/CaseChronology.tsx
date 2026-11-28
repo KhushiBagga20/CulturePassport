@@ -16,11 +16,11 @@ export interface ChronoEvent {
 
 /** Phase colours for case events, by the event's own tag. */
 const PHASE: Record<string, { label: string; color: string; ink: string }> = {
-  origin: { label: "Origin", color: "#27703F", ink: "#F6F0E3" },
-  recognition: { label: "Recognition", color: "#1F4E9F", ink: "#F6F0E3" },
+  origin: { label: "Origin", color: "#6e4520", ink: "#F6F0E3" },
+  recognition: { label: "Recognition", color: "#4e2b4c", ink: "#F6F0E3" },
   runway: { label: "On the runway", color: "#E04A2C", ink: "#1B1616" },
   response: { label: "Response", color: "#EEA53A", ink: "#1B1616" },
-  collaboration: { label: "Afterwards", color: "#0F6E67", ink: "#F6F0E3" },
+  collaboration: { label: "Afterwards", color: "#7a5a2e", ink: "#F6F0E3" },
 };
 const OTHER = { label: "Event", color: "#ECE2CA", ink: "#1B1616" };
 

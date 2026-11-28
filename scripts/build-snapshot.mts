@@ -3,6 +3,7 @@
  * pages never depend on the database.
  *
  *   npm run snapshot:build               seed + the research queue in .data/research.json
+ *                                        (+ the overviews in data/research-overviews.json)
  *   npm run snapshot:build -- --from-db  export the published archive from PostgreSQL (DATABASE_URL)
  *
  * Every passport keeps the address and number recorded in data/passport-ids.json, so printed QR
@@ -43,6 +44,15 @@ if (fromDb) {
   }
 } else {
   const file: ResearchFile = JSON.parse(await fs.readFile(path.join(root, RESEARCH_FILE), "utf8").catch(() => '{"candidates":{}}'));
+  // Overviews written by editors from each Wikipedia article, kept in the repo.
+  const overviews: Record<string, string> = JSON.parse(await fs.readFile(path.join(root, "data/research-overviews.json"), "utf8").catch(() => "{}"));
+  for (const c of Object.values(file.candidates)) {
+    const text = overviews[c.wikidataId];
+    if (!text) continue;
+    c.overview = text;
+    const wp = c.sources.find((x) => x.key === "wikipedia");
+    if (wp) wp.note = "The overview summarises this article in our own words; follow its references for more.";
+  }
   const queue: ResearchCandidate[] = Object.values(file.candidates)
     .filter((c) => c.status !== "rejected")
     .sort((a, b) => a.country.iso2.localeCompare(b.country.iso2) || a.name.localeCompare(b.name));

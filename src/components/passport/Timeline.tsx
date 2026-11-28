@@ -35,7 +35,7 @@ function gapLabel(years: number) {
   return `${years} years`;
 }
 
-/** Editorial timeline: an overview ruler, a draggable track of milestones, and details on demand. */
+/** Editorial timeline: a draggable track of milestones, and details on demand. */
 export function Timeline({ items, motif }: { items: TimelineItem[]; motif: MotifKey }) {
   const reduce = useReducedMotion();
   const track = useRef<HTMLDivElement>(null);
@@ -80,52 +80,8 @@ export function Timeline({ items, motif }: { items: TimelineItem[]; motif: Motif
     document.getElementById(`tlm-${items[i]?.id}`)?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
   };
 
-  const first = items[0];
-  const last = items[items.length - 1];
-
   return (
     <div>
-      {/* ── Overview ruler: every milestone at a glance, with the gaps between them ── */}
-      <div className="mb-8 border-2 border-ink bg-bone px-4 pb-4 pt-3 sm:px-6">
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <p className="label text-ink">
-            {items.length} milestones · {first?.label} → {last?.label}
-          </p>
-          <p className="label-sm text-ink-mute">Filled: documented · Hollow: disputed, oral or awaiting verification</p>
-        </div>
-        <ol className="no-scrollbar mt-4 flex flex-wrap items-start gap-y-3 pb-1 sm:flex-nowrap sm:overflow-x-auto" aria-label="Jump to a milestone">
-          {items.map((it, i) => {
-            const prev = items[i - 1];
-            const gap = prev ? it.year - prev.year : 0;
-            const uncertain = UNCERTAIN.includes(it.level);
-            return (
-              <li key={it.id} className="flex shrink-0 items-start">
-                {i > 0 && (
-                  <span aria-hidden className="relative mt-[11px] flex w-6 flex-col items-center sm:w-14">
-                    <span className={`block h-0.5 w-full ${gap > 60 ? "bg-[repeating-linear-gradient(90deg,#1B1616_0_4px,transparent_4px_8px)]" : "bg-ink"}`} />
-                    {gap > 60 && <span className="label-sm mt-1.5 whitespace-nowrap text-[0.56rem] text-ink-mute">{gapLabel(gap)}</span>}
-                  </span>
-                )}
-                <button
-                  type="button"
-                  onClick={() => scrollToIndex(i)}
-                  aria-current={current === i ? "step" : undefined}
-                  aria-label={`${it.label}: ${it.title}`}
-                  className="group flex flex-col items-center gap-1 px-0.5"
-                >
-                  <span
-                    className={`block h-6 w-6 rounded-full border-[3px] border-ink transition-transform ${uncertain ? "bg-bone" : "bg-[var(--accent)]"} ${current === i ? "scale-125 ring-4 ring-yellow" : "group-hover:scale-110"}`}
-                  />
-                  <span className={`font-ui whitespace-nowrap text-[0.7rem] font-bold ${current === i ? "text-ink" : "text-ink-mute"}`}>
-                    {it.year < 0 ? `${-it.year} BCE` : `${it.approx ? "c." : ""}${it.year}`}
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ol>
-      </div>
-
       {/* ── Desktop: horizontal, draggable ── */}
       <div className="hidden md:block">
         <div

@@ -237,7 +237,7 @@ async function wikidataIdsForTitles(titles: string[]): Promise<Map<string, strin
 }
 
 /** Things the GI table sometimes links to instead of the craft itself. */
-const NOT_A_TRADITION = /\b(city|town|village|district|human settlement|municipality|state of india|union territory|region|river|company|business|organization|person|human|taluk|neighbourhood|census town)\b/i;
+const NOT_A_TRADITION = /\b(city|town|village|district|human settlement|municipality|state of india|union territory|region|river|company|business|organization|person|human|taluk|neighbourhood|census town|ethnic group|people|temple complex|temple|monument|mountain|archaeological site|language)\b/i;
 
 async function researchIndiaGi(): Promise<ResearchCandidate[]> {
   console.log("\nIN: India's Geographical Indications…");

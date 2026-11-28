@@ -7,7 +7,7 @@ import type { GlobeCountry, World, WorldFeature } from "./geo";
 
 const FILL: Record<CountryStatus, string> = {
   active: "#B84B30",
-  introductory: "#146D68",
+  introductory: "#4e2b4c",
   documenting: "#E2A62E",
   shared: "#8C4257",
 };

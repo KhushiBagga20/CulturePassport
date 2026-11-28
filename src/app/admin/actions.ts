@@ -312,13 +312,13 @@ export async function draftFromCandidateAction(_prev: ActionResult | null, form:
     ...archive,
     traditions: [...archive.traditions, draft.tradition],
     sources: [...archive.sources.filter((s) => !draft.sources.some((d) => d.id === s.id)), ...draft.sources],
-    media: [...archive.media, ...(draft.media ? [draft.media] : [])],
+    media: [...archive.media, ...(draft.media ? [draft.media, ...draft.gallery] : [])],
   };
   const problems = [...checkTradition(draft.tradition, archive.traditions), ...validateArchive(next).filter((e) => e.includes(`tradition ${slug}`))];
   if (problems.length) return { ok: false, message: problems.join(" ") };
   try {
     for (const s of draft.sources) await saveSource(s, editor.name);
-    if (draft.media) await saveMedia(draft.media, editor.name);
+    if (draft.media) for (const m of [draft.media, ...draft.gallery]) await saveMedia(m, editor.name);
     await saveTradition(draft.tradition, editor.name, `Drafted from research candidate ${c.wikidataId}`);
     await recordDecision(c.id, { status: "drafted", reviewedBy: editor.name, draftId: draft.tradition.id });
   } catch (e) {

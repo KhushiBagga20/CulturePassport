@@ -27,7 +27,7 @@ export function PlacesMapView({ slug, name, width, height, lands, links, markers
             <line x1="0" y1="0" x2="0" y2="6" stroke="#B0351E" strokeOpacity="0.55" strokeWidth="1.6" />
           </pattern>
         </defs>
-        <rect width={width} height={height} fill="#1F4E9F" />
+        <rect width={width} height={height} fill="#4e2b4c" />
         {lands.map((l) => (
           <path
             key={l.key}

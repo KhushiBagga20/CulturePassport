@@ -15,21 +15,21 @@ export const EVIDENCE: Record<EvidenceLevel, { label: string; short: string; des
     label: "Documented",
     short: "DOC",
     description: "Supported by a primary record (registry, official decision, court report) or by credible published reporting, with no credible contradiction.",
-    color: "#23613A",
+    color: "#6e4520",
     glyph: "●",
   },
   community: {
     label: "Community testimony",
     short: "COM",
     description: "Oral tradition or practitioners' own accounts, recorded as such — valuable, but not the same as a written record.",
-    color: "#0F6E67",
+    color: "#8C4257",
     glyph: "◐",
   },
   interpretation: {
     label: "Historical interpretation",
     short: "INT",
     description: "A reading of the evidence by historians, curators or journalists. Reasonable people may read it differently.",
-    color: "#1F4E9F",
+    color: "#4e2b4c",
     glyph: "◒",
   },
   disputed: {
@@ -81,7 +81,7 @@ export const STATUS: Record<PublicationStatus, string> = { draft: "Draft", revie
 
 export const COUNTRY_STATUS: Record<CountryStatus, { label: string; description: string; color: string }> = {
   active: { label: "Active collection", description: "A curated, published collection.", color: "#B84B30" },
-  introductory: { label: "Introductory collection", description: "A first, carefully sourced passport.", color: "#146D68" },
+  introductory: { label: "Introductory collection", description: "A first, carefully sourced passport.", color: "#4e2b4c" },
   documenting: { label: "Stories being documented", description: "Candidate traditions under research. Nothing published yet.", color: "#E4AA29" },
   shared: { label: "Shared traditions", description: "No collection of its own yet; appears through traditions shared across borders.", color: "#581D30" },
 };
@@ -133,9 +133,9 @@ export const PLACE_ROLE: Record<TraditionPlace["role"], string> = {
 export const ACCENT: Record<AccentKey, { hex: string; ink: string; text: string; soft: string }> = {
   terracotta: { hex: "#E04A2C", ink: "#F6F0E3", text: "#B0351E", soft: "#F2C2AE" },
   burgundy: { hex: "#B32A3C", ink: "#F6F0E3", text: "#B32A3C", soft: "#EBC0C2" },
-  indigo: { hex: "#1F4E9F", ink: "#F6F0E3", text: "#1F4E9F", soft: "#BCCBE6" },
-  forest: { hex: "#27703F", ink: "#F6F0E3", text: "#23613A", soft: "#BFD9C3" },
-  teal: { hex: "#0F6E67", ink: "#F6F0E3", text: "#0F6E67", soft: "#B4D8D2" },
+  indigo: { hex: "#4e2b4c", ink: "#F6F0E3", text: "#4e2b4c", soft: "#D8C4D3" },
+  forest: { hex: "#6e4520", ink: "#F6F0E3", text: "#6e4520", soft: "#E3CDB0" },
+  teal: { hex: "#7a5a2e", ink: "#F6F0E3", text: "#7a5a2e", soft: "#E6D5B8" },
   mustard: { hex: "#EEA53A", ink: "#1B1616", text: "#8A5A12", soft: "#F6DDA6" },
 };
 

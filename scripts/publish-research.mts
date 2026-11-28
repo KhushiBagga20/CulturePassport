@@ -63,7 +63,7 @@ try {
         const trads = newTraditions.filter((t) => t.collection === iso);
         const ids = new Set(trads.map((t) => t.id));
         const srcKeys = new Set(trads.flatMap((t) => [...t.claims.flatMap((c) => c.sources), ...t.keepAlive.resources.flatMap((r) => (r.source ? [r.source] : []))]));
-        const mediaIds = new Set(trads.flatMap((t) => (t.hero ? [t.hero] : [])));
+        const mediaIds = new Set(trads.flatMap((t) => [...(t.hero ? [t.hero] : []), ...t.gallery]));
         for (let attempt = 1; ; attempt++) {
           try {
             await sql.begin(async (tx) => {

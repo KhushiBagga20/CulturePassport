@@ -135,8 +135,8 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
             <dl className="grid grid-cols-3 gap-3 lg:grid-cols-1">
               {[
                 ["Passports", own.length, "bg-orange text-ink"],
-                ["Shared across borders", own.filter((t) => t.countries.length > 1).length, "bg-cobalt text-bone"],
-                ["Awaiting documentation", waiting.length, "bg-green text-bone"],
+                ["Shared across borders", own.filter((t) => t.countries.length > 1).length, "bg-plum text-bone"],
+                ["Awaiting documentation", waiting.length, "bg-umber text-bone"],
               ].map(([k, v, c]) => (
                 <div key={k as string} className={`${c} flex min-w-0 flex-col-reverse justify-end p-3 sm:p-4`}>
                   <dt className="label-sm mt-2 hyphens-auto [overflow-wrap:anywhere]">{k}</dt>
