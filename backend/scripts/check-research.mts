@@ -12,10 +12,10 @@
  */
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { GI_LIST_PAGE, isFreeLicence, parseGiTable } from "../src/lib/research.ts";
-import type { Archive } from "../src/lib/types.ts";
+import { GI_LIST_PAGE, isFreeLicence, parseGiTable } from "../../src/lib/research.ts";
+import type { Archive } from "../../src/lib/types.ts";
 
-const root = new URL("..", import.meta.url).pathname;
+const root = new URL("../..", import.meta.url).pathname;
 const UA = "CulturePassportResearchPipeline/0.1 (open-source educational archive)";
 const snapshot = JSON.parse(await fs.readFile(path.join(root, "src/lib/data/snapshot.json"), "utf8")) as Omit<Archive, "backend">;
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -161,7 +161,7 @@ const lines = [
   ...problems.map((p) => `- \`${p.slug}\` — **${p.check}**: ${p.detail}`),
   "",
 ];
-await fs.writeFile(path.join(root, "data/research-checks.md"), lines.join("\n"));
+await fs.writeFile(path.join(root, "backend/data/research-checks.md"), lines.join("\n"));
 console.log(lines.slice(0, 5).join("\n"));
 for (const p of problems.slice(0, 40)) console.log(`  ${p.slug} · ${p.check}: ${p.detail}`);
 process.exitCode = problems.some((p) => p.check !== "UNESCO page") ? 1 : 0;

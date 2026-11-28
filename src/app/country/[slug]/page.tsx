@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { geoMercator, geoPath } from "d3-geo";
-import { getArchive, isPublic, lookups } from "@/lib/data/archive";
+import { countryEntries, entryLabel, getArchive, isPublic, lookups } from "@/lib/data/archive";
 import { whereLine } from "@/lib/data/views";
 import { byIso, countrySlug, loadCountries } from "@/lib/geo-server";
 import { buildRegionMap } from "@/components/country/regionMap";
@@ -45,11 +45,13 @@ export default async function CountryPage({ params }: PageProps<"/country/[slug]
   const own = published.filter((t) => t.collection === country.iso2);
   const shared = published.filter((t) => t.collection !== country.iso2 && (country.sharedTraditions ?? []).includes(t.slug));
   const L = lookups(archive);
+  const entries = countryEntries(archive);
   const status = COUNTRY_STATUS[country.status];
 
   const cardFor = (t: Tradition): ExplorerCard => ({
     slug: t.slug,
     no: t.passportNo,
+    entry: entries.get(t.slug)?.n,
     name: t.name,
     nativeName: t.nativeNames[0]?.text,
     where: whereLine(t, archive),
@@ -304,7 +306,9 @@ function DocumentingCountry({ country, archive, shared, outline }: { country: Co
                         <span className="block h-full w-full" style={{ background: ACCENT[t.accent].hex }} />
                       </span>
                       <span>
-                        <span className="font-ui text-xs text-ink-mute">No. {t.passportNo}</span>
+                        <span className="font-ui text-xs text-ink-mute">
+                          No. {t.passportNo} · {entryLabel(countryEntries(archive).get(t.slug))}
+                        </span>
                         <span className="font-display block text-2xl group-hover:text-brick">{t.name}</span>
                         <span className="label-sm text-ink-mute">{t.regionLabel}</span>
                       </span>

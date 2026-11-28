@@ -16,8 +16,8 @@ import {
   scriptOf,
   type CommonsPage,
   type WdEntity,
-} from "../src/lib/research.ts";
-import { seedArchive, validateArchive } from "../src/lib/data/seed/index.ts";
+} from "../../src/lib/research.ts";
+import { seedArchive, validateArchive } from "../../src/lib/data/seed/index.ts";
 
 let failed = 0;
 function check(name: string, ok: boolean, detail = "") {

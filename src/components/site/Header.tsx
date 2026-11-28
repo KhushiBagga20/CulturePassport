@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { notePageView } from "@/lib/navigation";
 
 /** Four destinations, each with a one-line promise so visitors know where they will land. */
 export const NAV = [
@@ -27,6 +28,7 @@ export const NAV = [
 export function Header() {
   const pathname = usePathname() ?? "/";
   const router = useRouter();
+  useEffect(() => notePageView(pathname), [pathname]);
   // The menu belongs to the page it was opened on, so navigating closes it.
   const [openOn, setOpenOn] = useState<string | null>(null);
   const open = openOn === pathname;

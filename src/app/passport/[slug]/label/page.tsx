@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { findTradition, getArchive, isPublic, lookups } from "@/lib/data/archive";
+import { countryEntries, entryLabel, findTradition, getArchive, isPublic, lookups } from "@/lib/data/archive";
 import { passportPath, requestOrigin } from "@/lib/site";
 import { qrSvg } from "@/lib/qr";
 import { ACCENT, CATEGORY } from "@/lib/labels";
@@ -28,6 +28,7 @@ export default async function LabelPage({ params }: PageProps<"/passport/[slug]/
   const svg = await qrSvg(url, { light: "#FFFFFF", margin: 1 });
   const communities = t.communities.map((c) => L.community.get(c.community)?.name).filter(Boolean).join("; ");
   const accent = ACCENT[t.accent].hex;
+  const entry = entryLabel(countryEntries(archive).get(t.slug));
   const isLocal = /localhost|127\.0\.0\.1/.test(origin);
 
   return (
@@ -62,6 +63,7 @@ export default async function LabelPage({ params }: PageProps<"/passport/[slug]/
           <div className="flex flex-col">
             <p className="label-sm" style={{ color: accent }}>
               Culture Passport · No. {t.passportNo}
+              {entry && ` · ${entry}`}
             </p>
             <p className="font-display mt-2 text-[1.92rem]">{t.name}</p>
             {t.nativeNames[0] && <p className="text-lg">{t.nativeNames.map((n) => n.text).join(" · ")}</p>}
@@ -91,6 +93,7 @@ export default async function LabelPage({ params }: PageProps<"/passport/[slug]/
           <div>
             <p className="label-sm" style={{ color: accent }}>
               No. {t.passportNo}
+              {entry && ` · ${entry}`}
             </p>
             <p className="font-display text-xl leading-none">{t.name}</p>
             <p className="mt-1 text-[0.62rem] leading-snug">{t.regionLabel}</p>

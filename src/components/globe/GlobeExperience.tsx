@@ -18,6 +18,8 @@ const GlobeCanvas = dynamic(() => import("./GlobeCanvas"), { ssr: false });
 
 interface PassportEntry {
   no: string;
+  /** "India entry 12" */
+  entry: string;
   slug: string;
   name: string;
   where: string;
@@ -393,7 +395,9 @@ export function GlobeExperience({ countries, passports }: { countries: GlobeCoun
                     <li key={p.slug}>
                       <Link href={`/passport/${p.slug}`} className="flex items-baseline justify-between gap-3 py-2 hover:text-terracotta">
                         <span>{p.name}</span>
-                        <span className="label-sm text-ink-mute">No. {p.no}</span>
+                        <span className="label-sm shrink-0 text-ink-mute">
+                          {"entry" in p && p.entry ? `Entry ${p.entry} · ` : ""}No. {p.no}
+                        </span>
                       </Link>
                     </li>
                   ))}
@@ -580,7 +584,7 @@ function PassportPicker({ dialogRef, passports }: { dialogRef: React.RefObject<H
               >
                 <span className="font-ui text-sm text-ink-mute">No. {p.no}</span>
                 <span className="flex-1">{p.name}</span>
-                <span className="label-sm text-ink-mute">{p.where}</span>
+                <span className="label-sm text-right text-ink-mute">{p.entry}</span>
               </Link>
             </li>
           ))}

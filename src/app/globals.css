@@ -335,6 +335,18 @@ h1, h2, h3, h4 {
   animation: curtain-lift 1.1s var(--ease-archive) both;
 }
 
+/* Warli transition for Indian passports: hold, then fade away. */
+@keyframes warli-out {
+  0%, 62% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.warli-curtain {
+  animation: warli-out 1.3s ease-in both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .warli-curtain { animation-duration: 0.5s; }
+}
+
 /* Disclosure blocks (<details>) used for progressive reading. */
 .more > summary {
   list-style: none;

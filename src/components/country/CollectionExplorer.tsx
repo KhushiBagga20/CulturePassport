@@ -11,6 +11,8 @@ import { Motif } from "@/components/motifs/Motif";
 export interface ExplorerCard {
   slug: string;
   no: string;
+  /** entry number within this country's collection */
+  entry?: number;
   name: string;
   nativeName?: string;
   where: string;
@@ -176,7 +178,12 @@ export function CollectionExplorer({ cards, map }: { cards: ExplorerCard[]; map:
                     ) : (
                       <Motif motif={c.motif} className="h-full w-full" />
                     )}
-                    <span className="font-display absolute left-3 top-3 flex h-14 w-14 -rotate-6 items-center justify-center rounded-full border-2 border-ink bg-yellow text-lg text-ink">{c.no}</span>
+                    <span
+                      className="font-display absolute left-3 top-3 flex h-14 w-14 -rotate-6 flex-col items-center justify-center rounded-full border-2 border-ink bg-yellow text-lg leading-none text-ink"
+                      title={`Entry ${c.entry} in this collection · Passport No. ${c.no}`}
+                    >
+                      {c.entry ?? c.no}
+                    </span>
                     {c.hasCase && <span className="label-sm absolute right-0 top-3 bg-brick px-2 py-1 text-bone">Attribution case</span>}
                   </div>
                   <div className="p-5">
@@ -201,8 +208,11 @@ export function CollectionExplorer({ cards, map }: { cards: ExplorerCard[]; map:
                     </dl>
                     <p className="mt-4 text-[0.95rem] text-ink-soft">{c.summary}</p>
                     <div className="mt-5 flex items-center justify-between border-t-2 border-ink pt-3">
-                      <span className="label-sm px-2 py-0.5" style={{ background: c.accentSoft }}>
-                        {c.maturity}
+                      <span className="flex flex-wrap items-center gap-2">
+                        <span className="label-sm px-2 py-0.5" style={{ background: c.accentSoft }}>
+                          {c.maturity}
+                        </span>
+                        <span className="label-sm text-ink-mute">Passport No. {c.no}</span>
                       </span>
                       <span className="label group-hover:text-brick">Open passport →</span>
                     </div>

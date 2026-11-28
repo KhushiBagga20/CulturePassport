@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getArchive, isPublic, lookups } from "@/lib/data/archive";
+import { countryEntries, entryLabel, getArchive, isPublic, lookups } from "@/lib/data/archive";
 import { ACCENT, CATEGORY, MATURITY } from "@/lib/labels";
 import { Motif } from "@/components/motifs/Motif";
 import { mediaUrl } from "@/lib/media";
@@ -17,6 +17,7 @@ export const metadata: Metadata = {
 export default async function PassportsPage() {
   const archive = await getArchive();
   const L = lookups(archive);
+  const entries = countryEntries(archive);
   const published = archive.traditions.filter(isPublic);
   const cover = (id?: string) => (id ? L.media.get(id) : undefined);
 
@@ -30,8 +31,9 @@ export default async function PassportsPage() {
             <h1 className="font-display mt-3 text-[clamp(2.81rem,7.8vw,6.84rem)]">Passports</h1>
           </div>
           <p className="max-w-md text-ink-soft">
-            In the order each entered the archive. Numbers are permanent: a printed QR code or a short link like{" "}
-            <code className="font-ui bg-ink px-1.5 py-0.5 text-sm text-bone">/p/001</code> will always find its passport.
+            Every passport has two numbers: its <strong>passport number</strong>, unique across the archive in the order passports entered it (a printed QR code
+            or a short link like <code className="font-ui bg-ink px-1.5 py-0.5 text-sm text-bone">/p/001</code> finds it), and its <strong>entry number</strong>{" "}
+            within its own country&apos;s collection.
           </p>
         </div>
         <MissingPassportNotice />
@@ -64,7 +66,8 @@ export default async function PassportsPage() {
                 <span className="min-w-0 py-4">
                   <span className="font-display block text-[clamp(1.56rem,3.12vw,2.58rem)] hyphens-auto [overflow-wrap:anywhere] group-hover:text-brick">{t.name}</span>
                   <span className="mt-1 block text-sm text-ink-soft">
-                    {CATEGORY[t.category]} · {t.regionLabel} · {t.communities.map((c) => L.community.get(c.community)?.name).join(", ")}
+                    <span className="label-sm mr-1 text-ink">{entryLabel(entries.get(t.slug))}</span> · {CATEGORY[t.category]} · {t.regionLabel}
+                    {t.communities.length > 0 && ` · ${t.communities.map((c) => L.community.get(c.community)?.name).join(", ")}`}
                   </span>
                 </span>
                 <span className="col-span-2 flex flex-wrap gap-2 pb-4 pl-4 sm:col-span-1 sm:justify-end sm:p-0">

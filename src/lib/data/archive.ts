@@ -66,6 +66,31 @@ export function findTradition(a: Archive, slug: string): { tradition: Tradition;
   return moved ? { tradition: moved, canonical: false } : null;
 }
 
+export interface CountryEntry {
+  /** place among the country's passports, in passport-number order (1-based) */
+  n: number;
+  total: number;
+  country: string;
+}
+
+/**
+ * Two numbers identify a passport: its passport number (unique across the archive) and its entry
+ * number within its own country's collection.
+ */
+export function countryEntries(a: Archive): Map<string, CountryEntry> {
+  const out = new Map<string, CountryEntry>();
+  const pub = a.traditions.filter(isPublic).sort((x, y) => x.passportNo.localeCompare(y.passportNo));
+  for (const c of new Set(pub.map((t) => t.collection))) {
+    const own = pub.filter((t) => t.collection === c);
+    const name = a.countries.find((x) => x.iso2 === c)?.name ?? c;
+    own.forEach((t, i) => out.set(t.slug, { n: i + 1, total: own.length, country: name === "United Arab Emirates" ? "UAE" : name }));
+  }
+  return out;
+}
+
+/** "India entry 12" */
+export const entryLabel = (e?: CountryEntry) => (e ? `${e.country} entry ${e.n}` : "");
+
 export function lookups(a: Archive) {
   return {
     source: new Map(a.sources.map((s) => [s.id, s])),

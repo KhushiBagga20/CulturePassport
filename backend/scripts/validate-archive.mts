@@ -1,5 +1,5 @@
 // Run: node scripts/validate-archive.ts — checks every reference in the seed archive resolves.
-import { seedArchive, validateArchive } from "../src/lib/data/seed/index.ts";
+import { seedArchive, validateArchive } from "../../src/lib/data/seed/index.ts";
 
 const errors = validateArchive(seedArchive);
 const claims = seedArchive.traditions.reduce((n, t) => n + t.claims.length, 0);

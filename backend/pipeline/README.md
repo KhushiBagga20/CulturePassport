@@ -36,7 +36,7 @@ Each candidate is triaged as "craft or visual art" or not, so the queue can show
 
 ## Where it writes
 
-- **`DATABASE_URL` set** (read from `.env.local`, or `pipeline/.env` to override): the `research_candidates` table (`db/migrations/0004_research.sql`). Run `npm run db:setup` once first.
+- **`DATABASE_URL` set** (read from `.env.local`, or `backend/pipeline/.env` to override): the `research_candidates` table (`backend/db/migrations/0004_research.sql`). Run `npm run db:setup` once first.
 - **No `DATABASE_URL`:** `.data/research.json`, the local queue the dev server reads.
 
 Candidates are never shown on public pages. Editors review them in the passcode-protected desk.
@@ -44,8 +44,8 @@ Candidates are never shown on public pages. Editors review them in the passcode-
 ## Running it as a separate backend
 
 This folder needs only Node 24 and the `postgres` package. The logic it shares with the site lives in `src/lib/research.ts` and `src/lib/db.ts`. To move it to its own repository or a scheduled job:
-1. Copy `pipeline/`, `src/lib/research.ts` and `src/lib/db.ts`. Keep them identical in both places, or publish them as a small package.
-2. Give it the same `DATABASE_URL` as the site. The schema in `db/migrations` is the contract between the two.
+1. Copy `backend/pipeline/`, `src/lib/research.ts` and `src/lib/db.ts`. Keep them identical in both places, or publish them as a small package.
+2. Give it the same `DATABASE_URL` as the site. The schema in `backend/db/migrations` is the contract between the two.
 3. Schedule it (for example weekly per country). Because decisions are kept, repeat runs only add or refresh leads.
 
 ## Wikimedia etiquette

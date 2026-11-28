@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import type { Archive, Tradition } from "@/lib/types";
-import { citedSources, isPublic, lookups } from "@/lib/data/archive";
+import { citedSources, countryEntries, isPublic, lookups } from "@/lib/data/archive";
 import { ACCENT, CATEGORY, MATURITY, RELATIONSHIP, SOURCE_TYPE, accentVars, formatSourceDate } from "@/lib/labels";
 import { ArchiveImage } from "@/components/site/ArchiveImage";
 import { CountryMark } from "@/components/site/Seal";
@@ -21,6 +21,7 @@ import { ProcessFlow } from "./ProcessFlow";
 import { ConnectionWeb, type WebNode } from "./ConnectionWeb";
 import { More } from "./More";
 import { TrailBar } from "./TrailBar";
+import { WarliTransition } from "./WarliTransition";
 
 /** Chapter names, used identically in the chapter bar and the headings. Ids are stable deep links. */
 export const CHAPTERS = [
@@ -49,6 +50,7 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
   const compact = t.maturity === "editorial-draft" && t.claims.length > 0 && t.claims.every((c) => originClaims.has(c.id) && c.level === "unverified");
   const ctx: BlockContext = { claims: new Map(t.claims.map((c) => [c.id, c])), numbering, media: L.media, motif: t.motif, anchors: compact };
   const hero = t.hero ? L.media.get(t.hero) : undefined;
+  const entry = countryEntries(archive).get(t.slug);
   // Gallery pictures that are not already shown in the chapters.
   const shownElsewhere = JSON.stringify({ ...t, gallery: [] });
   const pictures = t.gallery
@@ -175,6 +177,7 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
 
   return (
     <div style={accentVars(t.accent)}>
+      {t.collection === "IN" && !preview && <WarliTransition name={t.name} />}
       <Suspense fallback={null}>
         <TrailBar trails={trails} current={t.slug} />
       </Suspense>
@@ -215,6 +218,15 @@ export async function PassportView({ t, archive, preview = false }: { t: Traditi
                 className="pointer-events-none absolute -top-4 right-0 h-48 w-48 text-[var(--accent)] opacity-[0.16] sm:h-64 sm:w-64 lg:-right-6"
               />
             )}
+            <p className="label relative text-ink-mute">
+              Passport No. {t.passportNo}
+              {entry && (
+                <>
+                  <span aria-hidden> · </span>
+                  {entry.country} entry {entry.n} of {entry.total}
+                </>
+              )}
+            </p>
             <h1 className="font-display reveal-rise relative mt-2 text-[clamp(2.65rem,8.19vw,7.3rem)] hyphens-auto [overflow-wrap:anywhere]">{t.displayTitle}</h1>
             <p className="font-title relative mt-3 text-[clamp(1.7rem,3.4vw,2.8rem)] italic text-[var(--accent-text)]">{t.tagline}</p>
           </div>

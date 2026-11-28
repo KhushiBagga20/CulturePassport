@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { findTradition, getArchive, isPublic, lookups } from "@/lib/data/archive";
+import { countryEntries, entryLabel, findTradition, getArchive, isPublic, lookups } from "@/lib/data/archive";
 import { shareCaption } from "@/lib/share";
 import { ACCENT } from "@/lib/labels";
 import { ShareWithCredit } from "@/components/passport/SharePanel";
@@ -34,7 +34,7 @@ export default async function CardPage({ params }: PageProps<"/passport/[slug]/c
     <div style={{ ["--accent" as string]: ACCENT[t.accent].hex }} className="mx-auto max-w-[1400px] px-4 py-10 sm:px-6 lg:px-10 lg:py-16">
       <nav aria-label="Breadcrumb" className="label-sm flex flex-wrap gap-2 text-ink-mute">
         <Link href={`/passport/${t.slug}`} className="hover:text-terracotta">
-          ← Passport No. {t.passportNo} · {t.name}
+          ← Passport No. {t.passportNo} · {entryLabel(countryEntries(archive).get(t.slug))} · {t.name}
         </Link>
       </nav>
       <div className="mt-8 grid gap-12 lg:grid-cols-12">

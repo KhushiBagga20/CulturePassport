@@ -13,12 +13,12 @@
  * the archive's integrity rules first. Re-running skips candidates that already have a passport.
  */
 import { randomUUID } from "node:crypto";
-import { db, upsertRow } from "../src/lib/db.ts";
-import { loadPostgresArchive } from "../src/lib/data/pg.ts";
-import { countryToRow, mediaToRow, sourceToRow, traditionToRows } from "../src/lib/data/rows.ts";
-import { validateArchive } from "../src/lib/data/seed/index.ts";
-import type { ResearchCandidate } from "../src/lib/research.ts";
-import { RESEARCH_BY as BY, planPublish } from "../src/lib/research-publish.ts";
+import { db, upsertRow } from "../../src/lib/db.ts";
+import { loadPostgresArchive } from "../../src/lib/data/pg.ts";
+import { countryToRow, mediaToRow, sourceToRow, traditionToRows } from "../../src/lib/data/rows.ts";
+import { validateArchive } from "../../src/lib/data/seed/index.ts";
+import type { ResearchCandidate } from "../../src/lib/research.ts";
+import { RESEARCH_BY as BY, planPublish } from "../../src/lib/research-publish.ts";
 
 if (!process.env.DATABASE_URL?.trim()) {
   console.error("DATABASE_URL is not set (add it to .env.local).");

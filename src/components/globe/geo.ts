@@ -12,7 +12,7 @@ export interface GlobeCountry {
   status: CountryStatus;
   headline: string;
   intro: string;
-  passports: { slug: string; name: string; no: string }[];
+  passports: { slug: string; name: string; no: string; entry?: number }[];
   shared: { slug: string; name: string; no: string }[];
   candidates: string[];
   href: string;

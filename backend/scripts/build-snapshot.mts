@@ -5,6 +5,7 @@
  *   npm run snapshot:build               seed + the research queue in .data/research.json
  *                                        (+ the overviews in data/research-overviews.json)
  *   npm run snapshot:build -- --from-db  export the published archive from PostgreSQL (DATABASE_URL)
+ *   npm run snapshot:build -- --renumber number the passports 001, 002… without gaps
  *
  * Every passport keeps the address and number recorded in data/passport-ids.json, so printed QR
  * codes and shared links keep working; new passports get the next free number, and the file is
@@ -13,15 +14,18 @@
  */
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { seedArchive, validateArchive } from "../src/lib/data/seed/index.ts";
-import { RESEARCH_FILE, type ResearchCandidate, type ResearchFile } from "../src/lib/research.ts";
-import { planPublish, type KnownIds } from "../src/lib/research-publish.ts";
-import type { Archive } from "../src/lib/types.ts";
+import { seedArchive, validateArchive } from "../../src/lib/data/seed/index.ts";
+import { RESEARCH_FILE, type ResearchCandidate, type ResearchFile } from "../../src/lib/research.ts";
+import { planPublish, type KnownIds } from "../../src/lib/research-publish.ts";
+import type { Archive } from "../../src/lib/types.ts";
 
-const root = new URL("..", import.meta.url).pathname;
+const root = new URL("../..", import.meta.url).pathname;
 const SNAPSHOT = path.join(root, "src/lib/data/snapshot.json");
-const IDS = path.join(root, "data/passport-ids.json");
+const IDS = path.join(root, "backend/data/passport-ids.json");
 const fromDb = process.argv.includes("--from-db");
+// --renumber closes the gaps left by removed passports: numbers become 001, 002… in the order the
+// passports entered the archive, and numbers of removed passports are no longer reserved.
+const renumber = process.argv.includes("--renumber");
 
 type IdFile = Record<string, { no: string; qid?: string }>;
 const ids: IdFile = JSON.parse(await fs.readFile(IDS, "utf8").catch(() => "{}"));
@@ -34,8 +38,8 @@ for (const [slug, v] of Object.entries(ids)) {
 let archive: Omit<Archive, "backend">;
 if (fromDb) {
   if (!process.env.DATABASE_URL?.trim()) throw new Error("--from-db needs DATABASE_URL (in .env.local).");
-  const { db } = await import("../src/lib/db.ts");
-  const { loadPostgresArchive } = await import("../src/lib/data/pg.ts");
+  const { db } = await import("../../src/lib/db.ts");
+  const { loadPostgresArchive } = await import("../../src/lib/data/pg.ts");
   const sql = db();
   try {
     archive = await loadPostgresArchive(sql);
@@ -45,7 +49,7 @@ if (fromDb) {
 } else {
   const file: ResearchFile = JSON.parse(await fs.readFile(path.join(root, RESEARCH_FILE), "utf8").catch(() => '{"candidates":{}}'));
   // Overviews written by editors from each Wikipedia article, kept in the repo.
-  const overviews: Record<string, string> = JSON.parse(await fs.readFile(path.join(root, "data/research-overviews.json"), "utf8").catch(() => "{}"));
+  const overviews: Record<string, string> = JSON.parse(await fs.readFile(path.join(root, "backend/data/research-overviews.json"), "utf8").catch(() => "{}"));
   for (const c of Object.values(file.candidates)) {
     const text = overviews[c.wikidataId];
     if (!text) continue;
@@ -64,6 +68,11 @@ if (fromDb) {
 
 // Public content only.
 const published = archive.traditions.filter((t) => t.status === "published");
+if (renumber) {
+  published.sort((a, b) => a.passportNo.localeCompare(b.passportNo));
+  published.forEach((t, i) => (t.passportNo = String(i + 1).padStart(3, "0")));
+  for (const slug of Object.keys(ids)) if (!published.some((t) => t.slug === slug)) delete ids[slug];
+}
 const snapshot = { ...archive, traditions: published.sort((a, b) => a.passportNo.localeCompare(b.passportNo)) };
 delete (snapshot as Partial<Archive>).backend;
 const problems = validateArchive(snapshot);
@@ -80,7 +89,7 @@ for (const t of snapshot.traditions) {
 // Report addresses that existed before and are now missing (their links would break).
 const lost = Object.keys(ids).filter((slug) => !snapshot.traditions.some((t) => t.slug === slug || t.slugHistory?.includes(slug)));
 if (lost.length) console.warn(`⚠ ${lost.length} earlier address(es) no longer have a passport: ${lost.slice(0, 20).join(", ")}`);
-const renumbered = snapshot.traditions.filter((t) => ids[t.slug] && ids[t.slug].no !== t.passportNo);
+const renumbered = renumber ? [] : snapshot.traditions.filter((t) => ids[t.slug] && ids[t.slug].no !== t.passportNo);
 if (renumbered.length) console.warn(`⚠ ${renumbered.length} passport(s) got a different number: ${renumbered.map((t) => t.slug).join(", ")}`);
 
 await fs.writeFile(SNAPSHOT, JSON.stringify(snapshot) + "\n");

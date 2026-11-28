@@ -1,8 +1,8 @@
 // Generates db/seed.sql from the TypeScript seed archive.
 // Run: npm run seed:sql   (or: node scripts/generate-seed-sql.mts --stdout)
 import { writeFileSync } from "node:fs";
-import { seedArchive, validateArchive } from "../src/lib/data/seed/index.ts";
-import { archiveToRows, GLOBAL_TABLES, TRADITION_CHILD_TABLES, LATE_TABLES } from "../src/lib/data/rows.ts";
+import { seedArchive, validateArchive } from "../../src/lib/data/seed/index.ts";
+import { archiveToRows, GLOBAL_TABLES, TRADITION_CHILD_TABLES, LATE_TABLES } from "../../src/lib/data/rows.ts";
 
 const DELIM = "$cp$";
 

@@ -11,10 +11,10 @@
  * the snapshot, and updates sources, countries, places, organisations, images, routes and trails.
  * Drafts, uploads, corrections and the research queue are left alone.
  */
-import { db, upsertRow } from "../src/lib/db.ts";
-import { loadPostgresArchive } from "../src/lib/data/pg.ts";
-import { archiveToRows, GLOBAL_TABLES, LATE_TABLES, traditionToRows } from "../src/lib/data/rows.ts";
-import type { Archive } from "../src/lib/types.ts";
+import { db, upsertRow } from "../../src/lib/db.ts";
+import { loadPostgresArchive } from "../../src/lib/data/pg.ts";
+import { archiveToRows, GLOBAL_TABLES, LATE_TABLES, traditionToRows } from "../../src/lib/data/rows.ts";
+import type { Archive } from "../../src/lib/types.ts";
 import { readFileSync } from "node:fs";
 
 if (!process.argv.includes("--yes")) {
@@ -25,7 +25,7 @@ if (!process.env.DATABASE_URL?.trim()) {
   console.error("DATABASE_URL is not set (add it to .env.local).");
   process.exit(1);
 }
-const snapshot = JSON.parse(readFileSync(new URL("../src/lib/data/snapshot.json", import.meta.url), "utf8")) as Omit<Archive, "backend">;
+const snapshot = JSON.parse(readFileSync(new URL("../../src/lib/data/snapshot.json", import.meta.url), "utf8")) as Omit<Archive, "backend">;
 const rows = archiveToRows(snapshot);
 const KEY: Record<string, string[]> = { countries: ["iso2"], trails: ["slug"], trail_steps: ["trail_slug", "position"] };
 const sql = db();

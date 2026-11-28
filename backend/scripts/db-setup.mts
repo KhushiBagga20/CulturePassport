@@ -9,7 +9,7 @@
  */
 import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
-import { db } from "../src/lib/db.ts";
+import { db } from "../../src/lib/db.ts";
 
 if (!process.env.DATABASE_URL?.trim()) {
   console.error("DATABASE_URL is not set. Add your Neon connection string to .env.local (see the README).");
@@ -29,7 +29,7 @@ try {
     await sql.unsafe(`create schema if not exists cp_admin;
       create table if not exists cp_admin.migrations (name text primary key, applied_at timestamptz not null default now());`);
     const applied = new Set((await sql`select name from cp_admin.migrations`).map((r) => r.name as string));
-    const dir = path.join(root, "db", "migrations");
+    const dir = path.join(root, "backend", "db", "migrations");
     for (const m of readdirSync(dir).filter((f) => f.endsWith(".sql")).sort()) {
       if (applied.has(m)) continue;
       await sql.begin(async (tx) => {
@@ -42,7 +42,7 @@ try {
     const [{ n }] = await sql`select count(*)::int as n from traditions`;
     if (n === 0) {
       await sql.begin(async (tx) => {
-        await tx.unsafe(readFileSync(path.join(root, "db", "seed.sql"), "utf8"));
+        await tx.unsafe(readFileSync(path.join(root, "backend", "db", "seed.sql"), "utf8"));
       });
       console.log("✓ loaded the seed archive (db/seed.sql)");
     } else {

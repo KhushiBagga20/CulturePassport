@@ -37,7 +37,7 @@ import {
   type ResearchCandidate,
   type ResearchFile,
   type WdEntity,
-} from "../src/lib/research.ts";
+} from "../../src/lib/research.ts";
 
 // Generic client name, per Wikimedia's User-Agent policy; no personal contact details.
 const UA = "CulturePassportResearchPipeline/0.1 (open-source educational archive)";
@@ -312,7 +312,7 @@ async function writeLocal(cands: ResearchCandidate[]) {
 }
 
 async function writePostgres(cands: ResearchCandidate[]) {
-  const { db } = await import("../src/lib/db.ts");
+  const { db } = await import("../../src/lib/db.ts");
   const sql = db();
   // Status and review columns are not touched on conflict, so an editor's decision survives a refresh.
   // An element shared by several countries stays with the first country that found it (list the
@@ -363,4 +363,4 @@ if (dryRun) {
 } else {
   console.log(`\nDone: ${all.length} candidates saved.`);
 }
-if (target === "postgres" && !dryRun) await (await import("../src/lib/db.ts")).db().end();
+if (target === "postgres" && !dryRun) await (await import("../../src/lib/db.ts")).db().end();

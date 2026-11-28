@@ -18,7 +18,7 @@ import fs from "node:fs";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
-const repo = new URL("..", import.meta.url).pathname;
+const repo = new URL("../..", import.meta.url).pathname;
 const { feature } = require("topojson-client");
 const { topology } = require("topojson-server");
 const { geoArea } = require("d3-geo");

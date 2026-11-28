@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getArchive, isPublic, lookups } from "@/lib/data/archive";
+import { countryEntries, entryLabel, getArchive, isPublic, lookups } from "@/lib/data/archive";
 import { ACCENT, CATEGORY, accentVars } from "@/lib/labels";
 import { ArchiveImage } from "@/components/site/ArchiveImage";
 import { Motif } from "@/components/motifs/Motif";
@@ -26,6 +26,7 @@ export default async function TrailPage({ params }: PageProps<"/trails/[slug]">)
   const tr = archive.trails.find((t) => t.slug === slug);
   if (!tr) notFound();
   const L = lookups(archive);
+  const entries = countryEntries(archive);
   const steps = tr.steps.map((s) => ({ ...s, t: L.tradition.get(s.tradition) })).filter((s) => s.t && isPublic(s.t));
   const accent = ACCENT[tr.accent].hex;
 
@@ -60,7 +61,7 @@ export default async function TrailPage({ params }: PageProps<"/trails/[slug]">)
               <Link href={`/passport/${t.slug}?trail=${tr.slug}`} className="group grid min-w-0 gap-6 border-2 border-ink bg-bone p-5 transition-transform hover:-translate-y-0.5 md:grid-cols-[minmax(0,1fr)_16rem]">
                 <div>
                   <p className="label-sm text-ink-mute">
-                    No. {t.passportNo} · {CATEGORY[t.category]} · {t.regionLabel}
+                    No. {t.passportNo} · {entryLabel(entries.get(t.slug))} · {CATEGORY[t.category]}
                   </p>
                   <p className="font-display mt-2 text-4xl hyphens-auto [overflow-wrap:anywhere] group-hover:text-brick">{t.name}</p>
                   <p className="font-title mt-2 text-2xl italic text-[var(--accent-text)]">{s.note}</p>

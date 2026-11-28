@@ -10,9 +10,9 @@
  */
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { RESEARCH_FILE, type ResearchFile } from "../src/lib/research.ts";
+import { RESEARCH_FILE, type ResearchFile } from "../../src/lib/research.ts";
 
-const root = new URL("..", import.meta.url).pathname;
+const root = new URL("../..", import.meta.url).pathname;
 const file = path.join(root, RESEARCH_FILE);
 const data: ResearchFile = JSON.parse(await fs.readFile(file, "utf8"));
 const UA = "CulturePassportResearchPipeline/0.1 (open-source educational archive)";

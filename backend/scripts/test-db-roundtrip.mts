@@ -4,12 +4,12 @@
 //   research queue, corrections and the audit log.
 // Run: npm run test:db      (needs `createdb` and `dropdb` on PATH, and a local PostgreSQL server)
 import { execFileSync } from "node:child_process";
-import { seedArchive } from "../src/lib/data/seed/index.ts";
-import { archiveToRows, countryToRow, sourceToRow, traditionToRows } from "../src/lib/data/rows.ts";
+import { seedArchive } from "../../src/lib/data/seed/index.ts";
+import { archiveToRows, countryToRow, sourceToRow, traditionToRows } from "../../src/lib/data/rows.ts";
 
 const name = `cp_roundtrip_${process.pid}`;
 const url = `postgresql:///${name}`;
-const root = new URL("..", import.meta.url).pathname;
+const root = new URL("../..", import.meta.url).pathname;
 const canon = (v: unknown): unknown =>
   Array.isArray(v) ? v.map(canon) : v && typeof v === "object" ? Object.fromEntries(Object.keys(v).sort().map((k) => [k, canon((v as Record<string, unknown>)[k])])) : v;
 
@@ -21,13 +21,13 @@ const check = (label: string, ok: boolean, detail = "") => {
 
 execFileSync("createdb", [name]);
 process.env.DATABASE_URL = url;
-const { db, upsertRow } = await import("../src/lib/db.ts");
-const { loadPostgresArchive, ARCHIVE_TABLES } = await import("../src/lib/data/pg.ts");
+const { db, upsertRow } = await import("../../src/lib/db.ts");
+const { loadPostgresArchive, ARCHIVE_TABLES } = await import("../../src/lib/data/pg.ts");
 const sql = db();
 try {
   // ── setup script (the same command a user runs against Neon) ──
   const run = (args: string[] = []) =>
-    execFileSync("node", ["scripts/db-setup.mts", ...args], { cwd: root, env: { ...process.env, DATABASE_URL: url }, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+    execFileSync("node", ["backend/scripts/db-setup.mts", ...args], { cwd: root, env: { ...process.env, DATABASE_URL: url }, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
   const first = run();
   check("db:setup applies all four migrations", ["0001_schema", "0002_functions", "0003_media_files", "0004_research"].every((m) => first.includes(`applied ${m}`)), first);
   check("db:setup loads the seed", first.includes("loaded the seed archive"));

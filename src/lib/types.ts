@@ -2,7 +2,7 @@
  * Culture Passport content model.
  *
  * The same shapes are used by the local seed archive and by the PostgreSQL adapter
- * (see db/migrations/0001_schema.sql for the normalised tables they map to).
+ * (see backend/db/migrations/0001_schema.sql for the normalised tables they map to).
  * Keep this file free of runtime code so the seed generator can strip types with Node.
  */
 

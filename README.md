@@ -23,7 +23,7 @@ It is an education, documentation and attribution project. **It is not a legal o
 | Trails | `/trails`, `/trails/[slug]` | *Crafted by Hand*, *Threads Across Borders*, *Tradition Meets the Runway*, *From Walls to Paper*. Passports show a trail bar when visited from a trail. |
 | About | `/method` | How we work: principles, evidence labels, editorial process, corrections, languages, maps, image credits. |
 | Editorial desk | `/admin` | Sign-in, dashboard with integrity check, passport editor (identity, story markup, claims with sources, timeline, places and people, advanced JSON, publication), new drafts, sources, permitted-image uploads, review queue for public corrections, QR labels, audit history, draft preview. |
-| Research pipeline | `npm run research`, `/admin/research` | Gathers UNESCO-listed traditions for any country from Wikidata, UNESCO IDs and Wikimedia Commons into a private review queue. Editors reject candidates, add the country to the atlas ("Stories being documented"), or create a **draft** passport whose claims are all "Further verification needed". Nothing is published automatically. See [`pipeline/README.md`](pipeline/README.md). |
+| Research pipeline | `npm run research`, `/admin/research` | Gathers UNESCO-listed traditions for any country from Wikidata, UNESCO IDs and Wikimedia Commons into a private review queue. Editors reject candidates, add the country to the atlas ("Stories being documented"), or create a **draft** passport whose claims are all "Further verification needed". Nothing is published automatically. See [`backend/pipeline/README.md`](backend/pipeline/README.md). |
 
 ### Content in the seed archive
 
@@ -109,9 +109,9 @@ Only the server ever talks to the database, so its connection string never reach
 **The public site reads a snapshot baked into the repository**: `src/lib/data/snapshot.json`, the full published archive (about 400 passports). Public pages never query a database, so they can't fail or slow down because of one, and builds don't use database quota.
 
 - `npm run snapshot:build` rebuilds it from the hand-written seed (`src/lib/data/seed/`) plus the research queue in `.data/research.json` (from `npm run research -- … --target local`).
-  Research passports are published only when they meet the bar set in the November 2026 review: a real tradition (not a people, place or monument), at least two accurate, freely licensed photographs that name it, and a substantial Wikipedia article. Their short overviews are written by editors in our own words and kept in `data/research-overviews.json`; candidates below the bar are marked rejected in the queue with the reason.
+  Research passports are published only when they meet the bar set in the November 2026 review: a real tradition (not a people, place or monument), at least two accurate, freely licensed photographs that name it, and a substantial Wikipedia article. Their short overviews are written by editors in our own words and kept in `backend/data/research-overviews.json`; candidates below the bar are marked rejected in the queue with the reason.
 - `npm run snapshot:export` exports the published archive from PostgreSQL instead, after edits made in `/admin`.
-- `data/passport-ids.json` records every passport's address and number. Both commands reuse them, so printed QR codes and shared links keep working; new passports get the next free number.
+- `backend/data/passport-ids.json` records every passport's address and number. Both commands reuse them, so printed QR codes and shared links keep working; new passports get the next free number.
 - Commit the updated snapshot and push; the deploy publishes it.
 
 **PostgreSQL (optional) is the editorial workspace**: drafts, edits, uploads, corrections and the research queue. With `DATABASE_URL` set, `/admin` works on the database; changes reach the public site at the next `snapshot:export` and deploy.
@@ -122,7 +122,7 @@ If the snapshot was rebuilt outside the database (`snapshot:build`), run `npm ru
 
 1. **Create a free project** at neon.tech.
 2. **Copy its connection string**: Dashboard → Connect. Use the pooled one if offered (the host contains `-pooler`); it should end in `?sslmode=require`. Paste it into `.env.local` as `DATABASE_URL=…`, and into your host's environment settings when you deploy.
-3. **Set up the database:** `npm run db:setup`. It applies the migrations in `db/migrations` in order, records them in a separate `cp_admin.migrations` table, loads `db/seed.sql` if the archive is empty, and reports what is there. It never prints the connection string and is safe to re-run.
+3. **Set up the database:** `npm run db:setup`. It applies the migrations in `backend/db/migrations` in order, records them in a separate `cp_admin.migrations` table, loads `backend/db/seed.sql` if the archive is empty, and reports what is there. It never prints the connection string and is safe to re-run.
    - `0001_schema.sql`: the normalised tables (countries, places, communities, traditions, names, links, chapter sections, translations, claims and `claim_sources`, events and `event_sources`, case studies, materials, process steps, practitioners, organisations, resources, relationships, trails, QR records, content revisions, correction requests), with indexes, constraints and timestamps.
    - `0002_functions.sql`: `save_tradition(jsonb)`, which replaces a passport and all its child rows in one transaction.
    - `0003_media_files.sql`: images uploaded through the editorial desk (up to 8 MB each), served by `/api/media/[file]`.
@@ -183,16 +183,16 @@ npm run build        # production build
 npm run typecheck    # TypeScript
 npm run lint         # ESLint
 npm run validate     # archive referential integrity (seed)
-npm run seed:sql     # regenerate db/seed.sql from the TypeScript seed
+npm run seed:sql     # regenerate backend/db/seed.sql from the TypeScript seed
 npm run db:setup     # apply migrations and load the seed into DATABASE_URL (safe to re-run)
 npm run test:db      # setup + round-trip + write paths against a throwaway local PostgreSQL
-npm run research -- --country GH   # gather research candidates for a country (see pipeline/README.md)
+npm run research -- --country GH   # gather research candidates for a country (see backend/pipeline/README.md)
 npm run test:research               # offline tests for the research pipeline
 npm run research:publish            # publish the research queue into PostgreSQL (add --dry-run to preview)
 npm run snapshot:build              # rebuild src/lib/data/snapshot.json from the seed + .data/research.json
 npm run snapshot:export             # rebuild the snapshot from PostgreSQL (after editing in /admin)
-npm run check:research              # check research passports against live sources → data/research-checks.md
-node scripts/research-images.mts     # find more freely licensed photos for research candidates (slow: Wikimedia rate limits)
+npm run check:research              # check research passports against live sources → backend/data/research-checks.md
+node backend/scripts/research-images.mts     # find more freely licensed photos for research candidates (slow: Wikimedia rate limits)
 npm run db:load-snapshot -- --yes   # load the snapshot into PostgreSQL (keeps drafts, uploads, corrections)
 ```
 
@@ -218,15 +218,18 @@ src/
   lib/
     types.ts                content model
     data/seed/              researched seed archive + integrity validator
+    data/snapshot.json      the published archive the public site reads
     data/rows.ts            content model ⇄ normalised SQL rows (shared by seed SQL, the Postgres adapter and tests)
-    data/archive.ts         repository: local seed + store, or PostgreSQL (data/pg.ts, db.ts)
+    data/archive.ts         repository: snapshot, local store, or PostgreSQL (data/pg.ts, db.ts)
     data/mutations.ts       editor writes, corrections, audit trail
     auth.ts                 editor passcode → signed session cookie
-db/
-  migrations/               schema, save_tradition, uploaded images, research queue
-  seed.sql                  generated seed content
-pipeline/                   research pipeline (see pipeline/README.md)
-scripts/                    validator, seed generator, db:setup, database round-trip test
+backend/                    everything that is not the website itself
+  db/
+    migrations/             schema, save_tradition, uploaded images, research queue
+    seed.sql                generated seed content
+  data/                     passport numbers, research overviews, check reports
+  pipeline/                 research pipeline (see backend/pipeline/README.md)
+  scripts/                  snapshot builder, validator, seed generator, db:setup, checks, round-trip test
 ```
 
 ---
