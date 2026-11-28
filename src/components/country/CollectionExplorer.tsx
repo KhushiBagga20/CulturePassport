@@ -185,9 +185,11 @@ export function CollectionExplorer({ cards, map }: { cards: ExplorerCard[]; map:
                         <p className="font-display text-[1.76rem] hyphens-auto [overflow-wrap:anywhere] group-hover:text-brick">{c.name}</p>
                         {c.nativeName && <p className="mt-0.5 text-sm text-ink-mute">{c.nativeName}</p>}
                       </div>
-                      <span className="mt-1 h-10 w-10 shrink-0 overflow-hidden border-2 border-ink">
-                        <Motif motif={c.motif} className="h-full w-full" />
-                      </span>
+                      {c.motif !== "atlas" && (
+                        <span className="mt-1 h-10 w-10 shrink-0 overflow-hidden border-2 border-ink">
+                          <Motif motif={c.motif} className="h-full w-full" />
+                        </span>
+                      )}
                     </div>
                     <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
                       <dt className="label-sm pt-0.5 text-ink-mute">Where</dt>

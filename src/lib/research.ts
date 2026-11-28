@@ -443,7 +443,7 @@ export function imageFromInfo(page: CommonsPage, md5: (file: string) => string):
     sourcePage: info.descriptionurl,
     license,
     licenseUrl: meta.LicenseUrl?.value,
-    credit: stripHtml(meta.Artist?.value) || stripHtml(meta.Credit?.value) || "See the file page",
+    credit: (stripHtml(meta.Artist?.value) || stripHtml(meta.Credit?.value) || "See the file page").replace(/^User:/, ""),
     description: stripHtml(meta.ImageDescription?.value).slice(0, 280) || undefined,
     free: isFreeLicence(license),
   };

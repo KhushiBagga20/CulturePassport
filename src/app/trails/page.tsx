@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getArchive, lookups } from "@/lib/data/archive";
 import { ACCENT } from "@/lib/labels";
 import { Motif } from "@/components/motifs/Motif";
+import { mediaUrl } from "@/lib/media";
 import { Reveal } from "@/components/site/Motion";
 import { StoriesNav } from "@/components/site/StoriesNav";
 
@@ -42,7 +43,12 @@ export default async function TrailsPage() {
                       return t ? (
                         <span key={s.tradition} className="flex items-center">
                           <span className="h-12 w-12 overflow-hidden border-2 border-ink sm:h-16 sm:w-16" title={t.name}>
-                            <Motif motif={t.motif} className="h-full w-full" />
+                            {t.hero && L.media.get(t.hero) ? (
+                              // eslint-disable-next-line @next/next/no-img-element -- Commons thumbnail; credited on the passport and the image credits page
+                              <img src={mediaUrl(L.media.get(t.hero)!, 250)} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
+                            ) : (
+                              <Motif motif={t.motif} className="h-full w-full" />
+                            )}
                           </span>
                           {j < tr.steps.length - 1 && <span aria-hidden className="h-0.5 w-6 bg-ink sm:w-10" />}
                         </span>

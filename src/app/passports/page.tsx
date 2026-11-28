@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getArchive, isPublic, lookups } from "@/lib/data/archive";
 import { ACCENT, CATEGORY, MATURITY } from "@/lib/labels";
 import { Motif } from "@/components/motifs/Motif";
+import { mediaUrl } from "@/lib/media";
 import { Reveal } from "@/components/site/Motion";
 import { StoriesNav } from "@/components/site/StoriesNav";
 import { MissingPassportNotice } from "@/components/site/MissingPassportNotice";
@@ -17,6 +18,7 @@ export default async function PassportsPage() {
   const archive = await getArchive();
   const L = lookups(archive);
   const published = archive.traditions.filter(isPublic);
+  const cover = (id?: string) => (id ? L.media.get(id) : undefined);
 
   return (
     <>
@@ -44,8 +46,20 @@ export default async function PassportsPage() {
                 <span className="font-display flex h-full items-center justify-center self-stretch text-3xl sm:text-4xl" style={{ background: ACCENT[t.accent].hex, color: ACCENT[t.accent].ink }}>
                   {t.passportNo}
                 </span>
-                <span className="my-3 hidden h-20 w-16 overflow-hidden border-2 border-ink sm:block">
-                  <Motif motif={t.motif} className="h-full w-full transition-transform duration-700 group-hover:scale-110" />
+                <span className="my-3 hidden h-20 w-16 overflow-hidden border-2 border-ink bg-parchment sm:block">
+                  {cover(t.hero) ? (
+                    // eslint-disable-next-line @next/next/no-img-element -- Commons thumbnail; credited on the passport and the image credits page
+                    <img
+                      src={mediaUrl(cover(t.hero)!, 250)}
+                      alt=""
+                      title={`${cover(t.hero)!.credit} · ${cover(t.hero)!.license}`}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                  ) : (
+                    <Motif motif={t.motif} className="h-full w-full transition-transform duration-700 group-hover:scale-110" />
+                  )}
                 </span>
                 <span className="min-w-0 py-4">
                   <span className="font-display block text-[clamp(1.56rem,3.12vw,2.58rem)] hyphens-auto [overflow-wrap:anywhere] group-hover:text-brick">{t.name}</span>
